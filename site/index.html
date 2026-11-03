@@ -41,32 +41,35 @@
 
   /* ---------- header */
   .site-header {
-    display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
-    gap: 16px 32px; padding-bottom: 18px; border-bottom: 1px solid var(--line);
+    display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between;
+    gap: 16px 32px; padding-bottom: 20px;
   }
-  .brand { font-size: 0.85rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
-  .site-header h1 { font-size: 1.6rem; font-weight: 700; margin-top: 4px; }
+  .brand { font-size: 0.875rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--accent); }
+  .site-header h1 { font-size: 1.75rem; font-weight: 700; margin-top: 4px; }
   .meta { margin-top: 6px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 20px; }
   .meta strong { color: var(--text); font-weight: 600; }
-  .controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px; }
-  .control-label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 4px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+  .control-label { font-size: 0.875rem; color: var(--muted); margin-right: 6px; }
+  /* week selector: small and quiet */
   select {
-    font: inherit; color: var(--text); background: #fff; min-height: 40px;
-    border: 1px solid #8a97a8; border-radius: 8px; padding: 6px 10px;
+    font: inherit; font-size: 0.875rem; color: var(--muted); background: #fff; min-height: 32px;
+    border: 1px solid var(--line); border-radius: 6px; padding: 2px 6px;
   }
+  select:disabled { opacity: 1; }
   .lang-group { display: inline-flex; border: 1px solid #8a97a8; border-radius: 8px; overflow: hidden; }
   .lang-group button {
-    font: inherit; font-weight: 600; min-height: 40px; min-width: 64px; padding: 6px 12px;
+    font: inherit; font-size: 0.875rem; font-weight: 600; min-height: 36px; min-width: 56px; padding: 4px 10px;
     background: #fff; color: var(--text); border: 0; cursor: pointer;
   }
   .lang-group button + button { border-left: 1px solid #8a97a8; }
   .lang-group button[aria-pressed="true"] { background: var(--accent); color: #fff; }
 
+  /* sample data: visible, but quiet */
   .sample-banner {
-    margin-top: 14px; display: inline-flex; align-items: center; gap: 8px;
-    font-size: 0.9rem; color: #5b3d00; background: #fff6dd; border: 1px solid #e7cf86;
-    border-radius: 999px; padding: 4px 12px;
+    margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.875rem; color: var(--muted);
   }
+  .sample-banner [aria-hidden] { color: #8a6300; }
   .notice {
     margin-top: 24px; padding: 16px 18px; border: 1px solid #f1a7a7; background: #fde8e8;
     color: #7a1616; border-radius: var(--radius);
@@ -75,34 +78,48 @@
   .notice-info { border-color: #e6c66a; background: #fff8e1; color: #5b3d00; }
 
   /* ---------- sections */
-  section { margin-top: 28px; }
+  section { margin-top: 36px; }
   .section-title { margin-bottom: 12px; }
   .card { border: 1px solid var(--line); border-radius: var(--radius); background: #fff; padding: 16px 18px; }
-  .lead { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); gap: var(--gap); align-items: start; }
-  .strategy { background: var(--soft); }
-  .strategy h2 { margin-bottom: 10px; }
-  .strategy-item + .strategy-item { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
-  .strategy-item h3 { color: var(--accent); margin-bottom: 2px; }
-  .strategy-item p { color: var(--text); font-size: 0.95rem; }
-  .boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--gap); }
-  .box h2 { margin-bottom: 10px; }
-  .lines li { padding-left: 14px; position: relative; }
-  .lines li + li { margin-top: 8px; }
-  .lines li::before { content: ""; position: absolute; left: 0; top: 0.65em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .box-status { margin-bottom: 10px; }
-  .needs { margin-top: var(--gap); border-left: 4px solid var(--accent); background: var(--accent-soft); }
-  .needs h2 { margin-bottom: 6px; }
+  /* main screen: the 3 boxes lead, strategy sits compact in the corner */
+  .lead { display: grid; grid-template-columns: minmax(0, 3fr) minmax(220px, 1fr); gap: 28px; align-items: start; margin-top: 12px; }
+  .strategy { border-left: 1px solid var(--line); padding: 2px 0 2px 20px; }
+  .strategy h2 { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); margin-bottom: 10px; }
+  .strategy-item + .strategy-item { margin-top: 12px; }
+  .strategy-item h3 { font-size: 1rem; color: var(--accent); margin-bottom: 2px; }
+  .strategy-item p { color: var(--text); font-size: 1rem; }
+  .clamp { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+  .clamp.expanded { display: block; -webkit-line-clamp: unset; line-clamp: none; overflow: visible; }
+  .more-btn {
+    font: inherit; font-size: 0.875rem; font-weight: 600; color: var(--accent); background: none;
+    border: 0; padding: 4px 0; min-height: 28px; cursor: pointer; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .boxes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 24px; }
+  .box { background: var(--soft); border: 0; border-top: 3px solid var(--accent); border-radius: 4px var(--radius) var(--radius) var(--radius); padding: 22px 24px 24px; }
+  .box h2 { font-size: 1.3rem; margin-bottom: 14px; }
+  .lines li { padding-left: 16px; position: relative; }
+  .lines li + li { margin-top: 12px; }
+  .lines li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .box .lines { font-size: 1.125rem; line-height: 1.45; }
+  .box-status { margin-bottom: 14px; }
+  .more { margin-top: 12px; }
+  .more > summary { display: inline-block; font-size: 0.875rem; font-weight: 600; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 2px; padding: 4px 0; }
+  .more > .lines { margin-top: 10px; }
+  .needs { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 12px 18px; background: var(--accent-soft); border-radius: var(--radius); }
+  .needs h2 { font-size: 1rem; white-space: nowrap; }
+  .needs h2::after { content: ":"; }
+  .needs p { flex: 1 1 300px; }
 
   /* ---------- status / badges */
   .status {
-    display: inline-flex; align-items: center; gap: 6px; font-weight: 650; font-size: 0.85rem;
+    display: inline-flex; align-items: center; gap: 6px; font-weight: 650; font-size: 0.875rem;
     border: 1px solid; border-radius: 999px; padding: 2px 10px 2px 6px; white-space: nowrap;
   }
   .status .icon {
     display: inline-flex; align-items: center; justify-content: center; width: 1.25em; height: 1.25em;
     border-radius: 50%; font-size: 0.8em; font-weight: 800; color: #fff;
   }
-  .status-large { font-size: 1.05rem; padding: 4px 14px 4px 8px; }
+  .status-large { font-size: 1.125rem; padding: 4px 14px 4px 8px; }
   .st-green  { background: #e7f5ec; color: #14532d; border-color: #9fd3b2; }
   .st-green .icon  { background: #1f7a43; }
   .st-yellow { background: #fff5d6; color: #5f4200; border-color: #e6c66a; }
@@ -112,16 +129,34 @@
   .st-gray   { background: #eef1f4; color: #39424e; border-color: #c9d1da; }
   .st-gray .icon   { background: #5d6875; }
   .badge {
-    display: inline-block; font-size: 0.78rem; font-weight: 600; border-radius: 6px; padding: 1px 8px;
+    display: inline-block; font-size: 0.875rem; font-weight: 600; border-radius: 6px; padding: 1px 8px;
     border: 1px solid var(--line); background: #fff; color: var(--muted); white-space: nowrap;
   }
-  .badge-provisional { border-style: dashed; border-color: #8a6300; color: #5f4200; background: #fffaf0; }
+  .badge-provisional { border-style: dashed; border-color: #8a6300; color: #5f4200; background: #fff; }
   .tr-automated { background: var(--accent-soft); border-color: #9cbde3; color: #174a85; }
-  .tr-manual { background: #f3f0fa; border-color: #c6b9e6; color: #4a3585; }
+  .tr-manual { background: #fff; border-color: #8a97a8; color: var(--text); }
   .tr-not_yet { background: #fff; border-color: #c9d1da; color: #4a5563; }
+
+  /* ---------- main funnel (sales): value + status only */
+  .funnel-main { width: 100%; min-width: 0; border-collapse: collapse; }
+  .funnel-main th, .funnel-main td { border-left: 0 !important; padding: 14px 16px; vertical-align: middle; }
+  .funnel-main thead th { font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.04em; border-bottom: 2px solid var(--text); }
+  .funnel-main tbody th { font-size: 1.125rem; }
+  .funnel-main .value { font-size: 2rem; display: inline-block; margin-right: 10px; vertical-align: middle; }
+  .funnel-main .cell-badges { display: inline-flex; vertical-align: middle; }
+  .funnel-main .no-data { display: inline-block; margin: 0 10px 0 0; }
+
+  /* ---------- details (collapsed by default, never printed) */
+  .details { margin-top: 40px; border-top: 1px solid var(--line); }
+  .details > summary {
+    cursor: pointer; padding: 16px 0; font-size: 1.05rem; font-weight: 650; color: var(--accent);
+    list-style-position: inside;
+  }
+  .details > section:first-of-type { margin-top: 8px; }
 
   /* ---------- funnel table */
   .table-scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius); }
+  .table-plain { border: 0; border-radius: 0; }
   table { border-collapse: collapse; width: 100%; min-width: 880px; }
   caption { text-align: left; padding: 12px 16px 0; color: var(--muted); font-size: 0.9rem; }
   th, td { text-align: left; vertical-align: top; padding: 12px 14px; border-top: 1px solid var(--line); }
@@ -152,73 +187,69 @@
   .health-item .detail { color: var(--muted); font-size: 0.9rem; margin-left: 6px; }
 
   /* ---------- responsive */
-  @media (max-width: 1100px) { .boxes { grid-template-columns: 1fr; } }
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .lead { grid-template-columns: 1fr; }
+    .strategy { border-left: 0; border-top: 1px solid var(--line); padding: 16px 0 0; }
+  }
+  @media (max-width: 900px) {
+    .boxes { grid-template-columns: 1fr; gap: 16px; }
     .pillars { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   @media (max-width: 600px) {
     .wrap { padding: 16px 14px 32px; }
-    tbody th, thead th:first-child { position: sticky; left: 0; z-index: 1; background: #fff; box-shadow: 1px 0 0 var(--line); white-space: normal; min-width: 110px; }
-    .site-header h1 { font-size: 1.3rem; }
+    #funnel-table tbody th, #funnel-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: #fff; box-shadow: 1px 0 0 var(--line); white-space: normal; min-width: 110px; }
+    .site-header h1 { font-size: 1.35rem; }
+    .box { padding: 18px 18px 20px; }
     .pillars { grid-template-columns: 1fr; }
+    .funnel-main { table-layout: fixed; }
+    .funnel-main th:first-child { width: 34%; }
+    .funnel-main th, .funnel-main td { padding: 10px 3px; overflow-wrap: break-word; }
+    .funnel-main th { hyphens: auto; }
+    .funnel-main tbody th { font-size: 0.875rem; white-space: normal; padding-left: 0; }
+    .funnel-main thead th { font-size: 0.75rem; letter-spacing: 0; text-transform: none; }
+    .funnel-main thead th:first-child { padding-left: 0; }
+    .funnel-main .status, .funnel-main .badge { font-size: 0.75rem; }
+    .funnel-main .status { padding: 1px 6px 1px 3px; gap: 4px; }
+    .funnel-main .badge { padding: 1px 4px; }
+    .funnel-main .value { font-size: 1.5rem; display: block; margin: 0 0 4px; }
+    .funnel-main .no-data { display: block; margin: 0 0 4px; }
+    .funnel-main .cell-badges { display: flex; }
   }
   @media (prefers-reduced-motion: reduce) {
     *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
   }
 
   /* ---------- print: one A4 landscape page */
-  @page { size: A4 landscape; margin: 8mm; }
+  /* Main screen only, in the active language. If it ever spills to a 2nd page, cut spacing here, never font sizes. */
+  @page { size: A4 landscape; margin: 9mm 10mm; }
   @media print {
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    html, body { font-size: 7.5pt; line-height: 1.28; }
-    .site-header > div:first-child { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 4mm; }
-    .site-header > div:first-child .brand { width: 100%; }
-    .site-header .meta, .site-header .sample-banner { margin-top: 0; }
-    .lines li { padding-left: 9px; }
-    .lines li::before { width: 4px; height: 4px; }
-    .box-status { margin-bottom: 1.5mm; }
-    .change { display: inline; margin-right: 4px; }
-    .value { display: inline; margin-right: 4px; }
-    .cell-badges { margin-top: 0.8mm; }
-    .no-data { margin-bottom: 0; }
-    .pillar-item .kpi { margin-top: 0; }
+    html, body { font-size: 11pt; line-height: 1.32; }
+    .controls, .details, .more, .more-btn, noscript { display: none !important; }
     .wrap { max-width: none; padding: 0; }
-    .controls { display: none !important; }
-    .site-header { padding-bottom: 2mm; gap: 0 6mm; }
-    .site-header h1 { font-size: 13pt; margin-top: 0; }
-    .brand { font-size: 7pt; }
+    .site-header { padding-bottom: 3mm; gap: 0 6mm; }
+    .site-header h1 { font-size: 17pt; margin-top: 0; }
     .meta { margin-top: 1mm; }
-    .sample-banner { margin-top: 1.5mm; font-size: 7pt; padding: 0 6px; }
-    section { margin-top: 3mm; }
-    .section-title { margin-bottom: 1.5mm; }
-    h2 { font-size: 9pt; } h3 { font-size: 8.5pt; }
-    .card { padding: 2.5mm 3mm; border-radius: 6px; break-inside: avoid; }
-    .lead { grid-template-columns: 1fr 3fr; gap: 3mm; }
-    .boxes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3mm; }
-    .box h2, .strategy h2 { margin-bottom: 1.5mm; }
-    .strategy-item p { font-size: 7pt; }
-    .strategy-item + .strategy-item { margin-top: 1.5mm; padding-top: 1.5mm; }
-    .lines li + li { margin-top: 1mm; }
-    .needs { margin-top: 2mm; }
-    .table-scroll { overflow: visible; border-radius: 6px; }
-    table { min-width: 0; }
-    caption { padding: 1.5mm 2mm 0; font-size: 7pt; }
-    th, td { padding: 1.2mm 2mm; }
-    .value { font-size: 10pt; }
-    .change { font-size: 7pt; }
-    .status { font-size: 7pt; padding: 0 5px 0 3px; }
-    .status-large { font-size: 8.5pt; }
-    .badge { font-size: 6.5pt; padding: 0 4px; }
-    .pillars { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3mm; }
-    .pillar h3 { margin-bottom: 1mm; }
-    .pillar-item + .pillar-item { margin-top: 1mm; padding-top: 1mm; }
-    .pillar-item .name { font-size: 7.5pt; }
-    .pillar-item .kpi-value { font-size: 8.5pt; }
-    .health { margin-top: 2mm; padding: 1.5mm 0 0; gap: 1mm 10mm; break-inside: avoid; }
-    .health h2 { width: auto; }
-    .health-item .v { font-size: 8.5pt; }
-    .health-item .k { display: inline; margin-right: 4px; }
+    .sample-banner { margin-top: 1mm; }
+    section { margin-top: 5mm; }
+    .section-title { margin-bottom: 2mm; }
+    .lead { grid-template-columns: minmax(0, 3fr) minmax(0, 1fr); gap: 6mm; margin-top: 2mm; }
+    .strategy { border-left: 1px solid var(--line); border-top: 0; padding: 0 0 0 4mm; }
+    .strategy-item + .strategy-item { margin-top: 2.5mm; }
+    .strategy-item p { font-size: 10pt; }
+    .clamp.expanded { display: -webkit-box; -webkit-line-clamp: 2; line-clamp: 2; overflow: hidden; }
+    .boxes { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 5mm; }
+    .box { padding: 4mm 5mm; break-inside: avoid; }
+    .box h2 { font-size: 14pt; margin-bottom: 2.5mm; }
+    .box .lines { font-size: 11.5pt; }
+    .lines li + li { margin-top: 2mm; }
+    .box-status { margin-bottom: 2.5mm; }
+    .needs { margin-top: 4mm; padding: 2.5mm 4mm; }
+    .main-funnel { break-inside: avoid; }
+    .funnel-main th, .funnel-main td { padding: 2.5mm 4mm; }
+    .funnel-main .value { font-size: 20pt; }
+    .status, .badge { font-size: 9pt; }
+    .status-large { font-size: 11pt; }
   }
 </style>
 </head>
@@ -237,7 +268,7 @@
         <select id="week-select" disabled></select>
       </div>
       <div>
-        <span class="control-label" id="lang-label"></span>
+        <span class="visually-hidden" id="lang-label"></span>
         <div class="lang-group" role="group" aria-labelledby="lang-label">
           <button type="button" data-lang="pt-BR" aria-pressed="false" lang="pt-BR">PT-BR</button>
           <button type="button" data-lang="en-CA" aria-pressed="false" lang="en-CA">EN-CA</button>
@@ -249,55 +280,74 @@
   <main id="main" aria-busy="true">
     <div id="notice" role="alert" hidden></div>
     <div id="content" hidden>
-      <section class="lead" aria-labelledby="strategy-title">
-        <div class="card strategy">
-          <h2 id="strategy-title"></h2>
-          <div id="strategy"></div>
-        </div>
+      <!-- main screen (also the printed page) -->
+      <div class="lead">
         <div>
           <div class="boxes">
-            <article class="card box" aria-labelledby="box-executing-title">
+            <article class="box" aria-labelledby="box-executing-title">
               <h2 id="box-executing-title"></h2>
               <ul class="lines" id="box-executing"></ul>
+              <div id="box-executing-more"></div>
             </article>
-            <article class="card box" aria-labelledby="box-how-title">
+            <article class="box" aria-labelledby="box-how-title">
               <h2 id="box-how-title"></h2>
               <div class="box-status" id="box-how-status"></div>
               <ul class="lines" id="box-how"></ul>
+              <div id="box-how-more"></div>
             </article>
-            <article class="card box" aria-labelledby="box-change-title">
+            <article class="box" aria-labelledby="box-change-title">
               <h2 id="box-change-title"></h2>
               <ul class="lines" id="box-change"></ul>
+              <div id="box-change-more"></div>
             </article>
           </div>
-          <aside class="card needs" id="needs" aria-labelledby="needs-title" hidden>
+          <aside class="needs" id="needs" aria-labelledby="needs-title" hidden>
             <h2 id="needs-title"></h2>
-            <ul class="lines" id="needs-lines"></ul>
+            <p id="needs-text"></p>
           </aside>
         </div>
-      </section>
+        <aside class="strategy" aria-labelledby="strategy-title">
+          <h2 id="strategy-title"></h2>
+          <div id="strategy"></div>
+        </aside>
+      </div>
 
-      <section aria-labelledby="funnel-title">
-        <h2 class="section-title" id="funnel-title"></h2>
-        <div class="table-scroll" role="region" aria-labelledby="funnel-title" tabindex="0">
-          <table id="funnel-table">
-            <caption id="funnel-caption"></caption>
-            <thead><tr id="funnel-head"></tr></thead>
-            <tbody id="funnel-body"></tbody>
+      <section class="main-funnel" aria-labelledby="main-funnel-title">
+        <h2 class="section-title" id="main-funnel-title"></h2>
+        <div class="table-scroll table-plain" role="region" aria-labelledby="main-funnel-title" tabindex="0">
+          <table class="funnel-main" id="main-funnel-table">
+            <thead><tr id="main-funnel-head"></tr></thead>
+            <tbody id="main-funnel-body"></tbody>
           </table>
         </div>
       </section>
 
-      <section aria-labelledby="pillars-title">
-        <h2 class="section-title" id="pillars-title"></h2>
-        <div class="pillars" id="pillars"></div>
-      </section>
+      <!-- details: collapsed by default, never printed -->
+      <details class="details" id="details">
+        <summary id="details-summary"></summary>
 
-      <footer class="health" id="health" aria-labelledby="health-title" hidden>
-        <h2 id="health-title"></h2>
-        <div class="health-item" id="health-coverage" hidden></div>
-        <div class="health-item" id="health-review" hidden></div>
-      </footer>
+        <section aria-labelledby="funnel-title">
+          <h2 class="section-title" id="funnel-title"></h2>
+          <div class="table-scroll" role="region" aria-labelledby="funnel-title" tabindex="0">
+            <table id="funnel-table">
+              <caption id="funnel-caption"></caption>
+              <thead><tr id="funnel-head"></tr></thead>
+              <tbody id="funnel-body"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section aria-labelledby="pillars-title">
+          <h2 class="section-title" id="pillars-title"></h2>
+          <div class="pillars" id="pillars"></div>
+        </section>
+
+        <footer class="health" id="health" aria-labelledby="health-title" hidden>
+          <h2 id="health-title"></h2>
+          <div class="health-item" id="health-coverage" hidden></div>
+          <div class="health-item" id="health-review" hidden></div>
+        </footer>
+      </details>
     </div>
   </main>
   <noscript>
@@ -329,6 +379,16 @@
       'pt-BR': 'A semana do link ({week}) não está disponível. Mostrando a semana mais recente.'
     }
   };
+  // Interface texts that ui_labels does not have (yet). If the key is added to ui_labels, the sheet wins.
+  var UI = {
+    'label.see_more':    { 'en-CA': 'See more', 'pt-BR': 'Ver mais' },
+    'label.see_less':    { 'en-CA': 'See less', 'pt-BR': 'Ver menos' },
+    'label.see_details': { 'en-CA': 'See details', 'pt-BR': 'Ver detalhes' }
+  };
+  var MAX_BOX_ITEMS = 3;
+  // Main screen: sales-focused funnel (technical stage keys from kpi.funnel[].stage)
+  var MAIN_STAGES = ['Site visits', 'Demo/Trial request', 'Sale (revenue)'];
+  var TARGET_STATUSES = ['Green', 'Yellow', 'Red'];   // Gray = no target: the main table shows no badge
   var LANGS = ['en-CA', 'pt-BR'];
   var COL = { 'en-CA': 'en_CA', 'pt-BR': 'pt_BR' };
   var STATUS_ICON = { Green: '✓', Yellow: '!', Red: '✕', Gray: '–' };
@@ -374,6 +434,11 @@
     return fallback;
   }
   function L(key) { return labelOr(key, DASH); }
+  function uiText(key) {   // ui_labels first, then the built-in text (no "missing" warning)
+    var labels = state.data && isObj(state.data.labels) ? state.data.labels : {};
+    var v = isObj(labels[key]) ? str(labels[key][COL[state.lang]]).trim() : '';
+    return v || (UI[key] ? UI[key][state.lang] : DASH);
+  }
   function fill(template, values) {
     return template.replace(/\{(\w+)\}/g, function (m, k) { return values[k] !== undefined ? values[k] : m; });
   }
@@ -429,12 +494,41 @@
     var key = slug(tracking || 'Not yet');
     return el('span', 'badge tr-' + key, L('tracking.' + key));
   }
+  function splitLines(text) {
+    return str(text).split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
+  }
   function lines(target, text) {
     clear(target);
-    var parts = str(text).split(/\n+/).map(function (s) { return s.trim(); }).filter(Boolean);
+    var parts = splitLines(text);
     if (!parts.length) parts = [DASH];
     parts.forEach(function (p) { target.appendChild(el('li', null, p)); });
     return parts;
+  }
+  // Box: first MAX_BOX_ITEMS items visible; the rest go in a "see more" <details> (hidden in print).
+  function boxLines(target, text) {
+    clear(target);
+    var host = $(target.id + '-more');
+    clear(host);
+    var parts = splitLines(text);
+    if (!parts.length) parts = [DASH];
+    parts.slice(0, MAX_BOX_ITEMS).forEach(function (p) { target.appendChild(el('li', null, p)); });
+    var rest = parts.slice(MAX_BOX_ITEMS);
+    if (!rest.length) return;
+    var det = el('details', 'more');
+    det.appendChild(el('summary', null, uiText('label.see_more') + ' (+' + fmtNumber(rest.length) + ')'));
+    var ul = el('ul', 'lines');
+    rest.forEach(function (p) { ul.appendChild(el('li', null, p)); });
+    det.appendChild(ul);
+    host.appendChild(det);
+  }
+  // Strategy text: clamped to 2 lines; the button only shows when the text is actually cut.
+  function updateClamps() {
+    Array.prototype.forEach.call(document.querySelectorAll('.strategy-item'), function (item) {
+      var p = item.querySelector('.clamp'), btn = item.querySelector('.more-btn');
+      if (!p || !btn) return;
+      if (p.classList.contains('expanded')) { btn.hidden = false; return; }
+      btn.hidden = !(p.scrollHeight > p.clientHeight + 1);
+    });
   }
 
   // ---------- render
@@ -476,35 +570,108 @@
     clear(sb);
     var strategy = Array.isArray(d.strategy) ? d.strategy : [];
     if (!strategy.length) sb.appendChild(el('p', 'muted', DASH));
-    strategy.forEach(function (s) {
+    strategy.forEach(function (s, i) {
       if (!isObj(s)) return;
       var item = el('div', 'strategy-item');
       item.appendChild(el('h3', null, labelOr('strategy.' + slug(s.topic), str(s.topic) || DASH)));
-      item.appendChild(el('p', null, aiText(s, 'text') || DASH));
+      var p = el('p', 'clamp', aiText(s, 'text') || DASH);
+      p.id = 'strategy-text-' + i;
+      item.appendChild(p);
+      var btn = el('button', 'more-btn', uiText('label.see_more'));
+      btn.type = 'button';
+      btn.hidden = true;
+      btn.setAttribute('aria-expanded', 'false');
+      btn.setAttribute('aria-controls', p.id);
+      btn.addEventListener('click', function () {
+        var open = p.classList.toggle('expanded');
+        btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        btn.textContent = uiText(open ? 'label.see_less' : 'label.see_more');
+      });
+      item.appendChild(btn);
       sb.appendChild(item);
     });
 
-    // boxes
+    // boxes (at most 3 items visible each)
     $('box-executing-title').textContent = L('box.executing');
-    lines($('box-executing'), aiText(snap, 'executing_text'));
+    boxLines($('box-executing'), aiText(snap, 'executing_text'));
     $('box-how-title').textContent = L('box.how_its_going');
     var hs = $('box-how-status');
     clear(hs);
     hs.appendChild(statusBadge(snap.how_its_going_status || kpi.how_its_going_status, true));
-    lines($('box-how'), aiText(snap, 'how_its_going_text'));
+    boxLines($('box-how'), aiText(snap, 'how_its_going_text'));
     $('box-change-title').textContent = L('box.what_to_change');
-    lines($('box-change'), aiText(snap, 'what_to_change_text'));
-    var needs = aiText(snap, 'needs_from_team');
-    $('needs').hidden = !needs;
+    boxLines($('box-change'), aiText(snap, 'what_to_change_text'));
+    // needs from the team: one strip, only when there is text
+    var needs = splitLines(aiText(snap, 'needs_from_team'));
+    $('needs').hidden = !needs.length;
     $('needs-title').textContent = L('box.needs_from_team');
-    if (needs) lines($('needs-lines'), needs);
+    $('needs-text').textContent = needs.join(' · ');
 
+    renderMainFunnel(kpi);
+    $('details-summary').textContent = uiText('label.see_details');
     renderFunnel(kpi);
     renderPillars(kpi);
     renderHealth(kpi);
 
     var missing = Object.keys(state.missing);
     if (missing.length && window.console) console.warn('ui_labels keys missing for ' + state.lang + ':', missing);
+    window.requestAnimationFrame(updateClamps);
+  }
+
+  // Main screen funnel: products × MAIN_STAGES, value + status only (no change, no Gray badge).
+  function renderMainFunnel(kpi) {
+    $('main-funnel-title').textContent = L('label.funnel');
+    var rows = Array.isArray(kpi.funnel) ? kpi.funnel.filter(isObj) : [];
+    var products = [];
+    rows.forEach(function (r) { if (products.indexOf(r.product) < 0) products.push(r.product); });
+
+    var head = $('main-funnel-head');
+    clear(head);
+    var th0 = el('th', null, L('label.product'));
+    th0.scope = 'col';
+    head.appendChild(th0);
+    MAIN_STAGES.forEach(function (s) {
+      var th = el('th', null, labelOr('stage.' + slug(s), s));
+      th.scope = 'col';
+      head.appendChild(th);
+    });
+
+    var body = $('main-funnel-body');
+    clear(body);
+    if (!rows.length) {
+      var tr0 = el('tr');
+      var td0 = el('td', 'muted', L('label.no_data_yet'));
+      td0.colSpan = MAIN_STAGES.length + 1;
+      tr0.appendChild(td0);
+      body.appendChild(tr0);
+      return;
+    }
+    products.forEach(function (p) {
+      var tr = el('tr');
+      var th = el('th', null, labelOr('product.' + slug(p), str(p)));
+      th.scope = 'row';
+      tr.appendChild(th);
+      MAIN_STAGES.forEach(function (s) {
+        var r = rows.filter(function (x) { return x.product === p && x.stage === s; })[0] || {};
+        tr.appendChild(mainCell(r));
+      });
+      body.appendChild(tr);
+    });
+  }
+
+  function mainCell(r) {
+    var td = el('td');
+    var unit = r.unit && r.unit !== 'count' ? str(r.unit) : 'count';
+    var badges = el('span', 'cell-badges');
+    if (isNum(r.value)) {
+      td.appendChild(el('span', 'value', fmtNumber(r.value, unit)));
+      if (TARGET_STATUSES.indexOf(r.status) >= 0) badges.appendChild(statusBadge(r.status, false));
+    } else {
+      td.appendChild(el('span', 'no-data', L('label.no_data_yet')));
+    }
+    if (r.provisional === true) badges.appendChild(el('span', 'badge badge-provisional', L('badge.provisional')));
+    if (badges.firstChild) td.appendChild(badges);
+    return td;
   }
 
   function renderFunnel(kpi) {
@@ -757,6 +924,11 @@
         if (state.data) render(); else document.documentElement.lang = lg;
         renderNotice();
       });
+    });
+    var resizeTimer = null;
+    window.addEventListener('resize', function () {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(updateClamps, 150);
     });
     $('week-select').addEventListener('change', function (e) {
       var file = e.target.value;
