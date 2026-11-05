@@ -1,4 +1,7 @@
 {
+  "rewrites": [
+    { "source": "/api/timelog", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -12,6 +15,12 @@
       "source": "/data/(.*)",
       "headers": [
         { "key": "Cache-Control", "value": "no-cache" }
+      ]
+    },
+    {
+      "source": "/api/(.*)",
+      "headers": [
+        { "key": "Cache-Control", "value": "no-store" }
       ]
     }
   ]

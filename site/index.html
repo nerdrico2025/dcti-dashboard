@@ -259,6 +259,10 @@
   /* ---------- print: one A4 landscape page */
   /* Main screen only, in the active language. If it ever spills to a 2nd page, cut spacing here, never font sizes. */
   @page { size: A4 landscape; margin: 9mm 10mm; }
+  /* discreet link to the time log screen (horas.html) */
+  .timelog-link { margin-top: 48px; text-align: right; font-size: 0.8125rem; }
+  .timelog-link a { color: var(--faint); text-underline-offset: 3px; }
+
   @media print {
     * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     /* the print viewport can match the narrow-screen rules: pin the paper layout here */
@@ -270,7 +274,7 @@
     .products { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     .status-large { font-size: 13pt !important; }
     .needs { align-items: center !important; }
-    .controls, .details, .more, .more-btn, noscript { display: none !important; }
+    .controls, .details, .more, .more-btn, .timelog-link, noscript { display: none !important; }
     .wrap { max-width: none; padding: 0; }
     .card, .table-scroll { box-shadow: none; border: 1px solid #c9d1da; border-radius: 8px; padding: 3mm 4.5mm; }
     .site-header h1 { font-size: 17pt; margin-top: 0.5mm; }
@@ -419,6 +423,7 @@
       </details>
     </div>
   </main>
+  <p class="timelog-link"><a id="timelog-link" href="horas.html">Time log</a></p>
   <noscript>
     <p class="notice" lang="en-CA">This dashboard needs JavaScript to show the data.</p>
     <p class="notice" lang="pt-BR">Este painel precisa de JavaScript para mostrar os dados.</p>
@@ -452,7 +457,8 @@
   var UI = {
     'label.see_more':    { 'en-CA': 'See more', 'pt-BR': 'Ver mais' },
     'label.see_less':    { 'en-CA': 'See less', 'pt-BR': 'Ver menos' },
-    'label.see_details': { 'en-CA': 'See details', 'pt-BR': 'Ver detalhes' }
+    'label.see_details': { 'en-CA': 'See details', 'pt-BR': 'Ver detalhes' },
+    'label.time_log':    { 'en-CA': 'Time log', 'pt-BR': 'Registro de horas' }
   };
   var MAX_BOX_ITEMS = 3;
   // Main screen: sales-focused funnel (technical stage keys from kpi.funnel[].stage)
@@ -680,6 +686,7 @@
 
     renderMainFunnel(kpi);
     $('details-summary').textContent = uiText('label.see_details');
+    $('timelog-link').textContent = uiText('label.time_log');
     renderFunnel(kpi);
     renderPillars(kpi);
     renderHealth(kpi);

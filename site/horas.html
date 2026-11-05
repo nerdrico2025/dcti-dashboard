@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>DCTI-Institute – Registro de horas</title>
+<style>
+  :root {
+    --bg: #f5f7fa;
+    --card: #fff;
+    --text: #1b2430;
+    --muted: #4a5563;
+    --faint: #66717f;
+    --line: #d6dde6;
+    --accent: #1f5fa8;
+    --accent-soft: #e9f1fb;
+    --danger: #a3262a;
+    --ok: #1d6b3a;
+    --radius: 16px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 20px rgba(16, 24, 40, 0.06);
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { background: var(--bg); }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-size: 1.0625rem; line-height: 1.5;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 32px 72px; }
+  h1, h2, h3 { line-height: 1.25; margin: 0; }
+  p { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  .visually-hidden {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+  }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; opacity: 0.6; }
+
+  /* header */
+  .site-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 32px; }
+  .brand { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .site-header h1 { font-size: 1.875rem; font-weight: 750; letter-spacing: -0.01em; margin-top: 6px; }
+  .back { display: inline-block; margin-top: 8px; font-size: 0.9375rem; color: var(--accent); text-underline-offset: 3px; }
+  .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; padding-top: 4px; }
+  .lang-group { display: inline-flex; padding: 4px; gap: 4px; background: #fff; border-radius: 12px; box-shadow: var(--shadow); }
+  .lang-group button {
+    font-size: 0.9375rem; font-weight: 650; min-height: 40px; min-width: 64px; padding: 6px 14px;
+    background: transparent; border: 0; border-radius: 9px;
+  }
+  .lang-group button:hover { background: var(--accent-soft); }
+  .lang-group button[aria-pressed="true"] { background: var(--accent); color: #fff; }
+  .link-btn {
+    background: none; border: 0; padding: 8px 4px; min-height: 40px; color: var(--accent);
+    font-size: 0.9375rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px;
+  }
+
+  /* cards and buttons */
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 26px; }
+  .btn {
+    min-height: 44px; padding: 8px 18px; border-radius: 10px; border: 1px solid var(--accent);
+    background: var(--accent); color: #fff; font-weight: 650; font-size: 0.9375rem;
+  }
+  .btn:hover:not(:disabled) { background: #194f8c; }
+  .btn-quiet { background: #fff; color: var(--accent); }
+  .btn-quiet:hover:not(:disabled) { background: var(--accent-soft); }
+  .btn-small { min-height: 36px; padding: 4px 12px; font-size: 0.875rem; }
+  .btn-danger { border-color: var(--danger); color: var(--danger); background: #fff; }
+  .btn-danger:hover:not(:disabled) { background: #fbeaea; }
+  .notice { margin-top: 24px; padding: 16px 20px; background: #fde8e8; color: #7a1616; border-radius: var(--radius); }
+  .notice .btn { margin-top: 10px; }
+  .toast { min-height: 1.5em; margin-top: 8px; font-size: 0.9375rem; color: var(--ok); font-weight: 600; }
+
+  /* login */
+  .login { margin-top: 32px; max-width: 460px; }
+  .login h2 { font-size: 1.25rem; }
+  .login p.hint { margin-top: 6px; color: var(--muted); font-size: 0.9375rem; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+  .field input {
+    min-height: 44px; padding: 8px 12px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; width: 100%;
+  }
+  .field input[aria-invalid="true"] { border-color: var(--danger); }
+  .login form { margin-top: 18px; display: grid; gap: 14px; }
+  .error-text { color: var(--danger); font-size: 0.875rem; font-weight: 600; }
+
+  /* week bar */
+  .weekbar { margin-top: 8px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .weekbar .week-name { font-size: 1.25rem; font-weight: 700; }
+  .weekbar .week-range { color: var(--muted); font-size: 0.9375rem; }
+  .weekbar .nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* total */
+  .total { margin-top: 20px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+  .total .label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .total .value { font-size: 2.5rem; font-weight: 750; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .copy-box { margin-top: 12px; width: 100%; }
+  .copy-box textarea { width: 100%; min-height: 200px; padding: 10px; border: 1px solid #9aa5b1; border-radius: 10px; font-size: 0.9375rem; }
+
+  /* groups and tasks */
+  .section-title {
+    margin: 40px 0 14px; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted);
+  }
+  .group + .group { margin-top: 12px; }
+  .group.card { padding-top: 18px; padding-bottom: 18px; }
+  .group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .group-head h3 { font-size: 1.125rem; font-weight: 700; }
+  .sum { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .sum.zero { color: var(--faint); font-weight: 600; }
+  .task + .task { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .task-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .task-head h4 { margin: 0; font-size: 1rem; font-weight: 650; }
+  .tag { font-size: 0.8125rem; color: var(--muted); font-weight: 500; margin-left: 6px; }
+  .periods { margin-top: 10px; }
+  .period {
+    display: grid; grid-template-columns: 8.5rem 5rem 1fr auto; align-items: center; gap: 4px 14px;
+    padding: 8px 0; border-top: 1px solid #edf0f4;
+  }
+  .period:first-child { border-top: 0; }
+  .period .p-date { color: var(--muted); font-size: 0.9375rem; }
+  .period .p-hours { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .period .p-note { color: var(--text); font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .period .p-note.empty { color: var(--faint); }
+  .period .p-actions { display: flex; gap: 6px; }
+  .no-periods { margin-top: 8px; color: var(--faint); font-size: 0.9375rem; }
+  .add-btn { margin-top: 10px; }
+
+  /* period form */
+  .pform {
+    margin-top: 10px; padding: 14px; border-radius: 12px; background: var(--accent-soft);
+    display: grid; grid-template-columns: 10rem 8rem 1fr; gap: 12px; align-items: start;
+  }
+  .pform .hint { font-size: 0.8125rem; color: var(--muted); }
+  .pform .actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .pform .actions .error-text { margin-left: 4px; }
+  .loading { margin-top: 24px; color: var(--muted); }
+
+  @media (max-width: 640px) {
+    .wrap { padding: 24px 16px 56px; }
+    .site-header h1 { font-size: 1.5rem; }
+    .card { padding: 18px 16px; }
+    .total .value { font-size: 2.125rem; }
+    .period { grid-template-columns: 1fr auto; }
+    .period .p-date { grid-column: 1; }
+    .period .p-hours { grid-column: 2; grid-row: 1; text-align: right; }
+    .period .p-note { grid-column: 1 / -1; }
+    .period .p-actions { grid-column: 1 / -1; }
+    .pform { grid-template-columns: 1fr 1fr; }
+    .pform .f-note { grid-column: 1 / -1; }
+    .weekbar .nav { width: 100%; }
+    .weekbar .nav .btn { flex: 1 1 auto; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site-header">
+    <div>
+      <div class="brand">DCTI-Institute</div>
+      <h1 id="page-title"></h1>
+      <a class="back" id="back-link" href="./"></a>
+    </div>
+    <div class="controls">
+      <button type="button" class="link-btn" id="logout" hidden></button>
+      <span class="visually-hidden" id="lang-label"></span>
+      <div class="lang-group" role="group" aria-labelledby="lang-label">
+        <button type="button" data-lang="pt-BR" aria-pressed="false" lang="pt-BR">PT-BR</button>
+        <button type="button" data-lang="en-CA" aria-pressed="false" lang="en-CA">EN-CA</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <div class="notice" id="error" role="alert" hidden><p id="error-text"></p><button type="button" class="btn btn-quiet" id="retry"></button></div>
+
+    <section class="card login" id="login" aria-labelledby="login-title" hidden>
+      <h2 id="login-title"></h2>
+      <p class="hint" id="login-hint"></p>
+      <form id="login-form" novalidate>
+        <div class="field">
+          <label for="password" id="password-label"></label>
+          <input type="password" id="password" autocomplete="current-password" required aria-describedby="login-error">
+        </div>
+        <p class="error-text" id="login-error"></p>
+        <div><button type="submit" class="btn" id="login-btn"></button></div>
+      </form>
+    </section>
+
+    <div id="app" hidden>
+      <nav class="card weekbar" id="weekbar" aria-labelledby="week-name">
+        <div>
+          <h2 class="week-name" id="week-name"></h2>
+          <p class="week-range" id="week-range"></p>
+        </div>
+        <div class="nav">
+          <button type="button" class="btn btn-quiet btn-small" id="prev-week"></button>
+          <button type="button" class="btn btn-quiet btn-small" id="this-week"></button>
+          <button type="button" class="btn btn-quiet btn-small" id="next-week"></button>
+        </div>
+      </nav>
+
+      <p class="loading" id="loading" hidden></p>
+
+      <div id="week-content" hidden>
+        <section class="card total" aria-labelledby="total-label">
+          <div>
+            <p class="label" id="total-label"></p>
+            <p class="value" id="total-value"></p>
+          </div>
+          <button type="button" class="btn" id="copy-btn"></button>
+          <div class="copy-box" id="copy-box" hidden>
+            <p class="hint" id="copy-hint"></p>
+            <label class="visually-hidden" for="copy-text" id="copy-text-label"></label>
+            <textarea id="copy-text" readonly></textarea>
+          </div>
+        </section>
+
+        <h2 class="section-title" id="deliverables-title"></h2>
+        <div id="groups"></div>
+        <p class="no-periods" id="no-tasks" hidden></p>
+
+        <h2 class="section-title" id="fixed-title"></h2>
+        <div id="fixed"></div>
+      </div>
+    </div>
+  </main>
+  <noscript>
+    <p class="notice" lang="pt-BR">Esta tela precisa de JavaScript.</p>
+    <p class="notice" lang="en-CA">This page needs JavaScript.</p>
+  </noscript>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'api/timelog';             // same origin: Vercel rewrites it to the n8n webhook (site/vercel.json)
+  var KEY_STORE = 'dcti_timelog_key';   // the password, saved only in this browser
+  var LANG_STORE = 'dcti_lang';         // shared with the dashboard
+  var TZ = 'America/Sao_Paulo';
+  var FIXED_ORDER = ['T-MEET', 'T-EXTRA'];
+  var LANGS = ['pt-BR', 'en-CA'];
+
+  var T = {
+    'pt-BR': {
+      doc_title: 'DCTI-Institute – Registro de horas',
+      title: 'Registro de horas',
+      back: '← Voltar ao painel',
+      lang: 'Idioma',
+      logout: 'Sair',
+      login_title: 'Digite a senha',
+      login_hint: 'A senha fica salva só neste navegador. Use "Sair" para apagá-la.',
+      password: 'Senha',
+      enter: 'Entrar',
+      checking: 'Conferindo…',
+      empty_password: 'Digite a senha.',
+      wrong_password: 'Senha incorreta.',
+      not_configured: 'O servidor ainda não está configurado (segredo no n8n).',
+      network: 'Não foi possível falar com o servidor. Confira a conexão e tente de novo.',
+      server: 'O servidor respondeu com erro. Tente de novo em instantes.',
+      retry: 'Tentar de novo',
+      loading: 'Carregando…',
+      week_n: 'Semana {n} de {y}',
+      prev_week: '← Anterior',
+      this_week: 'Esta semana',
+      next_week: 'Próxima →',
+      prev_week_long: 'Semana anterior',
+      next_week_long: 'Próxima semana',
+      total_week: 'Total da semana',
+      copy: 'Copiar resumo da semana',
+      copied: 'Resumo copiado. É só colar no e-mail.',
+      copy_hint: 'Não deu para copiar sozinho. O texto já está selecionado: use Ctrl+C (ou Cmd+C).',
+      copy_text_label: 'Resumo da semana em inglês',
+      deliverables: 'Entregáveis',
+      fixed: 'Reuniões e extras',
+      no_tasks: 'Nenhuma tarefa ativa na aba tasks.',
+      add_period: '+ adicionar período',
+      inactive: '(inativa)',
+      date: 'Data',
+      hours: 'Horas',
+      hours_hint: 'Ex.: 1,5 · 1h30 · 90min',
+      note: 'Nota (opcional)',
+      no_note: 'sem nota',
+      save: 'Salvar',
+      saving: 'Salvando…',
+      cancel: 'Cancelar',
+      edit: 'Editar',
+      remove: 'Remover',
+      period_of: 'período de {h} em {d}',
+      confirm_remove: 'Remover o período de {h} em {d}?',
+      saved: 'Período salvo.',
+      removed: 'Período removido.',
+      invalid_hours: 'Horas inválidas. Use 1,5 ou 1h30 ou 90min (mais que 0 e até 24 h).',
+      invalid_date: 'Escolha uma data desta semana.',
+      not_found: 'Este período não existe mais. A lista foi recarregada.',
+      invalid_task: 'Esta tarefa não está ativa na planilha. A lista foi recarregada.',
+      add_period_for: 'Adicionar período em {t}',
+      total_of: 'Total de {t}'
+    },
+    'en-CA': {
+      doc_title: 'DCTI-Institute – Time log',
+      title: 'Time log',
+      back: '← Back to the dashboard',
+      lang: 'Language',
+      logout: 'Sign out',
+      login_title: 'Enter the password',
+      login_hint: 'The password is saved only in this browser. Use "Sign out" to remove it.',
+      password: 'Password',
+      enter: 'Sign in',
+      checking: 'Checking…',
+      empty_password: 'Enter the password.',
+      wrong_password: 'Wrong password.',
+      not_configured: 'The server is not set up yet (secret in n8n).',
+      network: 'Could not reach the server. Check the connection and try again.',
+      server: 'The server returned an error. Please try again shortly.',
+      retry: 'Try again',
+      loading: 'Loading…',
+      week_n: 'Week {n}, {y}',
+      prev_week: '← Previous',
+      this_week: 'This week',
+      next_week: 'Next →',
+      prev_week_long: 'Previous week',
+      next_week_long: 'Next week',
+      total_week: 'Week total',
+      copy: 'Copy week summary',
+      copied: 'Summary copied. Paste it into the email.',
+      copy_hint: 'Could not copy automatically. The text is selected: press Ctrl+C (or Cmd+C).',
+      copy_text_label: 'Week summary in English',
+      deliverables: 'Deliverables',
+      fixed: 'Meetings and extras',
+      no_tasks: 'No active task in the tasks tab.',
+      add_period: '+ add period',
+      inactive: '(inactive)',
+      date: 'Date',
+      hours: 'Hours',
+      hours_hint: 'E.g. 1.5 · 1h30 · 90min',
+      note: 'Note (optional)',
+      no_note: 'no note',
+      save: 'Save',
+      saving: 'Saving…',
+      cancel: 'Cancel',
+      edit: 'Edit',
+      remove: 'Remove',
+      period_of: 'period of {h} on {d}',
+      confirm_remove: 'Remove the period of {h} on {d}?',
+      saved: 'Period saved.',
+      removed: 'Period removed.',
+      invalid_hours: 'Invalid hours. Use 1.5 or 1h30 or 90min (more than 0, up to 24 h).',
+      invalid_date: 'Choose a date in this week.',
+      not_found: 'This period no longer exists. The list was reloaded.',
+      invalid_task: 'This task is not active in the sheet. The list was reloaded.',
+      add_period_for: 'Add period to {t}',
+      total_of: 'Total for {t}'
+    }
+  };
+  var MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+  var state = {
+    lang: 'pt-BR', key: '', week: '', tasks: [], entries: [],
+    form: null,          // { mode: 'add'|'edit', taskId, entryId, newId, date, hours, note, error, busy }
+    loaded: false, reqSeq: 0, focusAfter: null
+  };
+
+  // ---------- helpers
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function str(x) { return (x === null || x === undefined) ? '' : String(x); }
+  function t(k, vars) {
+    var s = (T[state.lang] && T[state.lang][k]) || T['en-CA'][k] || k;
+    return vars ? s.replace(/\{(\w+)\}/g, function (m, v) { return vars[v] !== undefined ? vars[v] : m; }) : s;
+  }
+  function store(k, v) { try { if (v === null) window.localStorage.removeItem(k); else window.localStorage.setItem(k, v); } catch (e) { /* no storage */ } }
+  function read(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function param(name) { try { return new URLSearchParams(window.location.search).get(name); } catch (e) { return null; } }
+  function normLang(x) {
+    var s = str(x).trim().toLowerCase();
+    for (var i = 0; i < LANGS.length; i++) if (LANGS[i].toLowerCase() === s) return LANGS[i];
+    return null;
+  }
+  function pad(n) { return (n < 10 ? '0' : '') + n; }
+
+  // ---------- dates and ISO weeks (dates are calendar days, YYYY-MM-DD, in America/Sao_Paulo)
+  function todaySP() {
+    try {
+      var p = {};
+      new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' })
+        .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+      return p.year + '-' + p.month + '-' + p.day;
+    } catch (e) {
+      var d = new Date(Date.now() - 3 * 3600e3);   // fallback: UTC-3
+      return d.toISOString().slice(0, 10);
+    }
+  }
+  function toUTC(ds) { var a = ds.split('-'); return Date.UTC(+a[0], +a[1] - 1, +a[2]); }
+  function fromUTC(ms) { return new Date(ms).toISOString().slice(0, 10); }
+  function addDays(ds, n) { return fromUTC(toUTC(ds) + n * 864e5); }
+  function isoWeek(ds) {
+    var d = new Date(toUTC(ds));
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 3);
+    var y = d.getUTCFullYear();
+    return y + '-W' + pad(1 + Math.floor((d - Date.UTC(y, 0, 1)) / 864e5 / 7));
+  }
+  function weekStart(week) {
+    var m = /^(\d{4})-W(\d{2})$/.exec(str(week));
+    if (!m) return '';
+    var jan4 = Date.UTC(+m[1], 0, 4);
+    var ds = fromUTC(jan4 - ((new Date(jan4).getUTCDay() + 6) % 7) * 864e5 + (+m[2] - 1) * 7 * 864e5);
+    return (+m[2] >= 1 && isoWeek(ds) === week) ? ds : '';
+  }
+  function shiftWeek(week, n) { return isoWeek(addDays(weekStart(week), 7 * n)); }
+  function fmtDay(ds, withWeekday) {
+    try {
+      var o = { timeZone: 'UTC', day: 'numeric', month: 'short' };
+      if (withWeekday) o.weekday = 'short';
+      return new Intl.DateTimeFormat(state.lang, o).format(new Date(toUTC(ds)));
+    } catch (e) { return ds; }
+  }
+  function fmtYearRange(week) {
+    var a = weekStart(week), b = addDays(a, 6);
+    var y = b.slice(0, 4);
+    return fmtDay(a) + ' – ' + fmtDay(b) + (state.lang === 'en-CA' ? ', ' : ' ') + y;
+  }
+
+  // ---------- hours: "1,5" | "1.5" | "2" | "1h30" | "1:30" | "90min" -> decimal hours with 2 places
+  function parseHours(v) {
+    var s = str(v).trim().toLowerCase().replace(/\s+/g, '');
+    var m;
+    var h = NaN;
+    if ((m = /^(\d+(?:[.,]\d+)?)(?:h|hr|hrs|hora|horas|hour|hours)?$/.exec(s))) h = parseFloat(m[1].replace(',', '.'));
+    else if ((m = /^(\d+)(?:h|:)(\d{1,2})(?:m|min)?$/.exec(s))) h = +m[2] < 60 ? +m[1] + (+m[2]) / 60 : NaN;
+    else if ((m = /^(\d+(?:[.,]\d+)?)(?:m|min|mins|minuto|minutos|minute|minutes)$/.exec(s))) h = parseFloat(m[1].replace(',', '.')) / 60;
+    if (!isFinite(h)) return NaN;
+    h = Math.round(h * 100) / 100;
+    return (h > 0 && h <= 24) ? h : NaN;
+  }
+  function round2(x) { return Math.round(x * 100) / 100; }
+  function fmtNum(h, lang) {
+    try { return new Intl.NumberFormat(lang || state.lang, { maximumFractionDigits: 2 }).format(h); } catch (e) { return String(h); }
+  }
+  function fmtHours(h, lang) { return fmtNum(round2(h), lang) + ' h'; }
+  function hoursInput(h) { return fmtNum(h).replace(/\s/g, ''); }   // value shown in the edit field
+
+  // ---------- tasks and entries
+  function taskName(task, lang) { return (lang || state.lang) === 'en-CA' ? (task.name_en || task.name_pt) : (task.name_pt || task.name_en); }
+  function isFixed(task) { return task.fixed || FIXED_ORDER.indexOf(task.task_id) >= 0; }
+  function deliverableLabel(group, lang) {
+    if ((lang || state.lang) !== 'en-CA') return group.key;
+    // English name of a deliverable = nome_en of the task whose nome_pt is the deliverable; otherwise the text as is
+    var same = group.tasks.filter(function (x) { return x.name_pt === group.key; })[0];
+    return same ? same.name_en : group.key;
+  }
+  function groups() {
+    var list = [], byKey = {};
+    state.tasks.forEach(function (task) {
+      if (isFixed(task)) return;
+      var k = task.deliverable || task.name_pt || task.task_id;
+      if (!byKey[k]) { byKey[k] = { key: k, tasks: [] }; list.push(byKey[k]); }
+      byKey[k].tasks.push(task);
+    });
+    return list;
+  }
+  function fixedTasks() {
+    return FIXED_ORDER.map(function (id) { return state.tasks.filter(function (x) { return x.task_id === id; })[0]; })
+      .filter(Boolean);
+  }
+  function entriesOf(taskId) { return state.entries.filter(function (e) { return e.task_id === taskId; }); }
+  function sumOf(list) { return round2(list.reduce(function (a, e) { return a + (+e.hours || 0); }, 0)); }
+  function sumTasks(tasks) { return round2(tasks.reduce(function (a, x) { return a + sumOf(entriesOf(x.task_id)); }, 0)); }
+  function newId() {
+    var a = new Uint8Array(9), s = '';
+    try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+    for (var j = 0; j < a.length; j++) s += ('0' + a[j].toString(16)).slice(-2);
+    return 'TL-' + Date.now().toString(36) + '-' + s;
+  }
+
+  // ---------- API (POST /api/timelog, header X-Timelog-Key)
+  function api(body) {
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, 25000) : null;
+    return fetch(API, {
+      method: 'POST', cache: 'no-store', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-Timelog-Key': state.key },
+      body: JSON.stringify(body), signal: ctrl ? ctrl.signal : undefined
+    }).then(function (res) {
+      if (timer) clearTimeout(timer);
+      return res.text().then(function (txt) {
+        var data = null;
+        try { data = JSON.parse(txt); } catch (e) { data = null; }
+        if (res.ok && data && data.ok) return data;
+        var err = new Error('api');
+        err.status = res.status;
+        err.code = data && data.error ? String(data.error) : (res.status === 401 ? 'unauthorized' : 'server');
+        throw err;
+      });
+    }, function () {
+      if (timer) clearTimeout(timer);
+      var err = new Error('network');
+      err.status = 0; err.code = 'network';
+      throw err;
+    });
+  }
+  function messageFor(err) {
+    if (err.code === 'unauthorized') return t('wrong_password');
+    if (err.code === 'not_configured') return t('not_configured');
+    if (err.code === 'network') return t('network');
+    if (T[state.lang][err.code]) return t(err.code);
+    return t('server');
+  }
+
+  // ---------- notices
+  var toastTimer = null;
+  function toast(msg) {
+    var n = $('toast');
+    n.textContent = msg;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { n.textContent = ''; }, 5000);
+  }
+  function showError(msg) { $('error-text').textContent = msg; $('error').hidden = false; }
+  function hideError() { $('error').hidden = true; }
+
+  // ---------- login / logout
+  function signOut(msg) {
+    state.key = '';
+    state.loaded = false; state.tasks = []; state.entries = []; state.form = null;
+    store(KEY_STORE, null);
+    $('app').hidden = true; $('logout').hidden = true; hideError();
+    $('login').hidden = false;
+    $('login-error').textContent = msg || '';
+    $('password').value = '';
+    $('password').setAttribute('aria-invalid', msg ? 'true' : 'false');
+    $('password').focus();
+  }
+  function onLogin(ev) {
+    ev.preventDefault();
+    var v = $('password').value.trim();
+    if (!v) { $('login-error').textContent = t('empty_password'); $('password').setAttribute('aria-invalid', 'true'); return; }
+    state.key = v;
+    $('login-btn').disabled = true;
+    $('login-btn').textContent = t('checking');
+    $('login-error').textContent = '';
+    loadWeek(true).then(function () {
+      $('login-btn').disabled = false;
+      $('login-btn').textContent = t('enter');
+    });
+  }
+  function enterApp() {
+    $('login').hidden = true;
+    $('app').hidden = false;
+    $('logout').hidden = false;
+  }
+
+  // ---------- loading a week
+  function loadWeek(fromLogin) {
+    var seq = ++state.reqSeq;
+    var week = state.week;
+    hideError();
+    state.form = null;
+    if (!fromLogin) { $('loading').hidden = false; $('week-content').hidden = true; }
+    renderWeekBar();
+    return api({ action: 'list', week: week }).then(function (data) {
+      if (seq !== state.reqSeq) return;
+      if (fromLogin) { store(KEY_STORE, state.key); enterApp(); }
+      state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      state.entries = Array.isArray(data.entries) ? data.entries : [];
+      state.loaded = true;
+      $('loading').hidden = true;
+      $('week-content').hidden = false;
+      render();
+    }, function (err) {
+      if (seq !== state.reqSeq) return;
+      $('loading').hidden = true;
+      if (err.code === 'unauthorized') { signOut(t('wrong_password')); return; }
+      if (fromLogin) {
+        $('login-error').textContent = messageFor(err);
+        state.key = read(KEY_STORE) || '';
+        if (!$('login').hidden) return;
+      }
+      state.loaded = false;
+      showError(messageFor(err));
+    });
+  }
+  function goWeek(week) {
+    state.week = week;
+    try {
+      var u = new URL(window.location.href);
+      if (week === isoWeek(todaySP())) u.searchParams.delete('week'); else u.searchParams.set('week', week);
+      window.history.replaceState(null, '', u.toString());
+    } catch (e) { /* ignore */ }
+    loadWeek(false);
+  }
+
+  // ---------- rendering
+  function renderStatic() {
+    document.documentElement.lang = state.lang;
+    document.title = t('doc_title');
+    $('page-title').textContent = t('title');
+    $('back-link').textContent = t('back');
+    $('lang-label').textContent = t('lang');
+    $('logout').textContent = t('logout');
+    $('login-title').textContent = t('login_title');
+    $('login-hint').textContent = t('login_hint');
+    $('password-label').textContent = t('password');
+    if (!$('login-btn').disabled) $('login-btn').textContent = t('enter');
+    $('retry').textContent = t('retry');
+    $('loading').textContent = t('loading');
+    $('total-label').textContent = t('total_week');
+    $('copy-btn').textContent = t('copy');
+    $('copy-hint').textContent = t('copy_hint');
+    $('copy-text-label').textContent = t('copy_text_label');
+    $('deliverables-title').textContent = t('deliverables');
+    $('fixed-title').textContent = t('fixed');
+    $('no-tasks').textContent = t('no_tasks');
+    var btns = document.querySelectorAll('.lang-group button');
+    for (var i = 0; i < btns.length; i++) btns[i].setAttribute('aria-pressed', btns[i].getAttribute('data-lang') === state.lang ? 'true' : 'false');
+  }
+  function renderWeekBar() {
+    var m = /^(\d{4})-W(\d{2})$/.exec(state.week);
+    $('week-name').textContent = t('week_n', { n: +m[2], y: m[1] });
+    $('week-range').textContent = fmtYearRange(state.week);
+    $('prev-week').textContent = t('prev_week');
+    $('prev-week').setAttribute('aria-label', t('prev_week_long'));
+    $('next-week').textContent = t('next_week');
+    $('next-week').setAttribute('aria-label', t('next_week_long'));
+    $('this-week').textContent = t('this_week');
+    $('this-week').disabled = state.week === isoWeek(todaySP());
+  }
+  function render() {
+    renderStatic();
+    renderWeekBar();
+    if (!state.loaded) return;
+    $('total-value').textContent = fmtHours(sumOf(state.entries));
+    var g = $('groups'); clear(g);
+    var list = groups();
+    list.forEach(function (group) { g.appendChild(groupCard(group)); });
+    $('no-tasks').hidden = list.length > 0;
+    var f = $('fixed'); clear(f);
+    fixedTasks().forEach(function (task) { f.appendChild(groupCard({ key: task.deliverable, tasks: [task], fixed: true })); });
+    if (state.focusAfter) {
+      var n = $(state.focusAfter);
+      state.focusAfter = null;
+      if (n) n.focus();
+    }
+  }
+  function sumEl(h, label) {
+    var s = el('span', 'sum' + (h ? '' : ' zero'), fmtHours(h));
+    s.setAttribute('aria-label', label + ': ' + fmtHours(h));
+    return s;
+  }
+  function groupCard(group) {
+    var card = el('section', 'card group');
+    var single = group.tasks.length === 1;
+    var label = group.fixed ? taskName(group.tasks[0]) : deliverableLabel(group);
+    var head = el('div', 'group-head');
+    var h3 = el('h3', null, label);
+    var hid = 'g-' + group.tasks[0].task_id;
+    h3.id = hid;
+    card.setAttribute('aria-labelledby', hid);
+    if (single && group.tasks[0].active === false) h3.appendChild(el('span', 'tag', t('inactive')));
+    head.appendChild(h3);
+    head.appendChild(sumEl(sumTasks(group.tasks), t('total_of', { t: label })));
+    card.appendChild(head);
+    group.tasks.forEach(function (task) { card.appendChild(taskBlock(task, single)); });
+    return card;
+  }
+  function taskBlock(task, single) {
+    var box = el('div', 'task');
+    var name = taskName(task);
+    if (!single) {
+      var head = el('div', 'task-head');
+      var h4 = el('h4', null, name);
+      if (task.active === false) h4.appendChild(el('span', 'tag', t('inactive')));
+      head.appendChild(h4);
+      head.appendChild(sumEl(sumOf(entriesOf(task.task_id)), t('total_of', { t: name })));
+      box.appendChild(head);
+    }
+    var list = entriesOf(task.task_id);
+    var form = state.form;
+    if (list.length) {
+      var ul = el('ul', 'periods');
+      list.forEach(function (e) {
+        var li = el('li');
+        if (form && form.mode === 'edit' && form.entryId === e.id) li.appendChild(periodForm(task, e));
+        else li.appendChild(periodRow(task, e));
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+    if (form && form.mode === 'add' && form.taskId === task.task_id) {
+      box.appendChild(periodForm(task, null));
+    } else if (task.active !== false) {
+      var add = el('button', 'btn btn-quiet btn-small add-btn', t('add_period'));
+      add.type = 'button';
+      add.id = 'add-' + task.task_id;
+      add.setAttribute('aria-label', t('add_period_for', { t: name }));
+      add.disabled = !!(form && form.busy);
+      add.addEventListener('click', function () { openAdd(task); });
+      box.appendChild(add);
+    }
+    return box;
+  }
+  function periodRow(task, e) {
+    var row = el('div', 'period');
+    row.appendChild(el('span', 'p-date', fmtDay(e.date, true)));
+    row.appendChild(el('span', 'p-hours', fmtHours(e.hours)));
+    row.appendChild(el('span', 'p-note' + (e.note ? '' : ' empty'), e.note || t('no_note')));
+    var acts = el('span', 'p-actions');
+    var what = t('period_of', { h: fmtHours(e.hours), d: fmtDay(e.date) });
+    var busy = !!(state.form && state.form.busy);
+    var edit = el('button', 'btn btn-quiet btn-small', t('edit'));
+    edit.type = 'button'; edit.id = 'edit-' + e.id; edit.disabled = busy;
+    edit.setAttribute('aria-label', t('edit') + ': ' + what);
+    edit.addEventListener('click', function () { openEdit(task, e); });
+    var rm = el('button', 'btn btn-danger btn-small', t('remove'));
+    rm.type = 'button'; rm.id = 'rm-' + e.id; rm.disabled = busy;
+    rm.setAttribute('aria-label', t('remove') + ': ' + what);
+    rm.addEventListener('click', function () { removeEntry(task, e); });
+    acts.appendChild(edit); acts.appendChild(rm);
+    row.appendChild(acts);
+    return row;
+  }
+  function field(id, label, input, hint) {
+    var f = el('div', 'field');
+    var l = el('label', null, label);
+    l.htmlFor = id;
+    input.id = id;
+    f.appendChild(l); f.appendChild(input);
+    if (hint) { var h = el('span', 'hint', hint); h.id = id + '-hint'; f.appendChild(h); input.setAttribute('aria-describedby', h.id + ' pform-error'); }
+    return f;
+  }
+  function periodForm(task, e) {
+    var s = state.form;
+    var ws = weekStart(state.week);
+    var form = el('form', 'pform');
+    form.noValidate = true;
+    form.setAttribute('aria-label', (e ? t('edit') : t('add_period_for', { t: taskName(task) })));
+    var d = el('input'); d.type = 'date'; d.min = ws; d.max = addDays(ws, 6); d.value = s.date; d.required = true;
+    d.addEventListener('input', function () { s.date = d.value; });
+    var h = el('input'); h.type = 'text'; h.inputMode = 'decimal'; h.autocomplete = 'off'; h.value = s.hours; h.required = true;
+    h.addEventListener('input', function () { s.hours = h.value; });
+    var n = el('input'); n.type = 'text'; n.maxLength = 500; n.value = s.note; n.autocomplete = 'off';
+    n.addEventListener('input', function () { s.note = n.value; });
+    if (s.error === 'invalid_hours') h.setAttribute('aria-invalid', 'true');
+    if (s.error === 'invalid_date') d.setAttribute('aria-invalid', 'true');
+    var fh = field('pform-hours', t('hours'), h, t('hours_hint'));
+    var fd = field('pform-date', t('date'), d);
+    var fn = field('pform-note', t('note'), n);
+    fn.className += ' f-note';
+    form.appendChild(fd); form.appendChild(fh); form.appendChild(fn);
+    var acts = el('div', 'actions');
+    var save = el('button', 'btn btn-small', s.busy ? t('saving') : t('save'));
+    save.type = 'submit'; save.disabled = s.busy;
+    var cancel = el('button', 'btn btn-quiet btn-small', t('cancel'));
+    cancel.type = 'button'; cancel.disabled = s.busy;
+    cancel.addEventListener('click', closeForm);
+    var err = el('span', 'error-text', s.error ? t(s.error) : '');
+    err.id = 'pform-error';
+    err.setAttribute('role', 'alert');
+    acts.appendChild(save); acts.appendChild(cancel); acts.appendChild(err);
+    form.appendChild(acts);
+    form.addEventListener('submit', function (ev) { ev.preventDefault(); submitForm(task, e); });
+    form.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !s.busy) { ev.preventDefault(); closeForm(); } });
+    return form;
+  }
+
+  // ---------- actions
+  function defaultDate() {
+    var today = todaySP();
+    return isoWeek(today) === state.week ? today : weekStart(state.week);
+  }
+  function openAdd(task) {
+    state.form = { mode: 'add', taskId: task.task_id, entryId: null, newId: newId(), date: defaultDate(), hours: '', note: '', error: '', busy: false };
+    state.focusAfter = 'pform-hours';
+    render();
+  }
+  function openEdit(task, e) {
+    state.form = { mode: 'edit', taskId: task.task_id, entryId: e.id, date: e.date, hours: hoursInput(e.hours), note: e.note || '', error: '', busy: false };
+    state.focusAfter = 'pform-hours';
+    render();
+  }
+  function closeForm() {
+    var f = state.form;
+    state.form = null;
+    state.focusAfter = f ? (f.mode === 'edit' ? 'edit-' + f.entryId : 'add-' + f.taskId) : null;
+    render();
+  }
+  function submitForm(task, e) {
+    var s = state.form;
+    if (!s || s.busy) return;
+    var ws = weekStart(state.week);
+    var hours = parseHours(s.hours);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s.date) || s.date < ws || s.date > addDays(ws, 6)) { s.error = 'invalid_date'; state.focusAfter = 'pform-date'; render(); return; }
+    if (!isFinite(hours)) { s.error = 'invalid_hours'; state.focusAfter = 'pform-hours'; render(); return; }
+    s.error = ''; s.busy = true;
+    render();
+    var body = s.mode === 'add'
+      ? { action: 'add', id: s.newId, task_id: task.task_id, date: s.date, hours: hours, note: s.note.trim() }
+      : { action: 'edit', id: s.entryId, date: s.date, hours: hours, note: s.note.trim() };
+    api(body).then(function (data) {
+      var entry = data.entry;
+      if (s.mode === 'add') {
+        if (!state.entries.some(function (x) { return x.id === entry.id; })) state.entries.push(entry);
+      } else {
+        state.entries = state.entries.map(function (x) { return x.id === entry.id ? entry : x; });
+      }
+      state.entries = state.entries.filter(function (x) { return x.week === state.week; });
+      state.entries.sort(function (a, b) { return (a.date + a.created_at).localeCompare(b.date + b.created_at); });
+      state.form = null;
+      state.focusAfter = s.mode === 'edit' ? 'edit-' + entry.id : 'add-' + task.task_id;
+      render();
+      toast(t('saved'));
+    }, function (err) { onWriteError(err, s); });
+  }
+  function removeEntry(task, e) {
+    if (state.form && state.form.busy) return;
+    if (!window.confirm(t('confirm_remove', { h: fmtHours(e.hours), d: fmtDay(e.date) }))) return;
+    state.form = { mode: 'remove', taskId: task.task_id, entryId: e.id, busy: true };
+    render();
+    api({ action: 'remove', id: e.id }).then(function () {
+      state.entries = state.entries.filter(function (x) { return x.id !== e.id; });
+      state.form = null;
+      state.focusAfter = 'add-' + task.task_id;
+      render();
+      toast(t('removed'));
+    }, function (err) { onWriteError(err, null); });
+  }
+  function onWriteError(err, s) {
+    if (err.code === 'unauthorized') { signOut(t('wrong_password')); return; }
+    if (err.code === 'not_found' || err.code === 'invalid_task') {
+      var msg = t(err.code);
+      loadWeek(false).then(function () { toast(msg); });
+      return;
+    }
+    if (s && (err.code === 'invalid_hours' || err.code === 'invalid_date')) {
+      s.busy = false; s.error = err.code; render(); return;
+    }
+    // network or server error: keep the form open (same id, so trying again never duplicates)
+    if (s) { s.busy = false; s.error = ''; } else { state.form = null; }
+    render();
+    toast('');
+    showError(messageFor(err));
+  }
+
+  // ---------- English summary for the email
+  function summaryText() {
+    var EN = 'en-CA';
+    var ws = weekStart(state.week), we = addDays(ws, 6);
+    function day(ds) { return MONTHS_EN[+ds.slice(5, 7) - 1] + ' ' + (+ds.slice(8, 10)); }
+    var range = ws.slice(0, 4) === we.slice(0, 4)
+      ? (ws.slice(5, 7) === we.slice(5, 7) ? day(ws) + '–' + (+we.slice(8, 10)) : day(ws) + ' – ' + day(we)) + ', ' + we.slice(0, 4)
+      : day(ws) + ', ' + ws.slice(0, 4) + ' – ' + day(we) + ', ' + we.slice(0, 4);
+    var m = /^(\d{4})-W(\d{2})$/.exec(state.week);
+    var lines = ['Time log – week ' + (+m[2]) + ' (' + range + ')', '', 'Hours by deliverable:'];
+    var any = false;
+    groups().forEach(function (g) {
+      var h = sumTasks(g.tasks);
+      if (!h) return;
+      any = true;
+      lines.push('- ' + deliverableLabel(g, EN) + ': ' + fmtHours(h, EN));
+    });
+    if (!any) lines.push('- No hours logged');
+    lines.push('');
+    fixedTasks().forEach(function (task) { lines.push(taskName(task, EN) + ': ' + fmtHours(sumOf(entriesOf(task.task_id)), EN)); });
+    lines.push('');
+    lines.push('Total: ' + fmtHours(sumOf(state.entries), EN));
+    return lines.join('\n');
+  }
+  function copySummary() {
+    var text = summaryText();
+    var box = $('copy-box'), ta = $('copy-text');
+    function fallback() {
+      ta.value = text;
+      box.hidden = false;
+      ta.focus();
+      ta.select();
+    }
+    box.hidden = true;
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(function () { toast(t('copied')); }, fallback);
+    } else {
+      fallback();
+    }
+  }
+
+  // ---------- start
+  function setLang(lg) {
+    state.lang = lg;
+    store(LANG_STORE, lg);
+    render();
+  }
+  function init() {
+    state.lang = normLang(param('lang')) || normLang(read(LANG_STORE)) || 'pt-BR';
+    var w = str(param('week'));
+    state.week = weekStart(w) ? w : isoWeek(todaySP());
+    renderStatic();
+    renderWeekBar();
+
+    var btns = document.querySelectorAll('.lang-group button');
+    for (var i = 0; i < btns.length; i++) {
+      btns[i].addEventListener('click', function () { setLang(this.getAttribute('data-lang')); });
+    }
+    $('login-form').addEventListener('submit', onLogin);
+    $('logout').addEventListener('click', function () { signOut(''); });
+    $('prev-week').addEventListener('click', function () { goWeek(shiftWeek(state.week, -1)); });
+    $('next-week').addEventListener('click', function () { goWeek(shiftWeek(state.week, 1)); });
+    $('this-week').addEventListener('click', function () { goWeek(isoWeek(todaySP())); });
+    $('retry').addEventListener('click', function () { loadWeek(false); });
+    $('copy-btn').addEventListener('click', copySummary);
+
+    state.key = read(KEY_STORE) || '';
+    if (!state.key) { $('login').hidden = false; return; }
+    enterApp();
+    loadWeek(false);
+  }
+  init();
+})();
+</script>
+</body>
+</html>
