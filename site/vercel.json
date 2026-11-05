@@ -1,6 +1,7 @@
 {
   "rewrites": [
-    { "source": "/api/timelog", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog" }
+    { "source": "/api/timelog", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog" },
+    { "source": "/api/timelog-public", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog?public=1" }
   ],
   "headers": [
     {

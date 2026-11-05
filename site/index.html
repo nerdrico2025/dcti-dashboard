@@ -223,6 +223,19 @@
   .pillar-item .kpi-value { font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
   .muted { color: var(--muted); }
 
+  /* ---------- hours by task (details; read-only, live from /api/timelog-public) */
+  .hours-card { padding: 8px 0 4px; }
+  .hours-card .hours-msg { padding: 14px 22px; color: var(--muted); }
+  table.hours-table { min-width: 0; }
+  .hours-table th, .hours-table td { padding: 9px 22px; }
+  .hours-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .hours-table tbody th { font-weight: 500; white-space: normal; }
+  .hours-table th.group-row { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding-top: 16px; }
+  .hours-table tfoot th, .hours-table tfoot td { font-weight: 700; border-top: 2px solid #d6dde6; }
+  .hours-table .zero { color: var(--faint); }
+  .hours-tag { display: inline-block; margin-left: 8px; padding: 0 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 650; background: #eef1f5; color: var(--muted); }
+  .hours-note { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
+
   /* ---------- process health (details) */
   .health { display: flex; flex-wrap: wrap; gap: 12px 40px; margin-top: 40px; }
   .health h2 { width: 100%; }
@@ -415,6 +428,19 @@
           <div class="pillars" id="pillars"></div>
         </section>
 
+        <section aria-labelledby="hours-title" id="hours-section">
+          <h2 class="section-title" id="hours-title"></h2>
+          <div class="card hours-card">
+            <p class="hours-msg" id="hours-msg" role="status"></p>
+            <table class="hours-table" id="hours-table" hidden>
+              <thead><tr><th scope="col" id="hours-h-task"></th><th scope="col" class="num" id="hours-h-week"></th><th scope="col" class="num" id="hours-h-total"></th></tr></thead>
+              <tbody id="hours-body"></tbody>
+              <tfoot><tr><th scope="row" id="hours-f-label"></th><td class="num" id="hours-f-week"></td><td class="num" id="hours-f-total"></td></tr></tfoot>
+            </table>
+          </div>
+          <p class="hours-note" id="hours-note"></p>
+        </section>
+
         <footer class="health" id="health" aria-labelledby="health-title" hidden>
           <h2 id="health-title"></h2>
           <div class="health-item" id="health-coverage" hidden></div>
@@ -458,7 +484,20 @@
     'label.see_more':    { 'en-CA': 'See more', 'pt-BR': 'Ver mais' },
     'label.see_less':    { 'en-CA': 'See less', 'pt-BR': 'Ver menos' },
     'label.see_details': { 'en-CA': 'See details', 'pt-BR': 'Ver detalhes' },
-    'label.time_log':    { 'en-CA': 'Time log', 'pt-BR': 'Registro de horas' }
+    'label.time_log':    { 'en-CA': 'Time log', 'pt-BR': 'Registro de horas' },
+    'label.hours_by_task':     { 'en-CA': 'Hours by task', 'pt-BR': 'Horas por tarefa' },
+    'label.hours_task':        { 'en-CA': 'Task', 'pt-BR': 'Tarefa' },
+    'label.hours_week':        { 'en-CA': 'This week ({date})', 'pt-BR': 'Esta semana ({date})' },
+    'label.hours_to_date':     { 'en-CA': 'To date', 'pt-BR': 'Acumulado' },
+    'label.hours_sum':         { 'en-CA': 'Total', 'pt-BR': 'Total' },
+    'label.hours_fixed':       { 'en-CA': 'Meetings and extras', 'pt-BR': 'Reuniões e extras' },
+    'label.hours_other':       { 'en-CA': 'Other', 'pt-BR': 'Outras' },
+    'label.hours_loading':     { 'en-CA': 'Loading…', 'pt-BR': 'Carregando…' },
+    'label.hours_unavailable': { 'en-CA': 'Unavailable right now.', 'pt-BR': 'Indisponível no momento.' },
+    'label.hours_none':        { 'en-CA': 'No hours logged yet.', 'pt-BR': 'Nenhuma hora registrada ainda.' },
+    'label.hours_paused':      { 'en-CA': 'paused', 'pt-BR': 'pausada' },
+    'label.hours_finished':    { 'en-CA': 'finished', 'pt-BR': 'concluída' },
+    'label.hours_note':        { 'en-CA': 'Read-only. "To date" = all hours since the log started.', 'pt-BR': 'Somente leitura. "Acumulado" = todas as horas desde o início do registro.' }
   };
   var MAX_BOX_ITEMS = 3;
   // Main screen: sales-focused funnel (technical stage keys from kpi.funnel[].stage)
@@ -687,6 +726,7 @@
     renderMainFunnel(kpi);
     $('details-summary').textContent = uiText('label.see_details');
     $('timelog-link').textContent = uiText('label.time_log');
+    if ($('details').open) loadHours(); else renderHours();
     renderFunnel(kpi);
     renderPillars(kpi);
     renderHealth(kpi);
@@ -859,6 +899,143 @@
     });
   }
 
+  // ---------- hours by task: live, read-only totals (no notes, dates or single periods)
+  // Loaded only when "See details" is open; any failure shows "unavailable" and never touches the rest of the page.
+  var hours = { week: null, data: null, loading: false, failed: false, seq: 0 };
+  function isoWeekOf(ds) {
+    var p = ds.split('-');
+    var d = new Date(Date.UTC(+p[0], +p[1] - 1, +p[2]));
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 3);
+    var y = d.getUTCFullYear(), w = 1 + Math.floor((d - Date.UTC(y, 0, 1)) / 864e5 / 7);
+    return y + '-W' + (w < 10 ? '0' : '') + w;
+  }
+  // the CALENDAR week of today (Monday to Sunday, America/Sao_Paulo), not the week shown in the dashboard
+  function hoursWeekStart() {
+    var today;
+    try {
+      var p = {};
+      new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Sao_Paulo', year: 'numeric', month: '2-digit', day: '2-digit' })
+        .formatToParts(new Date()).forEach(function (x) { p[x.type] = x.value; });
+      today = p.year + '-' + p.month + '-' + p.day;
+    } catch (e) {
+      today = new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10);   // fallback: UTC-3
+    }
+    var a = today.split('-');
+    var d = new Date(Date.UTC(+a[0], +a[1] - 1, +a[2]));
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7));
+    return d.toISOString().slice(0, 10);
+  }
+  // "2–8 nov" / "Nov 2–8"; across months "26 out – 1 nov" / "Oct 26 – Nov 1"
+  var MONTHS_SHORT = {
+    'pt-BR': ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'],
+    'en-CA': ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+  };
+  function hoursWeekRange(ws) {
+    var a = new Date(Date.UTC(+ws.slice(0, 4), +ws.slice(5, 7) - 1, +ws.slice(8, 10)));
+    var b = new Date(a.getTime() + 6 * 864e5);
+    var m = MONTHS_SHORT[state.lang] || MONTHS_SHORT['en-CA'];
+    var da = a.getUTCDate(), db = b.getUTCDate(), ma = m[a.getUTCMonth()], mb = m[b.getUTCMonth()];
+    var pt = state.lang === 'pt-BR';
+    if (ma === mb) return pt ? da + '–' + db + ' ' + ma : ma + ' ' + da + '–' + db;
+    return pt ? da + ' ' + ma + ' – ' + db + ' ' + mb : ma + ' ' + da + ' – ' + mb + ' ' + db;
+  }
+  function loadHours() {
+    var ws = hoursWeekStart();
+    var week = ws ? isoWeekOf(ws) : null;
+    if (week && week === hours.week && (hours.data || hours.loading)) { renderHours(); return; }
+    var seq = ++hours.seq;
+    hours.week = week; hours.data = null; hours.failed = !week; hours.loading = !!week;
+    renderHours();
+    if (!week) return;
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, 15000) : null;
+    fetch('api/timelog-public', {
+      method: 'POST', cache: 'no-store', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'public_totals', week: week }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (res) {
+      return res.json().then(function (d) {
+        if (!res.ok || !isObj(d) || d.ok !== true || !Array.isArray(d.rows)) throw new Error('hours');
+        return d;
+      });
+    }).then(function (d) {
+      if (timer) window.clearTimeout(timer);
+      if (seq !== hours.seq) return;
+      hours.loading = false; hours.data = d;
+      renderHours();
+    }).catch(function () {
+      if (timer) window.clearTimeout(timer);
+      if (seq !== hours.seq) return;
+      hours.loading = false; hours.failed = true;
+      renderHours();
+    });
+  }
+  function fmtHoursValue(h) {
+    var n = isNum(h) ? h : 0;
+    try { return new Intl.NumberFormat(state.lang, { maximumFractionDigits: 2 }).format(n) + ' h'; } catch (e) { return n + ' h'; }
+  }
+  function renderHours() {
+    $('hours-title').textContent = uiText('label.hours_by_task');
+    $('hours-note').textContent = uiText('label.hours_note');
+    var ws = hoursWeekStart();
+    $('hours-h-task').textContent = uiText('label.hours_task');
+    $('hours-h-week').textContent = fill(uiText('label.hours_week'), { date: ws ? hoursWeekRange(ws) : DASH });
+    $('hours-h-total').textContent = uiText('label.hours_to_date');
+    $('hours-f-label').textContent = uiText('label.hours_sum');
+    var msg = $('hours-msg'), table = $('hours-table'), body = $('hours-body');
+    var d = hours.data;
+    var rows = d && Array.isArray(d.rows) ? d.rows.filter(isObj) : [];
+    var any = rows.some(function (r) { return isNum(r.total_hours) && r.total_hours > 0; });
+    if (!d || !any) {
+      table.hidden = true;
+      msg.hidden = false;
+      msg.textContent = hours.loading ? uiText('label.hours_loading')
+        : hours.failed ? uiText('label.hours_unavailable')
+        : d ? uiText('label.hours_none') : '';
+      return;
+    }
+    msg.hidden = true;
+    clear(body);
+    var pt = state.lang === 'pt-BR';
+    var groups = [], byKey = {};
+    rows.forEach(function (r) {
+      var k = r.fixed ? '~fixed' : (str(r.group) || '~other');
+      if (!byKey[k]) {
+        var name = r.fixed ? uiText('label.hours_fixed')
+          : (str(pt ? r.group_pt : r.group_en) || str(r.group) || uiText('label.hours_other'));
+        byKey[k] = { name: name, rows: [] };
+        groups.push(k);
+      }
+      byKey[k].rows.push(r);
+    });
+    groups.sort(function (a, b) { return (a.charAt(0) === '~') - (b.charAt(0) === '~'); });
+    groups.forEach(function (k) {
+      var g = byKey[k];
+      var gr = el('tr');
+      var gh = el('th', 'group-row', g.name);
+      gh.colSpan = 3; gh.scope = 'colgroup';
+      gr.appendChild(gh);
+      body.appendChild(gr);
+      g.rows.forEach(function (r) {
+        var tr = el('tr');
+        var th = el('th', null, str(pt ? r.name_pt : r.name_en) || str(r.task_id));
+        th.scope = 'row';
+        if (r.status === 'pausada' || r.status === 'concluida') {
+          th.appendChild(el('span', 'hours-tag', uiText(r.status === 'pausada' ? 'label.hours_paused' : 'label.hours_finished')));
+        }
+        tr.appendChild(th);
+        [r.week_hours, r.total_hours].forEach(function (h) {
+          tr.appendChild(el('td', 'num' + (isNum(h) && h > 0 ? '' : ' zero'), fmtHoursValue(h)));
+        });
+        body.appendChild(tr);
+      });
+    });
+    $('hours-f-week').textContent = fmtHoursValue(d.total_week_hours);
+    $('hours-f-total').textContent = fmtHoursValue(d.total_hours);
+    table.hidden = false;
+  }
+
   function renderHealth(kpi) {
     var cov = isObj(kpi.automation_coverage) ? kpi.automation_coverage : null;
     var rev = isObj(kpi.in_review) ? kpi.in_review : null;
@@ -1002,6 +1179,7 @@
       window.clearTimeout(resizeTimer);
       resizeTimer = window.setTimeout(updateClamps, 150);
     });
+    $('details').addEventListener('toggle', function () { if ($('details').open && state.data) loadHours(); });
     $('week-select').addEventListener('change', function (e) {
       var file = e.target.value;
       if (!FILE_RE.test(file)) return;

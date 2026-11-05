@@ -115,9 +115,13 @@
   .sum { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .sum.zero { color: var(--faint); font-weight: 600; }
   .task + .task { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .group-head + .task { margin-top: 12px; padding-top: 14px; border-top: 2px solid var(--line); }
   .task-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
   .task-head h4 { margin: 0; font-size: 1rem; font-weight: 650; }
-  .tag { font-size: 0.8125rem; color: var(--muted); font-weight: 500; margin-left: 6px; }
+  .tag { display: inline-block; font-size: 0.75rem; font-weight: 650; margin-left: 8px; padding: 1px 8px; border-radius: 999px;
+    background: #eef1f5; color: var(--muted); vertical-align: 2px; text-transform: lowercase; }
+  .tag-pausada { background: #fff4d6; color: #6b4a00; }
+  .tag-concluida { background: #e3f1e7; color: #1d5a32; }
   .periods { margin-top: 10px; }
   .period {
     display: grid; grid-template-columns: 8.5rem 5rem 1fr auto; align-items: center; gap: 4px 14px;
@@ -280,11 +284,13 @@
       copied: 'Resumo copiado. É só colar no e-mail.',
       copy_hint: 'Não deu para copiar sozinho. O texto já está selecionado: use Ctrl+C (ou Cmd+C).',
       copy_text_label: 'Resumo da semana em inglês',
-      deliverables: 'Entregáveis',
+      deliverables: 'Frentes do GTM',
       fixed: 'Reuniões e extras',
-      no_tasks: 'Nenhuma tarefa ativa na aba tasks.',
+      no_tasks: 'Nenhuma frente ativa na aba pillars.',
       add_period: '+ adicionar período',
-      inactive: '(inativa)',
+      other_group: 'Fora da aba pillars',
+      status_pausada: 'pausada',
+      status_concluida: 'concluída',
       date: 'Data',
       hours: 'Horas',
       hours_hint: 'Ex.: 1,5 · 1h30 · 90min',
@@ -302,7 +308,8 @@
       invalid_hours: 'Horas inválidas. Use 1,5 ou 1h30 ou 90min (mais que 0 e até 24 h).',
       invalid_date: 'Escolha uma data desta semana.',
       not_found: 'Este período não existe mais. A lista foi recarregada.',
-      invalid_task: 'Esta tarefa não está ativa na planilha. A lista foi recarregada.',
+      invalid_task: 'Esta frente não existe mais na planilha. A lista foi recarregada.',
+      task_closed: 'Esta frente está pausada ou concluída: não aceita novos períodos. A lista foi recarregada.',
       add_period_for: 'Adicionar período em {t}',
       total_of: 'Total de {t}'
     },
@@ -335,11 +342,13 @@
       copied: 'Summary copied. Paste it into the email.',
       copy_hint: 'Could not copy automatically. The text is selected: press Ctrl+C (or Cmd+C).',
       copy_text_label: 'Week summary in English',
-      deliverables: 'Deliverables',
+      deliverables: 'GTM workstreams',
       fixed: 'Meetings and extras',
-      no_tasks: 'No active task in the tasks tab.',
+      no_tasks: 'No active workstream in the pillars tab.',
       add_period: '+ add period',
-      inactive: '(inactive)',
+      other_group: 'Not in the pillars tab',
+      status_pausada: 'paused',
+      status_concluida: 'finished',
       date: 'Date',
       hours: 'Hours',
       hours_hint: 'E.g. 1.5 · 1h30 · 90min',
@@ -357,7 +366,8 @@
       invalid_hours: 'Invalid hours. Use 1.5 or 1h30 or 90min (more than 0, up to 24 h).',
       invalid_date: 'Choose a date in this week.',
       not_found: 'This period no longer exists. The list was reloaded.',
-      invalid_task: 'This task is not active in the sheet. The list was reloaded.',
+      invalid_task: 'This workstream is no longer in the sheet. The list was reloaded.',
+      task_closed: 'This workstream is paused or finished: no new periods. The list was reloaded.',
       add_period_for: 'Add period to {t}',
       total_of: 'Total for {t}'
     }
@@ -458,21 +468,26 @@
   // ---------- tasks and entries
   function taskName(task, lang) { return (lang || state.lang) === 'en-CA' ? (task.name_en || task.name_pt) : (task.name_pt || task.name_en); }
   function isFixed(task) { return task.fixed || FIXED_ORDER.indexOf(task.task_id) >= 0; }
-  function deliverableLabel(group, lang) {
-    if ((lang || state.lang) !== 'en-CA') return group.key;
-    // English name of a deliverable = nome_en of the task whose nome_pt is the deliverable; otherwise the text as is
-    var same = group.tasks.filter(function (x) { return x.name_pt === group.key; })[0];
-    return same ? same.name_en : group.key;
-  }
+  function isOpen(task) { return isFixed(task) || task.status === 'ativa'; }
+  function groupLabel(group, lang) { return (lang || state.lang) === 'en-CA' ? group.en : group.pt; }
+  // workstreams grouped by pillars.group (Content, External authority, ...), in the order of the sheet
   function groups() {
     var list = [], byKey = {};
     state.tasks.forEach(function (task) {
       if (isFixed(task)) return;
-      var k = task.deliverable || task.name_pt || task.task_id;
-      if (!byKey[k]) { byKey[k] = { key: k, tasks: [] }; list.push(byKey[k]); }
+      var k = task.group || '';
+      if (!byKey[k]) {
+        var other = { en: T['en-CA'].other_group, pt: T['pt-BR'].other_group };   // ids no longer in pillars
+        byKey[k] = { key: k, en: task.group_en || task.group || other.en, pt: task.group_pt || task.group || other.pt, tasks: [] };
+        list.push(byKey[k]);
+      }
       byKey[k].tasks.push(task);
     });
     return list;
+  }
+  function statusTag(task) {
+    if (isOpen(task)) return null;
+    return el('span', 'tag tag-' + task.status, t(task.status === 'pausada' ? 'status_pausada' : 'status_concluida'));
   }
   function fixedTasks() {
     return FIXED_ORDER.map(function (id) { return state.tasks.filter(function (x) { return x.task_id === id; })[0]; })
@@ -481,6 +496,7 @@
   function entriesOf(taskId) { return state.entries.filter(function (e) { return e.task_id === taskId; }); }
   function sumOf(list) { return round2(list.reduce(function (a, e) { return a + (+e.hours || 0); }, 0)); }
   function sumTasks(tasks) { return round2(tasks.reduce(function (a, x) { return a + sumOf(entriesOf(x.task_id)); }, 0)); }
+  function slugId(s) { return str(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'x'; }
   function newId() {
     var a = new Uint8Array(9), s = '';
     try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
@@ -649,7 +665,7 @@
     list.forEach(function (group) { g.appendChild(groupCard(group)); });
     $('no-tasks').hidden = list.length > 0;
     var f = $('fixed'); clear(f);
-    fixedTasks().forEach(function (task) { f.appendChild(groupCard({ key: task.deliverable, tasks: [task], fixed: true })); });
+    fixedTasks().forEach(function (task) { f.appendChild(groupCard({ key: task.task_id, tasks: [task], fixed: true })); });
     if (state.focusAfter) {
       var n = $(state.focusAfter);
       state.focusAfter = null;
@@ -663,14 +679,13 @@
   }
   function groupCard(group) {
     var card = el('section', 'card group');
-    var single = group.tasks.length === 1;
-    var label = group.fixed ? taskName(group.tasks[0]) : deliverableLabel(group);
+    var single = !!group.fixed;
+    var label = group.fixed ? taskName(group.tasks[0]) : groupLabel(group);
     var head = el('div', 'group-head');
     var h3 = el('h3', null, label);
-    var hid = 'g-' + group.tasks[0].task_id;
+    var hid = 'g-' + (group.fixed ? group.tasks[0].task_id : slugId(group.key));
     h3.id = hid;
     card.setAttribute('aria-labelledby', hid);
-    if (single && group.tasks[0].active === false) h3.appendChild(el('span', 'tag', t('inactive')));
     head.appendChild(h3);
     head.appendChild(sumEl(sumTasks(group.tasks), t('total_of', { t: label })));
     card.appendChild(head);
@@ -683,7 +698,8 @@
     if (!single) {
       var head = el('div', 'task-head');
       var h4 = el('h4', null, name);
-      if (task.active === false) h4.appendChild(el('span', 'tag', t('inactive')));
+      var tag = statusTag(task);
+      if (tag) h4.appendChild(tag);
       head.appendChild(h4);
       head.appendChild(sumEl(sumOf(entriesOf(task.task_id)), t('total_of', { t: name })));
       box.appendChild(head);
@@ -702,7 +718,7 @@
     }
     if (form && form.mode === 'add' && form.taskId === task.task_id) {
       box.appendChild(periodForm(task, null));
-    } else if (task.active !== false) {
+    } else if (isOpen(task)) {
       var add = el('button', 'btn btn-quiet btn-small add-btn', t('add_period'));
       add.type = 'button';
       add.id = 'add-' + task.task_id;
@@ -840,7 +856,7 @@
   }
   function onWriteError(err, s) {
     if (err.code === 'unauthorized') { signOut(t('wrong_password')); return; }
-    if (err.code === 'not_found' || err.code === 'invalid_task') {
+    if (err.code === 'not_found' || err.code === 'invalid_task' || err.code === 'task_closed') {
       var msg = t(err.code);
       loadWeek(false).then(function () { toast(msg); });
       return;
@@ -867,10 +883,12 @@
     var lines = ['Time log – week ' + (+m[2]) + ' (' + range + ')', '', 'Hours by deliverable:'];
     var any = false;
     groups().forEach(function (g) {
-      var h = sumTasks(g.tasks);
-      if (!h) return;
-      any = true;
-      lines.push('- ' + deliverableLabel(g, EN) + ': ' + fmtHours(h, EN));
+      g.tasks.forEach(function (task) {     // one line per workstream (the workstream is the deliverable)
+        var h = sumOf(entriesOf(task.task_id));
+        if (!h) return;
+        any = true;
+        lines.push('- ' + taskName(task, EN) + ': ' + fmtHours(h, EN));
+      });
     });
     if (!any) lines.push('- No hours logged');
     lines.push('');
