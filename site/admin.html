@@ -18,7 +18,7 @@
   [hidden] { display: none !important; }
   html { background: var(--bg); }
   body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 1.0625rem; line-height: 1.5; }
-  .wrap { max-width: 880px; margin: 0 auto; padding: 40px 32px 72px; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 40px 32px 72px; }
   h1, h2, h3 { line-height: 1.25; margin: 0; }
   p { margin: 0; }
   ul { margin: 0; padding: 0; list-style: none; }
@@ -32,7 +32,7 @@
   .site-header h1 { font-size: 1.875rem; font-weight: 750; letter-spacing: -0.01em; margin-top: 6px; }
   .link-btn { background: none; border: 0; padding: 8px 4px; min-height: 40px; color: var(--accent); font-size: 0.9375rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
-  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 26px; margin-top: 20px; }
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 26px; margin-top: 28px; }
   .card h2 { font-size: 1.25rem; }
   .btn { min-height: 44px; padding: 8px 18px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 650; font-size: 0.9375rem; }
   .btn:hover:not(:disabled) { background: #194f8c; }
@@ -42,7 +42,8 @@
   .btn-danger { border-color: var(--danger); color: var(--danger); background: #fff; }
   .btn-danger:hover:not(:disabled) { background: #fbeaea; }
   .notice { margin-top: 24px; padding: 16px 20px; background: #fde8e8; color: #7a1616; border-radius: var(--radius); }
-  .toast { min-height: 1.5em; margin-top: 8px; font-size: 0.9375rem; color: var(--ok); font-weight: 600; }
+  .toast { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 10; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: #14532d; color: #fff; font-size: 0.9375rem; font-weight: 600; box-shadow: var(--shadow); }
+  .toast:empty { display: none; }
   .hint { margin-top: 6px; color: var(--muted); font-size: 0.9375rem; }
   .error-text { color: var(--danger); font-size: 0.875rem; font-weight: 600; }
 
@@ -71,27 +72,78 @@
 
   .field select, .task-controls select { min-height: 44px; padding: 8px 10px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; font: inherit; color: inherit; width: 100%; }
   .field textarea.short { min-height: 72px; }
-  .filters { margin-top: 16px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-  .task-controls { margin-top: 10px; display: grid; grid-template-columns: repeat(2, minmax(0, 14rem)); gap: 12px; }
-  .task-controls label { display: block; font-size: 0.875rem; font-weight: 600; color: var(--muted); margin-bottom: 4px; }
-  .task-edit { margin-top: 10px; }
-  .task-edit > summary { color: var(--accent); font-size: 0.9375rem; font-weight: 600; cursor: pointer; padding: 6px 0; }
-  .task-edit .stack { margin-top: 8px; }
-  .tag-status { background: #eef1f4; color: #39424e; border: 1px solid #c9d1da; }
-  .tag-next { background: #e9f1fb; color: #174a85; border-color: #9cbde3; }
-  .tag-doing { background: #eeebfb; color: #40309a; border-color: #bcb1ec; }
-  .tag-blocked { background: #fde8e8; color: #8b1a1a; border-color: #f1a7a7; }
-  .tag-done { background: #e7f5ec; color: #14532d; border-color: #9fd3b2; }
-  .tag-frozen { background: #e4f6fb; color: #0d5468; border: 1px dashed #4b9cb3; }
-  .tag-dropped { background: #fff; color: #4a5563; border: 1px solid #8a97a8; text-decoration: line-through; }
+  .filters { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 14px; }
+  .list-bar { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+  .list-bar .hint { margin-top: 0; }
+  .pager { margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; }
+  .pager .hint { margin-top: 0; }
+
+  /* status colours: side stripe, badge and summary tile */
+  .st-backlog { --st: #7b8794; --st-bg: #eef1f4; --st-fg: #39424e; }
+  .st-next { --st: #2f74c0; --st-bg: #e6f0fb; --st-fg: #174a85; }
+  .st-doing { --st: #e07a1f; --st-bg: #fdeedd; --st-fg: #8a4300; }
+  .st-blocked { --st: #c8322f; --st-bg: #fde8e8; --st-fg: #8b1a1a; }
+  .st-done { --st: #2e9a56; --st-bg: #e5f5ec; --st-fg: #14532d; }
+  .st-frozen { --st: #6cc3dc; --st-bg: #e4f6fb; --st-fg: #0d5468; }
+  .st-dropped { --st: #a7b0bb; --st-bg: #f1f2f4; --st-fg: #4a5563; }
+  .st-none { --st: #c9d1da; --st-bg: #f5f7fa; --st-fg: #39424e; }
+  .color-Green { --st: #2e9a56; --st-bg: #e5f5ec; --st-fg: #14532d; }
+  .color-Yellow { --st: #d9a400; --st-bg: #fff5d6; --st-fg: #5f4200; }
+  .color-Red { --st: #c8322f; --st-bg: #fde8e8; --st-fg: #8b1a1a; }
+  .color-Gray { --st: #7b8794; --st-bg: #eef1f4; --st-fg: #39424e; }
+
+  .tiles { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 10px; }
+  .tile { padding: 10px 12px; border-radius: 10px; background: var(--st-bg); color: var(--st-fg); border-top: 4px solid var(--st); }
+  .tile-label { font-size: 0.8125rem; font-weight: 650; }
+  .tile-value { font-size: 1.5rem; font-weight: 750; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .tile-value.small { font-size: 1.0625rem; padding-top: 5px; }
+  .tile-sub { font-size: 0.75rem; }
+  .publish { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .publish .hint { margin-top: 0; flex: 1 1 18rem; }
+
+  .task { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: 6px 20px; margin-top: 10px; padding: 12px 14px; border: 1px solid var(--line); border-left: 6px solid var(--st); border-radius: 10px; }
+  .task-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  .task-head .tag { margin-left: 0; vertical-align: baseline; }
+  .task .item-title { margin-top: 4px; font-size: 1rem; }
+  .task .item-meta { font-size: 0.875rem; }
+  .task .task-controls select { min-height: 38px; padding: 4px 8px; font-size: 0.9375rem; }
+  .st-dropped .item-title, .tag-status.st-dropped { text-decoration: line-through; }
+  .due-late { color: var(--danger); font-weight: 700; }
+  .pid { font-size: 0.8125rem; font-weight: 700; font-variant-numeric: tabular-nums; padding: 1px 8px; border-radius: 6px; }
+  .p-FND { color: #4b2e83; background: #efe9f8; }
+  .p-WLX { color: #00666b; background: #dff4f4; }
+  .p-CNT { color: #a3195b; background: #fce6f0; }
+  .p-CMP { color: #7a4a00; background: #fbf0d9; }
+  .p-AUD { color: #4f6b00; background: #eef5d6; }
+  .p-TOP { color: #5a3a22; background: #f3e9df; }
+  .p-STL { color: #123f7a; background: #dfe9f7; }
+  .p-GATE { color: #fff; background: #1b2430; }
+  .p-MTG, .p-other { color: #39424e; background: #eef1f4; }
+  .tag-status { background: var(--st-bg); color: var(--st-fg); border: 1px solid var(--st); }
   .tag-new { background: #fff5d6; color: #5f4200; border: 1px solid #e6c66a; }
+  .task-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-self: start; }
+  .task-controls label { display: block; font-size: 0.8125rem; font-weight: 600; color: var(--muted); margin-bottom: 2px; }
+  .task-line { grid-column: 1 / -1; font-size: 0.875rem; font-weight: 650; }
+  .task-line.saved { color: var(--ok); }
+  .task-line.saving { color: var(--muted); }
+  .task-line.failed { color: var(--danger); }
+  .task-edit { grid-column: 1 / -1; }
+  .task-edit > summary { color: var(--accent); font-size: 0.875rem; font-weight: 600; cursor: pointer; padding: 2px 0; }
+  .task-edit .stack { margin-top: 8px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 14px; }
+  .fold > summary { cursor: pointer; }
+  .fold > summary h2 { display: inline; }
 
   @media (max-width: 640px) {
-    .filters, .task-controls { grid-template-columns: 1fr; }
+    .filters, .task-controls, .task { grid-template-columns: 1fr; }
     .wrap { padding: 24px 16px 56px; }
     .site-header h1 { font-size: 1.5rem; }
     .card { padding: 18px 16px; }
     .row { grid-template-columns: 1fr; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pager .btn { flex: 1 1 8rem; }
+    .task .task-controls select { min-height: 44px; }
+    .task-edit > summary { padding: 10px 0; }
   }
 </style>
 </head>
@@ -123,54 +175,68 @@
     </section>
 
     <div id="app" hidden>
-      <section class="card" aria-labelledby="publish-title">
-        <h2 id="publish-title">Publicar agora</h2>
-        <p class="hint">Roda os workflows B e C para a semana passada: grava uma linha nova em weekly_snapshots, chama a IA e dispara os e-mails configurados.</p>
-        <div class="actions" style="margin-top: 12px">
-          <button type="button" class="btn" id="publish-btn">Publicar agora</button>
+      <section class="card" aria-labelledby="summary-title">
+        <h2 id="summary-title">Resumo</h2>
+        <p class="hint">Visão rápida das tarefas e da situação do painel.</p>
+        <div class="tiles" id="summary"></div>
+        <div class="publish">
+          <button type="button" class="btn" id="publish-btn">Atualizar painel agora</button>
+          <p class="hint">Recalcula o painel agora, sem esperar a segunda-feira. Não envia nada ao Scott.</p>
         </div>
       </section>
 
-      <section class="card" aria-labelledby="forced-title">
-        <h2 id="forced-title">Forçar cor da semana</h2>
-        <p class="hint" id="forced-week"></p>
-        <form class="stack" id="forced-form" novalidate>
-          <div class="row">
-            <div class="field">
-              <label for="forced-reason">Motivo (aparece na Home)</label>
-              <input type="text" id="forced-reason" maxlength="300" aria-describedby="forced-error">
-            </div>
-            <div class="field">
-              <label for="forced-color">Cor</label>
-              <select id="forced-color">
-                <option value="">Automática</option>
-                <option value="Green">Verde</option>
-                <option value="Yellow">Amarelo</option>
-                <option value="Red">Vermelho</option>
-                <option value="Gray">Cinza</option>
-              </select>
-            </div>
+      <section class="card" aria-labelledby="tasks-title">
+        <h2 id="tasks-title" tabindex="-1">Tarefas</h2>
+        <p class="hint">Mude o status e o "Mostrar na Home" direto na linha. Cada mudança é salva na hora.</p>
+        <div class="filters">
+          <div class="field"><label for="filter-search">Buscar</label><input type="search" id="filter-search" placeholder="Código, título, responsável"></div>
+          <div class="field"><label for="filter-status">Status</label><select id="filter-status"></select></div>
+          <div class="field"><label for="filter-section">Pilar</label><select id="filter-section"></select></div>
+          <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
+          <div class="field"><label for="filter-sort">Ordenar por</label><select id="filter-sort"><option value="due">Prazo</option><option value="id">Código</option></select></div>
+        </div>
+        <div class="list-bar">
+          <p class="hint" id="tasks-count" role="status" aria-live="polite"></p>
+          <button type="button" class="btn btn-quiet btn-small" id="toggle-all">Ver todas</button>
+        </div>
+        <ul id="tasks"></ul>
+        <div class="pager" id="pager" hidden>
+          <button type="button" class="btn btn-quiet btn-small" id="page-prev">Anterior</button>
+          <p class="hint" id="page-info"></p>
+          <button type="button" class="btn btn-quiet btn-small" id="page-next">Próxima</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="new-title">
+        <h2 id="new-title">Nova tarefa</h2>
+        <p class="hint">Cria uma tarefa à mão na planilha. O código é gerado automaticamente.</p>
+        <form class="stack" id="new-form" novalidate>
+          <div class="field">
+            <label for="new-title-pt">Título em português (obrigatório)</label>
+            <input type="text" id="new-title-pt" maxlength="300" required aria-describedby="new-error">
+          </div>
+          <div class="field">
+            <label for="new-title-en">Título em inglês (opcional)</label>
+            <input type="text" id="new-title-en" maxlength="300" aria-describedby="new-en-hint">
+            <p class="hint" id="new-en-hint">Se ficar em branco, a versão em inglês da Home mostra o título em português.</p>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label for="new-owners">Responsáveis (separados por vírgula)</label><input type="text" id="new-owners" maxlength="200"></div>
+            <div class="field"><label for="new-due">Prazo</label><input type="date" id="new-due"></div>
+            <div class="field"><label for="new-section">Pilar (obrigatório)</label><select id="new-section" aria-describedby="new-error"></select></div>
+            <div class="field"><label for="new-status">Status inicial</label><select id="new-status"></select></div>
+            <div class="field"><label for="new-show">Mostrar na Home</label><select id="new-show"><option value="no">Não</option><option value="yes">Sim</option></select></div>
           </div>
           <div class="actions">
-            <button type="submit" class="btn" id="forced-btn">Salvar cor</button>
-            <span class="error-text" id="forced-error" role="alert"></span>
+            <button type="submit" class="btn" id="new-btn">Criar tarefa</button>
+            <span class="error-text" id="new-error" role="alert"></span>
           </div>
         </form>
       </section>
 
-      <section class="card" aria-labelledby="tasks-title">
-        <h2 id="tasks-title">Tarefas</h2>
-        <div class="filters">
-          <div class="field"><label for="filter-status">Status</label><select id="filter-status"></select></div>
-          <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
-          <div class="field"><label for="filter-section">Seção</label><select id="filter-section"></select></div>
-        </div>
-        <p class="hint" id="tasks-count" role="status" aria-live="polite"></p>
-        <ul id="tasks"></ul>
-      </section>
-
       <section class="card" aria-labelledby="meeting-title">
         <h2 id="meeting-title">Subir resumo de reunião</h2>
+        <p class="hint">Transforma o resumo de uma reunião em tarefas e sugestões para você revisar.</p>
         <p class="warning" id="meeting-warning">Não suba trechos com senha, pagamento ou remuneração.</p>
         <form class="stack" id="meeting-form" novalidate>
           <div class="field">
@@ -202,11 +268,41 @@
 
       <section class="card" aria-labelledby="suggestions-title">
         <h2 id="suggestions-title">Alterações sugeridas</h2>
-        <p class="hint">Aceitar ou recusar só registra sua decisão. A tarefa não muda sozinha.</p>
+        <p class="hint">Mudanças em tarefas encontradas nas reuniões. Aceitar ou recusar só registra sua decisão. A tarefa não muda sozinha.</p>
         <ul id="suggestions"></ul>
         <p class="empty" id="no-suggestions" hidden>Nenhuma alteração aguardando decisão.</p>
         <p class="error-text" id="suggestions-error" role="alert"></p>
       </section>
+
+      <details class="card fold" id="forced-box">
+        <summary>
+          <h2 id="forced-title">Ajuste excepcional da cor</h2>
+          <p class="hint">Use só quando a cor automática não refletir a realidade. Vale por pública junto com a cor calculada.</p>
+        </summary>
+        <p class="hint" id="forced-week"></p>
+        <form class="stack" id="forced-form" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="forced-reason">Motivo (aparece na Home)</label>
+              <input type="text" id="forced-reason" maxlength="300" aria-describedby="forced-error">
+            </div>
+            <div class="field">
+              <label for="forced-color">Cor</label>
+              <select id="forced-color">
+                <option value="">Automática</option>
+                <option value="Green">Verde</option>
+                <option value="Yellow">Amarelo</option>
+                <option value="Red">Vermelho</option>
+                <option value="Gray">Cinza</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn" id="forced-btn">Salvar cor</button>
+            <span class="error-text" id="forced-error" role="alert"></span>
+          </div>
+        </form>
+      </details>
     </div>
   </main>
   <noscript><p class="notice">Esta tela precisa de JavaScript.</p></noscript>
@@ -239,15 +335,25 @@
     note_too_long: 'A nota passa de 500 caracteres.',
     owners_too_long: 'A lista de responsáveis passa de 200 caracteres.',
     reason_required: 'Escreva o motivo para forçar a cor.',
-    suggestions_unavailable: 'As alterações sugeridas estão indisponíveis agora. O resto da admin continua funcionando.'
+    suggestions_unavailable: 'As alterações sugeridas estão indisponíveis agora. O resto da admin continua funcionando.',
+    title_required: 'Escreva o título em português.',
+    title_too_long: 'O título passa de 300 caracteres.',
+    invalid_section: 'Escolha o pilar.',
+    invalid_status: 'Status inválido.',
+    invalid_visibility: 'Opção de "Mostrar na Home" inválida.',
+    duplicate_title: 'Já existe uma tarefa com este título.',
+    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.'
   };
 
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
   var STATUS = [['backlog', 'Backlog'], ['next', 'Próxima'], ['doing', 'Em andamento'], ['blocked', 'Bloqueada'], ['done', 'Concluída'], ['frozen', 'Congelada'], ['dropped', 'Descartada']];
   var GATES = ['M1', 'M2', 'S1', 'M3'];
   var SECTIONS = [['FND', 'Fundações'], ['WLX', 'Waalaxy'], ['CNT', 'Conteúdo e grupos'], ['CMP', 'Campanhas'], ['AUD', 'Audiências'], ['TOP', 'Top 100'], ['STL', 'Sintera Transformation Lab'], ['GATE', 'Gates'], ['MTG', 'Reuniões']];
+  var PILLAR_CODES = ['FND', 'WLX', 'CNT', 'CMP', 'AUD', 'TOP', 'STL', 'GATE', 'MTG'];
+  var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
+  var PAGE_SIZE = 20;
 
-  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, savingTask: '' };
+  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1, filtersReady: false };
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
@@ -285,6 +391,7 @@
         var err = new Error('api');
         err.status = res.status;
         err.code = data && data.error ? String(data.error) : (res.status === 401 ? 'unauthorized' : 'server');
+        err.similarTo = data && data.similar_to ? String(data.similar_to) : '';
         throw err;
       });
     }, function () {
@@ -307,8 +414,14 @@
 
   // ---------- login
   function signOut(msg) {
-    state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null;
+    state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
+    state.rowLine = null; state.page = 1; state.filtersReady = false;
     clear($('tasks'));
+    clear($('summary'));
+    $('filter-search').value = '';
+    $('pager').hidden = true;
+    $('new-error').textContent = '';
+    $('new-form').reset();
     store(KEY_STORE, null);
     resetMeeting();
     $('result').hidden = true;
@@ -510,9 +623,21 @@
   function sectionOf(id) {
     if (GATES.indexOf(id) >= 0) return 'GATE';
     if (/^M\d{4}-/.test(id)) return 'MTG';
-    return id.split('-')[0];
+    var manual = /^MAN-([A-Z]+)-/.exec(id);    // manual tasks carry the pillar in the code: MAN-CMP-001
+    return manual ? manual[1] : id.split('-')[0];
   }
   function ownersOf(t) { return t.owners.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+  function isOpen(t) { return ['done', 'frozen', 'dropped'].indexOf(t.status) < 0; }
+  function isLate(t) { return !!t.due_date && t.due_date < todaySP() && isOpen(t); }
+  function statusClass(s) {
+    for (var i = 0; i < STATUS.length; i++) if (STATUS[i][0] === s) return 'st-' + s;
+    return 'st-none';
+  }
+  function plainText(v) { return String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function timeNow() {
+    try { return new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, hour: '2-digit', minute: '2-digit' }).format(new Date()); }
+    catch (e) { return ''; }
+  }
   function fillSelect(select, first, pairs) {
     var keep = select.value;
     clear(select);
@@ -527,9 +652,11 @@
       if (fromLogin) { store(KEY_STORE, state.key); enterApp(); }
       state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
       state.forced = data.forced || null;
+      state.panel = data.panel || null;
       renderFilters();
       renderTasks();
       renderForced();
+      renderSummary();
     }, function (err) {
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
       if (fromLogin) { $('login-error').textContent = messageFor(err); state.key = read(KEY_STORE) || ''; return; }
@@ -539,22 +666,72 @@
   function renderFilters() {
     var owners = {};
     state.tasks.forEach(function (t) { ownersOf(t).forEach(function (o) { owners[o] = true; }); });
-    fillSelect($('filter-status'), 'Todos', STATUS);
+    fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto']].concat(STATUS));
     fillSelect($('filter-owner'), 'Todos', Object.keys(owners).sort().map(function (o) { return [o, o]; }));
-    fillSelect($('filter-section'), 'Todas', SECTIONS);
+    fillSelect($('filter-section'), 'Todos', SECTIONS);
+    if (!state.filtersReady) { $('filter-status').value = 'open'; state.filtersReady = true; }
+  }
+  function byId(a, b) { return a.task_id.localeCompare(b.task_id, 'pt-BR', { numeric: true }); }
+  function byDue(a, b) {
+    if (a.due_date === b.due_date) return byId(a, b);
+    if (!a.due_date) return 1;
+    if (!b.due_date) return -1;
+    return a.due_date < b.due_date ? -1 : 1;
   }
   function visibleTasks() {
     var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value;
-    return state.tasks.filter(function (t) {
-      return (!st || t.status === st) && (!ow || ownersOf(t).indexOf(ow) >= 0) && (!se || sectionOf(t.task_id) === se);
+    var q = plainText($('filter-search').value).trim();
+    var found = state.tasks.filter(function (t) {
+      if (st === 'open' ? !isOpen(t) : (st && t.status !== st)) return false;
+      if (ow && ownersOf(t).indexOf(ow) < 0) return false;
+      if (se && sectionOf(t.task_id) !== se) return false;
+      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note].join(' ')).indexOf(q) >= 0;
     });
+    return found.sort($('filter-sort').value === 'id' ? byId : byDue);
   }
   function renderTasks() {
     var list = $('tasks');
     clear(list);
     var shown = visibleTasks();
-    $('tasks-count').textContent = shown.length + ' de ' + state.tasks.length + ' tarefas';
-    shown.forEach(function (t) { list.appendChild(taskRow(t)); });
+    var pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
+    if (state.page > pages) state.page = pages;
+    var start = (state.page - 1) * PAGE_SIZE, end = Math.min(start + PAGE_SIZE, shown.length);
+    $('tasks-count').textContent = shown.length ? 'Mostrando ' + (start + 1) + '–' + end + ' de ' + shown.length : 'Nenhuma tarefa com esses filtros.';
+    shown.slice(start, end).forEach(function (t) { list.appendChild(taskRow(t)); });
+    $('pager').hidden = pages < 2;
+    $('page-info').textContent = 'Página ' + state.page + ' de ' + pages;
+    $('page-prev').disabled = state.page <= 1;
+    $('page-next').disabled = state.page >= pages;
+    $('toggle-all').textContent = $('filter-status').value === 'open' ? 'Ver todas' : 'Ver só em aberto';
+  }
+  function filtersChanged() { state.page = 1; renderTasks(); }
+  function goPage(delta) {
+    state.page += delta;
+    renderTasks();
+    $('tasks-title').focus();
+  }
+  function tile(cls, label, value, sub, small) {
+    var d = el('div', 'tile ' + cls);
+    d.appendChild(el('div', 'tile-label', label));
+    d.appendChild(el('div', 'tile-value' + (small ? ' small' : ''), value));
+    if (sub) d.appendChild(el('div', 'tile-sub', sub));
+    return d;
+  }
+  // Only counts what is on screen. The colour rule and the metrics stay on the server.
+  function renderSummary() {
+    var box = $('summary'), count = {};
+    clear(box);
+    state.tasks.forEach(function (t) { count[t.status] = (count[t.status] || 0) + 1; });
+    var active = state.tasks.filter(function (t) { return t.status !== 'frozen' && t.status !== 'dropped'; }).length;
+    box.appendChild(tile('st-none', 'Tarefas ativas', active, 'de ' + state.tasks.length + ' no total'));
+    STATUS.forEach(function (s) {
+      box.appendChild(tile('st-' + s[0], s[1], count[s[0]] || 0, (s[0] === 'frozen' || s[0] === 'dropped') ? 'fora do total ativo' : ''));
+    });
+    var p = state.panel || {};
+    var auto = COLOR_NAMES[p.auto_color] ? p.auto_color : '';
+    var forced = state.forced && COLOR_NAMES[state.forced.color] ? 'Forçada na semana: ' + COLOR_NAMES[state.forced.color] : '';
+    box.appendChild(tile(auto ? 'color-' + auto : 'st-none', 'Cor automática', auto ? COLOR_NAMES[auto] : 'Sem dados', forced, true));
+    box.appendChild(tile('st-none', 'Última atualização', fmtDate(p.updated_on) || 'Sem dados', p.week_start ? 'semana de ' + fmtDate(p.week_start) : '', true));
   }
   function labelled(labelText, control) {
     var d = el('div');
@@ -578,16 +755,24 @@
     return d;
   }
   function taskRow(t) {
-    var li = el('li', 'item');
+    var li = el('li', 'task ' + statusClass(t.status));
     li.setAttribute('data-task', t.task_id);
     var saving = state.savingTask === t.task_id;
-    li.appendChild(el('span', 'item-id', t.task_id));
-    var title = el('p', 'item-title', t.title_pt_BR || t.title_en_CA);
-    title.appendChild(el('span', 'tag tag-status tag-' + t.status, statusLabel(t.status)));
-    if (t.is_new === 'yes') title.appendChild(el('span', 'tag tag-new', 'novo'));
-    li.appendChild(title);
-    li.appendChild(el('p', 'item-meta', 'Responsáveis: ' + (t.owners || 'não informado') + ' · Prazo: ' + (fmtDate(t.due_date) || 'sem prazo')));
-    if (t.change_note) li.appendChild(el('p', 'item-meta', 'Nota: ' + t.change_note));
+    var main = el('div');
+    var head = el('div', 'task-head');
+    var section = sectionOf(t.task_id);
+    head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
+    head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
+    if (t.is_new === 'yes') head.appendChild(el('span', 'tag tag-new', 'novo'));
+    main.appendChild(head);
+    main.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA));
+    var meta = el('p', 'item-meta');
+    var late = isLate(t);
+    meta.appendChild(el('span', late ? 'due-late' : null, 'Prazo: ' + (fmtDate(t.due_date) || 'sem prazo') + (late ? ' (vencido)' : '')));
+    meta.appendChild(el('span', null, ' · Responsáveis: ' + (t.owners || 'não informado')));
+    main.appendChild(meta);
+    if (t.change_note) main.appendChild(el('p', 'item-meta', 'Nota: ' + t.change_note));
+    li.appendChild(main);
 
     var controls = el('div', 'task-controls');
     var statusSel = optionSelect('status-' + t.task_id, STATUS, t.status, saving);
@@ -598,8 +783,11 @@
     controls.appendChild(labelled('Mostrar na Home', showSel));
     li.appendChild(controls);
 
+    if (saving) li.appendChild(el('p', 'task-line saving', 'Salvando…'));
+    else if (state.rowLine && state.rowLine.id === t.task_id) li.appendChild(el('p', 'task-line ' + state.rowLine.kind, state.rowLine.text));
+
     var det = el('details', 'task-edit');
-    det.appendChild(el('summary', null, 'Editar responsáveis, prazo e nota'));
+    det.appendChild(el('summary', null, 'Editar detalhes'));
     var form = el('form', 'stack');
     form.noValidate = true;
     var owners = el('input'); owners.type = 'text'; owners.maxLength = 200; owners.value = t.owners;
@@ -639,14 +827,60 @@
     api({ action: 'update_task', task_id: t.task_id, changes: changes }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
       state.savingTask = '';
       state.tasks = state.tasks.map(function (x) { return x.task_id === data.task.task_id ? data.task : x; });
+      state.rowLine = { id: data.task.task_id, kind: 'saved', text: 'Salvo às ' + timeNow() + '.' };
       renderFilters();
+      renderSummary();
       replaceRow(data.task, focusId);
       toast('Tarefa ' + data.task.task_id + ' salva.');
     }, function (err) {
       state.savingTask = '';
-      replaceRow(t, focusId);
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      state.rowLine = { id: t.task_id, kind: 'failed', text: 'Não foi salvo. ' + messageFor(err) };
+      replaceRow(t, focusId);
       showError(messageFor(err));
+    });
+  }
+
+  // ---------- new manual task (the server generates the code)
+  function newError(code, focusId, extra) {
+    $('new-error').textContent = (MSG[code] || MSG.server) + (extra || '');
+    if (focusId) { $(focusId).setAttribute('aria-invalid', 'true'); $(focusId).focus(); }
+  }
+  function resetNewForm() {
+    $('new-form').reset();
+    ['new-title-pt', 'new-section'].forEach(function (id) { $(id).setAttribute('aria-invalid', 'false'); });
+  }
+  function onCreate(ev) {
+    ev.preventDefault();
+    var title = $('new-title-pt').value.trim(), section = $('new-section').value;
+    $('new-error').textContent = '';
+    ['new-title-pt', 'new-section'].forEach(function (id) { $(id).setAttribute('aria-invalid', 'false'); });
+    if (!title) { newError('title_required', 'new-title-pt'); return; }
+    if (!section) { newError('invalid_section', 'new-section'); return; }
+    hideError();
+    $('new-btn').disabled = true;
+    $('new-btn').textContent = 'Criando…';
+    api({ action: 'create_task', task: {
+      title_pt_BR: title, title_en_CA: $('new-title-en').value, owners: $('new-owners').value, due_date: $('new-due').value,
+      section: section, status: $('new-status').value, show_to_scott: $('new-show').value
+    } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      $('new-btn').disabled = false;
+      $('new-btn').textContent = 'Criar tarefa';
+      state.tasks.push(data.task);
+      state.rowLine = { id: data.task.task_id, kind: 'saved', text: 'Criada às ' + timeNow() + '.' };
+      resetNewForm();
+      renderFilters();
+      renderTasks();
+      renderSummary();
+      toast('Tarefa ' + data.task.task_id + ' criada.');
+    }, function (err) {
+      $('new-btn').disabled = false;
+      $('new-btn').textContent = 'Criar tarefa';
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'duplicate_title') { newError('duplicate_title', 'new-title-pt', err.similarTo ? ' Código: ' + err.similarTo + '.' : ''); return; }
+      if (err.code === 'title_required' || err.code === 'title_too_long') { newError(err.code, 'new-title-pt'); return; }
+      if (err.code === 'invalid_section') { newError(err.code, 'new-section'); return; }
+      newError(err.code);
     });
   }
 
@@ -669,7 +903,8 @@
       $('forced-btn').disabled = false;
       state.forced = data.forced;
       renderForced();
-      toast(color ? 'Cor forçada salva. Vale a partir da próxima publicação.' : 'Cor automática restaurada.');
+      renderSummary();
+      toast(color ? 'Cor forçada salva. Vale a partir da próxima atualização do painel.' : 'Cor automática restaurada.');
     }, function (err) {
       $('forced-btn').disabled = false;
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
@@ -677,11 +912,11 @@
     });
   }
   function onPublish() {
-    if (!window.confirm('Publicar agora? Isto grava uma linha nova, chama a IA e dispara os e-mails configurados.')) return;
+    if (!window.confirm('Atualizar o painel agora? Isto grava uma linha nova na planilha e chama a IA.')) return;
     hideError();
     $('publish-btn').disabled = true;
     api({ action: 'publish' }, DEFAULT_TIMEOUT, ADMIN_API).then(function () {
-      toast('Publicação iniciada. O resultado chega em alguns minutos, por e-mail.');
+      toast('Atualização iniciada. O resultado chega em alguns minutos, por e-mail.');
       setTimeout(function () { $('publish-btn').disabled = false; }, 60000);
     }, function (err) {
       $('publish-btn').disabled = false;
@@ -692,7 +927,17 @@
 
   // ---------- start
   function init() {
-    ['filter-status', 'filter-owner', 'filter-section'].forEach(function (id) { $(id).addEventListener('change', renderTasks); });
+    ['filter-status', 'filter-owner', 'filter-section', 'filter-sort'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
+    $('filter-search').addEventListener('input', filtersChanged);
+    $('toggle-all').addEventListener('click', function () {
+      $('filter-status').value = $('filter-status').value === 'open' ? '' : 'open';
+      filtersChanged();
+    });
+    $('page-prev').addEventListener('click', function () { goPage(-1); });
+    $('page-next').addEventListener('click', function () { goPage(1); });
+    fillSelect($('new-section'), 'Escolha', SECTIONS.filter(function (s) { return s[0] !== 'GATE' && s[0] !== 'MTG'; }));
+    STATUS.forEach(function (s) { var o = el('option', null, s[1]); o.value = s[0]; $('new-status').appendChild(o); });
+    $('new-form').addEventListener('submit', onCreate);
     $('forced-form').addEventListener('submit', onForced);
     $('publish-btn').addEventListener('click', onPublish);
     $('meeting-date').max = todaySP();
