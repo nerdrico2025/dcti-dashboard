@@ -440,7 +440,7 @@
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
   var STATUS = [['backlog', 'Backlog'], ['next', 'Próxima'], ['doing', 'Em andamento'], ['blocked', 'Bloqueada'], ['done', 'Concluída'], ['frozen', 'Congelada'], ['dropped', 'Descartada']];
   var GATES = ['M1', 'M2', 'S1', 'M3'];
-  var SECTIONS = [['FND', 'Fundações'], ['WLX', 'Waalaxy'], ['CNT', 'Conteúdo e grupos'], ['CMP', 'Campanhas'], ['AUD', 'Audiências'], ['TOP', 'Top 100'], ['STL', 'Sintera Transformation Lab'], ['GATE', 'Gates'], ['MTG', 'Reuniões']];
+  var SECTIONS = [['FND', 'Fundações'], ['WLX', 'Waalaxy'], ['CNT', 'Conteúdo e grupos'], ['CMP', 'Campanhas'], ['AUD', 'Audiências'], ['TOP', 'Top 100'], ['STL', 'Sintera Transformation Lab'], ['GATE', 'Gates']];   // meetings are an origin, not a pillar: see the Origem filter
   var PILLAR_CODES = ['FND', 'WLX', 'CNT', 'CMP', 'AUD', 'TOP', 'STL', 'GATE', 'MTG'];
   var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
   var PAGE_SIZE = 10;
@@ -1338,7 +1338,7 @@
     });
     $('page-prev').addEventListener('click', function () { goPage(-1); });
     $('page-next').addEventListener('click', function () { goPage(1); });
-    fillSelect($('new-section'), 'Escolha', SECTIONS.filter(function (s) { return s[0] !== 'GATE' && s[0] !== 'MTG'; }));
+    fillSelect($('new-section'), 'Escolha', SECTIONS.filter(function (s) { return s[0] !== 'GATE'; }));
     STATUS.forEach(function (s) { var o = el('option', null, s[1]); o.value = s[0]; $('new-status').appendChild(o); });
     $('new-form').addEventListener('submit', onCreate);
     $('select-page').addEventListener('click', onSelectPage);
