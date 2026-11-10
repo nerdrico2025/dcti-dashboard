@@ -133,6 +133,13 @@
   .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 14px; }
   .fold > summary { cursor: pointer; }
   .fold > summary h2 { display: inline; }
+  .confirm { max-width: 30rem; width: calc(100% - 32px); border: 0; border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); color: var(--text); }
+  .confirm::backdrop { background: rgba(16, 24, 40, 0.45); }
+  .confirm h2 { font-size: 1.25rem; }
+  .confirm .item-title { margin-top: 2px; }
+  .confirm .item-id { display: block; margin-top: 10px; }
+  .confirm .error-text { margin-top: 8px; }
+  .confirm .actions { margin-top: 16px; justify-content: flex-end; }
 
   @media (max-width: 640px) {
     .filters, .task-controls, .task { grid-template-columns: 1fr; }
@@ -303,6 +310,18 @@
           </div>
         </form>
       </details>
+
+      <dialog class="confirm" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-name delete-warning">
+        <h2 id="delete-title">Excluir esta tarefa?</h2>
+        <span class="item-id" id="delete-id"></span>
+        <p class="item-title" id="delete-name"></p>
+        <p class="hint" id="delete-warning">A linha sai da planilha e não dá para desfazer por aqui.</p>
+        <p class="error-text" id="delete-error" role="alert"></p>
+        <div class="actions">
+          <button type="button" class="btn btn-quiet" id="delete-cancel" autofocus>Cancelar</button>
+          <button type="button" class="btn btn-danger" id="delete-confirm">Excluir</button>
+        </div>
+      </dialog>
     </div>
   </main>
   <noscript><p class="notice">Esta tela precisa de JavaScript.</p></noscript>
@@ -342,7 +361,9 @@
     invalid_status: 'Status inválido.',
     invalid_visibility: 'Opção de "Mostrar na Home" inválida.',
     duplicate_title: 'Já existe uma tarefa com este título.',
-    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.'
+    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.',
+    delete_not_allowed: 'Tarefas do GTM não podem ser excluídas. Use o status Descartada.',
+    task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.'
   };
 
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
@@ -351,7 +372,7 @@
   var SECTIONS = [['FND', 'Fundações'], ['WLX', 'Waalaxy'], ['CNT', 'Conteúdo e grupos'], ['CMP', 'Campanhas'], ['AUD', 'Audiências'], ['TOP', 'Top 100'], ['STL', 'Sintera Transformation Lab'], ['GATE', 'Gates'], ['MTG', 'Reuniões']];
   var PILLAR_CODES = ['FND', 'WLX', 'CNT', 'CMP', 'AUD', 'TOP', 'STL', 'GATE', 'MTG'];
   var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
-  var PAGE_SIZE = 20;
+  var PAGE_SIZE = 10;
 
   var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1, filtersReady: false };
 
@@ -416,6 +437,7 @@
   function signOut(msg) {
     state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
     state.rowLine = null; state.page = 1; state.filtersReady = false;
+    closeDelete();
     clear($('tasks'));
     clear($('summary'));
     $('filter-search').value = '';
@@ -799,6 +821,13 @@
     var save = el('button', 'btn btn-small', 'Salvar');
     save.type = 'submit'; save.disabled = saving;
     var acts = el('div', 'actions'); acts.appendChild(save);
+    if (canDelete(t)) {
+      var del = el('button', 'btn btn-danger btn-small', 'Excluir');
+      del.type = 'button'; del.disabled = saving;
+      del.setAttribute('aria-label', 'Excluir ' + t.task_id);
+      del.addEventListener('click', function () { askDelete(t); });
+      acts.appendChild(del);
+    }
     form.appendChild(acts);
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -838,6 +867,56 @@
       state.rowLine = { id: t.task_id, kind: 'failed', text: 'Não foi salvo. ' + messageFor(err) };
       replaceRow(t, focusId);
       showError(messageFor(err));
+    });
+  }
+
+  // ---------- delete (manual and meeting tasks only; the server enforces the same rule)
+  function canDelete(t) {
+    var origin = String(t.origin || '').toLowerCase();
+    return origin === 'manual' || origin.indexOf('reunião') === 0;
+  }
+  function askDelete(t) {
+    state.deleting = t;
+    $('delete-id').textContent = t.task_id;
+    $('delete-name').textContent = t.title_pt_BR || t.title_en_CA;
+    $('delete-error').textContent = '';
+    $('delete-dialog').showModal();
+  }
+  function closeDelete() {
+    state.deleting = null;
+    state.deleteBusy = false;
+    setDeleteBusy(false);
+    if ($('delete-dialog').open) $('delete-dialog').close();
+  }
+  function setDeleteBusy(on) {
+    state.deleteBusy = on;
+    $('delete-confirm').disabled = on;
+    $('delete-cancel').disabled = on;
+    $('delete-confirm').textContent = on ? 'Excluindo…' : 'Excluir';
+  }
+  function confirmDelete() {
+    var t = state.deleting;
+    if (!t || state.deleteBusy) return;
+    hideError();
+    setDeleteBusy(true);
+    $('delete-error').textContent = '';
+    api({ action: 'delete_task', task_id: t.task_id }, DEFAULT_TIMEOUT, ADMIN_API).then(function () {
+      closeDelete();
+      state.tasks = state.tasks.filter(function (x) { return x.task_id !== t.task_id; });
+      renderFilters();
+      renderTasks();
+      renderSummary();
+      toast('Tarefa ' + t.task_id + ' excluída.');
+      $('tasks-title').focus();
+    }, function (err) {
+      setDeleteBusy(false);
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'not_found') {
+        closeDelete();
+        loadTasks(false).then(function () { toast(MSG.task_gone); });
+        return;
+      }
+      $('delete-error').textContent = messageFor(err);
     });
   }
 
@@ -938,6 +1017,11 @@
     fillSelect($('new-section'), 'Escolha', SECTIONS.filter(function (s) { return s[0] !== 'GATE' && s[0] !== 'MTG'; }));
     STATUS.forEach(function (s) { var o = el('option', null, s[1]); o.value = s[0]; $('new-status').appendChild(o); });
     $('new-form').addEventListener('submit', onCreate);
+    $('delete-cancel').addEventListener('click', closeDelete);
+    $('delete-confirm').addEventListener('click', confirmDelete);
+    $('delete-dialog').addEventListener('cancel', function (ev) {   // Esc
+      if (state.deleteBusy) ev.preventDefault(); else state.deleting = null;
+    });
     $('forced-form').addEventListener('submit', onForced);
     $('publish-btn').addEventListener('click', onPublish);
     $('meeting-date').max = todaySP();
