@@ -1,4 +1,6 @@
-# Contrato dos dados da página (schema_version 1.0)
+# Contrato dos dados da página (schema_version 1.1)
+
+A versão 1.1 só acrescenta `kpi.tasks` (seção 2.3). Semanas antigas, sem esse campo, continuam válidas e mostram os textos da IA. O campo `schema_version` publicado ainda sai como `1.0`, porque o workflow C não foi alterado.
 
 A página `site/index.html` lê só arquivos desta pasta:
 
@@ -100,6 +102,29 @@ A página **não calcula status nem reescreve texto**. Ela só exibe, formata n�
 
 **Regra das chaves de rótulo:** prefixo + valor técnico em minúsculas, trocando tudo que não é letra ou número por `_`. Exemplos: `stage.demo_trial_request`, `product.ai_transformation`, `status.gray`, `tracking.not_yet`, `kpi.posts_published`.
 
+### 2.3 `kpi.tasks` (versão 1.1, workflow B)
+Calculado da aba `tasks`. A IA só redige a frase de "Como está" (primeira linha de `how_its_going_text_*`). As demais caixas da Home usam as listas abaixo, e os textos da IA continuam gravados para o workflow C validar.
+
+| Campo | Tipo | Significado |
+|---|---|---|
+| `base_date` / `cycle_end` | AAAA-MM-DD | dia em que o B rodou (base das atrasadas) / domingo da semana relatada (base do ciclo e do % previsto) |
+| `cycle` | `{ done, total, pct }` | "x de y do ciclo": prazo até `cycle_end` (ou concluída sem prazo), sem `dropped` e `frozen` |
+| `gtm_original` | `{ done, expected, total, done_pct, expected_pct, diff_points }` | origin "GTM 90 dias". (a) `done_pct`, (b) `expected_pct` (mesma base do ciclo), `diff_points` = (a) − (b): positivo = adiantado, negativo = atrasado |
+| `meeting_tasks` | `{ added, done }` | origin começando com "reunião ", independente de `is_new` |
+| `late_count` / `blocked_count` | number | atrasadas (prazo antes de `base_date`, não concluídas) / bloqueadas |
+| `late_gates` | array de task_id | gates atrasados (`how_gate_task_ids` em config) |
+| `funnel_pct` | number \| null | média de `pct_of_plan` das linhas com meta e valor. `null` = não conta |
+| `auto_color` | status | cor calculada pela regra. Fica gravada mesmo com cor forçada |
+| `forced_color` / `forced_reason` | status / string, ou null | cor forçada na admin para esta semana e o motivo |
+| `executing` | `{ this_week: [task_id], next_week: [task_id] }` | `doing` / `next` |
+| `to_change` | array de task_id | `blocked`, atrasadas ou com `change_note` |
+| `team_needs` | `[{ person, tasks: [{ task_id, due_date }] }]` | `next`, `doing` ou `blocked` com responsável diferente de Rafael |
+| `items` | objeto por task_id: `{ title_en_CA, title_pt_BR, due_date, status, change_note }` | detalhes só das tarefas listadas |
+
+- As listas têm só tarefas com `show_to_scott=yes`. As contas e a cor usam todas.
+- `how_its_going_status` (snapshot e kpi) = `forced_color`, ou `auto_color` quando não há cor forçada.
+- Nunca vão ao JSON público: `origin`, `owners` por tarefa, `pillar`, `is_new`, `show_to_scott`, `done_on`, `source_excerpt`.
+
 ## 3. Rótulos da página que foram criados para ela (já estão em ui_labels)
 
 Estas 25 chaves foram acrescentadas à aba ui_labels junto com o workflow C. Se alguma faltar, a página mostra "—" e avisa no console, e o workflow C manda um aviso no e-mail (sem bloquear a publicação).
@@ -167,6 +192,16 @@ A página não tem mais regras de negócio fixas no código. Snapshots gravados 
   Se uma etapa falhar, as seguintes não rodam, então `index.json` e `latest.json` nunca apontam para um arquivo que não existe.
 - **index.json:** acrescenta a semana ou substitui a entrada da mesma semana (sem duplicar), ordena da mais recente para a mais antiga e remove entradas com `sample: true` ou inválidas.
 - **latest.json:** só é reescrito se a semana publicada for a mais recente do índice. Republicar uma semana antiga não muda o latest.
+
+## 4.3 Status das tarefas (aba `tasks`, entra na versão 1.1)
+Lista: `backlog` | `next` | `doing` | `blocked` | `done` | `frozen` | `dropped`.
+
+- `frozen` (pt-BR "Congelada", en-CA "Frozen"): pausada de propósito, pode voltar.
+- `dropped`: descartada de vez.
+- Tarefa `frozen` fica fora de "x de y do ciclo", do % concluído e do % previsto do GTM original, das atrasadas, das bloqueadas, das novas de reunião, da cor automática e das listas da Home.
+- Tarefa `frozen` não aparece em nenhum array do JSON público. Gate (M1, M2, S1, M3) congelado não conta como gate atrasado.
+- Ao sair de `frozen`, a tarefa volta às contas normalmente.
+- O workflow D continua considerando as `frozen` na checagem de duplicatas.
 
 ## 5. Robustez esperada
 - Qualquer campo pode faltar: a página mostra "—" ou "No data yet / Sem dados ainda" e não quebra.

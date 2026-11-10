@@ -123,6 +123,18 @@
   .box .lines { font-size: 1.0625rem; line-height: 1.6; }
   .box-how .lines { font-size: 1.125rem; }
   .box-status { margin-bottom: 18px; }
+  .forced-note { margin-top: -8px; margin-bottom: 16px; font-size: 0.9375rem; color: var(--muted); }
+  .forced-note strong { color: var(--text); }
+  .how-stats { margin-top: 18px; font-size: 0.9375rem; }
+  .how-stats p + p { margin-top: 4px; }
+  .how-count { font-weight: 650; }
+  .how-bar { margin-top: 12px; }
+  .how-bar-head { display: flex; justify-content: space-between; gap: 12px; font-size: 0.875rem; }
+  .how-bar-head strong { font-variant-numeric: tabular-nums; }
+  .how-bar-track { margin-top: 4px; height: 8px; border-radius: 999px; background: #e6ebf1; overflow: hidden; }
+  .how-bar-fill { display: block; height: 100%; background: var(--tone-how); }
+  .how-diff { margin-top: 10px; font-weight: 650; }
+  .needs-person { display: block; }
   .more { margin-top: 16px; }
   .more > summary { display: inline-block; font-size: 0.875rem; font-weight: 650; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 4px 0; }
   .more > .lines { margin-top: 12px; }
@@ -374,8 +386,10 @@
               <h2 id="box-how-title"></h2>
             </div>
             <div class="box-status" id="box-how-status"></div>
+            <p class="forced-note" id="box-how-forced" hidden></p>
             <ul class="lines" id="box-how"></ul>
             <div id="box-how-more"></div>
+            <div class="how-stats" id="box-how-tasks" hidden></div>
           </article>
           <article class="card box box-exec" aria-labelledby="box-executing-title">
             <div class="box-head">
@@ -449,7 +463,7 @@
       </details>
     </div>
   </main>
-  <p class="timelog-link"><a id="timelog-link" href="horas.html">Time log</a></p>
+  <p class="timelog-link"><a id="timelog-link" href="horas">Time log</a></p>
   <noscript>
     <p class="notice" lang="en-CA">This dashboard needs JavaScript to show the data.</p>
     <p class="notice" lang="pt-BR">Este painel precisa de JavaScript para mostrar os dados.</p>
@@ -497,7 +511,29 @@
     'label.hours_none':        { 'en-CA': 'No hours logged yet.', 'pt-BR': 'Nenhuma hora registrada ainda.' },
     'label.hours_paused':      { 'en-CA': 'paused', 'pt-BR': 'pausada' },
     'label.hours_finished':    { 'en-CA': 'finished', 'pt-BR': 'concluída' },
-    'label.hours_note':        { 'en-CA': 'Read-only. "To date" = all hours since the log started.', 'pt-BR': 'Somente leitura. "Acumulado" = todas as horas desde o início do registro.' }
+    'label.hours_note':        { 'en-CA': 'Read-only. "To date" = all hours since the log started.', 'pt-BR': 'Somente leitura. "Acumulado" = todas as horas desde o início do registro.' },
+    'label.tasks_this_week':   { 'en-CA': 'This week', 'pt-BR': 'Esta semana' },
+    'label.tasks_next_week':   { 'en-CA': 'Next week', 'pt-BR': 'Próxima semana' },
+    'label.tasks_none':        { 'en-CA': 'Nothing to list.', 'pt-BR': 'Nada a listar.' },
+    'label.task_blocked':      { 'en-CA': 'Blocked', 'pt-BR': 'Bloqueada' },
+    'label.task_late':         { 'en-CA': 'Late since {date}', 'pt-BR': 'Atrasada desde {date}' },
+    'label.task_due':          { 'en-CA': 'due {date}', 'pt-BR': 'prazo {date}' },
+    'label.task_no_due':       { 'en-CA': 'no due date', 'pt-BR': 'sem prazo' },
+    'label.forced_reason':     { 'en-CA': 'Reason', 'pt-BR': 'Motivo' },
+    'label.forced_rule':       { 'en-CA': 'rule: {color}', 'pt-BR': 'regra: {color}' },
+    'label.cycle_progress':    { 'en-CA': '{x} of {y} in the cycle', 'pt-BR': '{x} de {y} do ciclo' },
+    'label.late_one':          { 'en-CA': '{n} late', 'pt-BR': '{n} atrasada' },
+    'label.late_many':         { 'en-CA': '{n} late', 'pt-BR': '{n} atrasadas' },
+    'label.gtm_done':          { 'en-CA': 'Original GTM plan completed', 'pt-BR': 'GTM original concluído' },
+    'label.gtm_expected':      { 'en-CA': 'Expected by {date}', 'pt-BR': 'Previsto até {date}' },
+    'label.gtm_ahead':         { 'en-CA': '{n} points ahead', 'pt-BR': 'adiantado {n} pontos' },
+    'label.gtm_behind':        { 'en-CA': '{n} points behind', 'pt-BR': 'atrasado {n} pontos' },
+    'label.gtm_on_plan':       { 'en-CA': 'On plan', 'pt-BR': 'em dia' },
+    'label.meeting_title':     { 'en-CA': 'From meetings', 'pt-BR': 'De reuniões' },
+    'label.meeting_new_one':   { 'en-CA': '+{n} new', 'pt-BR': '+{n} nova' },
+    'label.meeting_new_many':  { 'en-CA': '+{n} new', 'pt-BR': '+{n} novas' },
+    'label.meeting_done_one':  { 'en-CA': '{n} completed', 'pt-BR': '{n} concluída' },
+    'label.meeting_done_many': { 'en-CA': '{n} completed', 'pt-BR': '{n} concluídas' }
   };
   var MAX_BOX_ITEMS = 3;
   // Main screen: sales-focused funnel (technical stage keys from kpi.funnel[].stage)
@@ -708,20 +744,27 @@
     });
 
     // boxes (at most 3 items visible each)
+    // Weeks with kpi.tasks use the task lists; older weeks keep the AI texts.
+    var tasks = isObj(kpi.tasks) ? kpi.tasks : null;
     $('box-executing-title').textContent = L('box.executing');
-    boxLines($('box-executing'), aiText(snap, 'executing_text'));
+    boxLines($('box-executing'), tasks ? executingLines(tasks) : aiText(snap, 'executing_text'));
     $('box-how-title').textContent = L('box.how_its_going');
     var hs = $('box-how-status');
     clear(hs);
     hs.appendChild(statusBadge(snap.how_its_going_status || kpi.how_its_going_status, true));
-    boxLines($('box-how'), aiText(snap, 'how_its_going_text'));
+    renderForced(tasks);
+    boxLines($('box-how'), tasks ? (splitLines(aiText(snap, 'how_its_going_text'))[0] || '') : aiText(snap, 'how_its_going_text'));
+    renderHowTasks(tasks);
     $('box-change-title').textContent = L('box.what_to_change');
-    boxLines($('box-change'), aiText(snap, 'what_to_change_text'));
-    // needs from the team: one strip, only when there is text
-    var needs = splitLines(aiText(snap, 'needs_from_team'));
+    boxLines($('box-change'), tasks ? toChangeLines(tasks) : aiText(snap, 'what_to_change_text'));
+    // needs from the team: one strip, only when there is something to ask
+    var needs = tasks ? needsLines(tasks) : splitLines(aiText(snap, 'needs_from_team'));
     $('needs').hidden = !needs.length;
     $('needs-title').textContent = L('box.needs_from_team');
-    $('needs-text').textContent = needs.join(' · ');
+    var needsBox = $('needs-text');
+    clear(needsBox);
+    if (tasks) needs.forEach(function (n) { needsBox.appendChild(el('span', 'needs-person', n)); });
+    else needsBox.textContent = needs.join(' · ');
 
     renderMainFunnel(kpi);
     $('details-summary').textContent = uiText('label.see_details');
@@ -734,6 +777,80 @@
     var missing = Object.keys(state.missing);
     if (missing.length && window.console) console.warn('ui_labels keys missing for ' + state.lang + ':', missing);
     window.requestAnimationFrame(updateClamps);
+  }
+
+  // ---------- task boxes (kpi.tasks, workflow B)
+  function shortDate(iso) { return fmtDate(iso, { day: 'numeric', month: 'short' }); }
+  function taskItem(t, id) { return isObj(t.items) && isObj(t.items[id]) ? t.items[id] : {}; }
+  function taskTitle(t, id) {
+    var it = taskItem(t, id);
+    return str(it['title_' + COL[state.lang]]).trim() || str(it.title_en_CA).trim() || str(it.title_pt_BR).trim() || str(id);
+  }
+  function arr(x) { return Array.isArray(x) ? x : []; }
+  function oneLine(s) { return str(s).replace(/\s+/g, ' ').trim(); }
+  function executingLines(t) {
+    var ex = isObj(t.executing) ? t.executing : {};
+    var out = arr(ex.this_week).map(function (id) { return uiText('label.tasks_this_week') + ': ' + oneLine(taskTitle(t, id)); })
+      .concat(arr(ex.next_week).map(function (id) { return uiText('label.tasks_next_week') + ': ' + oneLine(taskTitle(t, id)); }));
+    return (out.length ? out : [uiText('label.tasks_none')]).join('\n');
+  }
+  function toChangeLines(t) {
+    var out = arr(t.to_change).map(function (id) {
+      var it = taskItem(t, id), why = [];
+      if (it.status === 'blocked') why.push(uiText('label.task_blocked'));
+      if (it.due_date && it.due_date < str(t.base_date) && it.status !== 'done') why.push(fill(uiText('label.task_late'), { date: shortDate(it.due_date) }));
+      if (it.change_note) why.push(oneLine(it.change_note));
+      return oneLine(taskTitle(t, id)) + (why.length ? ' (' + why.join(' · ') + ')' : '');
+    });
+    return (out.length ? out : [uiText('label.tasks_none')]).join('\n');
+  }
+  function needsLines(t) {
+    return arr(t.team_needs).filter(isObj).map(function (p) {
+      return str(p.person) + ': ' + arr(p.tasks).filter(isObj).map(function (x) {
+        var when = x.due_date ? fill(uiText('label.task_due'), { date: shortDate(x.due_date) }) : uiText('label.task_no_due');
+        return oneLine(taskTitle(t, x.task_id)) + ' (' + when + ')';
+      }).join('; ');
+    });
+  }
+  function renderForced(t) {
+    var box = $('box-how-forced');
+    clear(box);
+    box.hidden = !(t && t.forced_color);
+    if (box.hidden) return;
+    box.appendChild(el('strong', null, uiText('label.forced_reason') + ': '));
+    box.appendChild(document.createTextNode(str(t.forced_reason) + ' · ' + fill(uiText('label.forced_rule'), { color: L('status.' + slug(t.auto_color)) })));
+  }
+  function plural(base, n) { return uiText(base + (n === 1 ? '_one' : '_many')); }
+  function progressBar(label, pct) {
+    var wrap = el('div', 'how-bar');
+    var head = el('div', 'how-bar-head');
+    head.appendChild(el('span', null, label));
+    head.appendChild(el('strong', null, isNum(pct) ? fmtNumber(pct) + '%' : DASH));
+    wrap.appendChild(head);
+    var track = el('div', 'how-bar-track');
+    track.setAttribute('aria-hidden', 'true');   // the number above says the same
+    var fill_ = el('span', 'how-bar-fill');
+    fill_.style.width = (isNum(pct) ? Math.max(0, Math.min(100, pct)) : 0) + '%';
+    track.appendChild(fill_);
+    wrap.appendChild(track);
+    return wrap;
+  }
+  function renderHowTasks(t) {
+    var box = $('box-how-tasks');
+    clear(box);
+    box.hidden = !t;
+    if (!t) return;
+    var c = isObj(t.cycle) ? t.cycle : {}, g = isObj(t.gtm_original) ? t.gtm_original : {}, m = isObj(t.meeting_tasks) ? t.meeting_tasks : {};
+    var late = isNum(t.late_count) ? t.late_count : 0;
+    box.appendChild(el('p', 'how-count', fill(uiText('label.cycle_progress'), { x: fmtNumber(c.done), y: fmtNumber(c.total) }) + ' · ' + fill(plural('label.late', late), { n: fmtNumber(late) })));
+    box.appendChild(progressBar(uiText('label.gtm_done'), g.done_pct));
+    box.appendChild(progressBar(fill(uiText('label.gtm_expected'), { date: shortDate(t.cycle_end) }), g.expected_pct));
+    if (isNum(g.diff_points)) {
+      var points = fmtNumber(Math.abs(g.diff_points));
+      box.appendChild(el('p', 'how-diff', g.diff_points > 0 ? fill(uiText('label.gtm_ahead'), { n: points }) : (g.diff_points < 0 ? fill(uiText('label.gtm_behind'), { n: points }) : uiText('label.gtm_on_plan'))));
+    }
+    var added = isNum(m.added) ? m.added : 0, done = isNum(m.done) ? m.done : 0;
+    box.appendChild(el('p', null, uiText('label.meeting_title') + ': ' + fill(plural('label.meeting_new', added), { n: fmtNumber(added) }) + ', ' + fill(plural('label.meeting_done', done), { n: fmtNumber(done) })));
   }
 
   // Main screen funnel: one card per product; Site visits -> Demo/Trial request -> Sale (revenue).

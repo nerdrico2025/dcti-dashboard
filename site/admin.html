@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta name="referrer" content="no-referrer">
+<title>DCTI-Institute – Admin</title>
+<style>
+  :root {
+    --bg: #f5f7fa; --card: #fff; --text: #1b2430; --muted: #4a5563; --faint: #66717f; --line: #d6dde6;
+    --accent: #1f5fa8; --accent-soft: #e9f1fb; --danger: #a3262a; --ok: #1d6b3a; --radius: 16px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, 0.05), 0 6px 20px rgba(16, 24, 40, 0.06);
+    color-scheme: light;
+  }
+  * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
+  html { background: var(--bg); }
+  body { margin: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; font-size: 1.0625rem; line-height: 1.5; }
+  .wrap { max-width: 1040px; margin: 0 auto; padding: 40px 32px 72px; }
+  h1, h2, h3 { line-height: 1.25; margin: 0; }
+  p { margin: 0; }
+  ul { margin: 0; padding: 0; list-style: none; }
+  :focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; border-radius: 4px; }
+  button, input, textarea { font: inherit; color: inherit; }
+  button { cursor: pointer; }
+  button:disabled { cursor: default; opacity: 0.6; }
+
+  .site-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 32px; }
+  .brand { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
+  .site-header h1 { font-size: 1.875rem; font-weight: 750; letter-spacing: -0.01em; margin-top: 6px; }
+  .link-btn { background: none; border: 0; padding: 8px 4px; min-height: 40px; color: var(--accent); font-size: 0.9375rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+
+  .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 26px; margin-top: 28px; }
+  .card h2 { font-size: 1.25rem; }
+  .btn { min-height: 44px; padding: 8px 18px; border-radius: 10px; border: 1px solid var(--accent); background: var(--accent); color: #fff; font-weight: 650; font-size: 0.9375rem; }
+  .btn:hover:not(:disabled) { background: #194f8c; }
+  .btn-quiet { background: #fff; color: var(--accent); }
+  .btn-quiet:hover:not(:disabled) { background: var(--accent-soft); }
+  .btn-small { min-height: 36px; padding: 4px 12px; font-size: 0.875rem; }
+  .btn-danger { border-color: var(--danger); color: var(--danger); background: #fff; }
+  .btn-danger:hover:not(:disabled) { background: #fbeaea; }
+  .notice { margin-top: 24px; padding: 16px 20px; background: #fde8e8; color: #7a1616; border-radius: var(--radius); }
+  .toast { position: fixed; left: 50%; bottom: 16px; transform: translateX(-50%); z-index: 10; max-width: calc(100% - 32px); padding: 10px 16px; border-radius: 10px; background: #14532d; color: #fff; font-size: 0.9375rem; font-weight: 600; box-shadow: var(--shadow); }
+  .toast:empty { display: none; }
+  .hint { margin-top: 6px; color: var(--muted); font-size: 0.9375rem; }
+  .error-text { color: var(--danger); font-size: 0.875rem; font-weight: 600; }
+
+  .login { max-width: 460px; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+  .field input, .field textarea { padding: 8px 12px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; width: 100%; }
+  .field input { min-height: 44px; }
+  .field textarea { min-height: 220px; resize: vertical; }
+  .field [aria-invalid="true"] { border-color: var(--danger); }
+  form.stack { margin-top: 18px; display: grid; gap: 14px; }
+  .row { display: grid; grid-template-columns: 1fr 12rem; gap: 14px; }
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+
+  .warning { margin-top: 14px; padding: 12px 16px; border-radius: 12px; background: #fff5d6; color: #5f4200; font-weight: 650; }
+  .item { padding: 14px 0; border-top: 1px solid var(--line); }
+  .item:first-child { border-top: 0; }
+  .item-title { font-weight: 650; overflow-wrap: anywhere; }
+  .item-id { font-variant-numeric: tabular-nums; color: var(--muted); font-size: 0.875rem; font-weight: 600; }
+  .item-meta { color: var(--muted); font-size: 0.9375rem; margin-top: 2px; }
+  .excerpt { margin: 8px 0 0; padding-left: 12px; border-left: 3px solid var(--line); color: var(--muted); font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .tag { display: inline-block; font-size: 0.75rem; font-weight: 650; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: var(--accent-soft); color: #174a85; vertical-align: 2px; }
+  .subhead { margin-top: 20px; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .item .actions { margin-top: 10px; }
+  .empty { margin-top: 10px; color: var(--faint); }
+
+  .field select, .task-controls select { min-height: 44px; padding: 8px 10px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; font: inherit; color: inherit; width: 100%; }
+  .field textarea.short { min-height: 72px; }
+  .filters { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(10.5rem, 1fr)); gap: 14px; }
+  .list-bar { margin-top: 12px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+  .list-bar .hint { margin-top: 0; }
+  .pager { margin-top: 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 12px; }
+  .pager .hint { margin-top: 0; }
+
+  /* status colours: side stripe, badge and summary tile */
+  .st-backlog { --st: #7b8794; --st-bg: #eef1f4; --st-fg: #39424e; }
+  .st-next { --st: #2f74c0; --st-bg: #e6f0fb; --st-fg: #174a85; }
+  .st-doing { --st: #e07a1f; --st-bg: #fdeedd; --st-fg: #8a4300; }
+  .st-blocked { --st: #c8322f; --st-bg: #fde8e8; --st-fg: #8b1a1a; }
+  .st-done { --st: #2e9a56; --st-bg: #e5f5ec; --st-fg: #14532d; }
+  .st-frozen { --st: #6cc3dc; --st-bg: #e4f6fb; --st-fg: #0d5468; }
+  .st-dropped { --st: #a7b0bb; --st-bg: #f1f2f4; --st-fg: #4a5563; }
+  .st-none { --st: #c9d1da; --st-bg: #f5f7fa; --st-fg: #39424e; }
+  .color-Green { --st: #2e9a56; --st-bg: #e5f5ec; --st-fg: #14532d; }
+  .color-Yellow { --st: #d9a400; --st-bg: #fff5d6; --st-fg: #5f4200; }
+  .color-Red { --st: #c8322f; --st-bg: #fde8e8; --st-fg: #8b1a1a; }
+  .color-Gray { --st: #7b8794; --st-bg: #eef1f4; --st-fg: #39424e; }
+
+  .tiles { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr)); gap: 10px; }
+  .tile { padding: 10px 12px; border-radius: 10px; background: var(--st-bg); color: var(--st-fg); border-top: 4px solid var(--st); }
+  .tile-label { font-size: 0.8125rem; font-weight: 650; }
+  .tile-value { font-size: 1.5rem; font-weight: 750; line-height: 1.2; font-variant-numeric: tabular-nums; }
+  .tile-value.small { font-size: 1.0625rem; padding-top: 5px; }
+  .tile-sub { font-size: 0.75rem; }
+  .publish { margin-top: 18px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  .publish .hint { margin-top: 0; flex: 1 1 18rem; }
+
+  .task { display: grid; grid-template-columns: minmax(0, 1fr) 21rem; gap: 6px 20px; margin-top: 10px; padding: 12px 14px; border: 1px solid var(--line); border-left: 6px solid var(--st); border-radius: 10px; }
+  .task-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; }
+  .task-head .tag { margin-left: 0; vertical-align: baseline; }
+  .task .item-title { margin-top: 4px; font-size: 1rem; }
+  .task .item-meta { font-size: 0.875rem; }
+  .task .task-controls select { min-height: 38px; padding: 4px 8px; font-size: 0.9375rem; }
+  .st-dropped .item-title, .tag-status.st-dropped { text-decoration: line-through; }
+  .due-late { color: var(--danger); font-weight: 700; }
+  .pid { font-size: 0.8125rem; font-weight: 700; font-variant-numeric: tabular-nums; padding: 1px 8px; border-radius: 6px; }
+  .p-FND { color: #4b2e83; background: #efe9f8; }
+  .p-WLX { color: #00666b; background: #dff4f4; }
+  .p-CNT { color: #a3195b; background: #fce6f0; }
+  .p-CMP { color: #7a4a00; background: #fbf0d9; }
+  .p-AUD { color: #4f6b00; background: #eef5d6; }
+  .p-TOP { color: #5a3a22; background: #f3e9df; }
+  .p-STL { color: #123f7a; background: #dfe9f7; }
+  .p-GATE { color: #fff; background: #1b2430; }
+  .p-MTG, .p-other { color: #39424e; background: #eef1f4; }
+  .tag-status { background: var(--st-bg); color: var(--st-fg); border: 1px solid var(--st); }
+  .tag-new { background: #fff5d6; color: #5f4200; border: 1px solid #e6c66a; }
+  .task-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-self: start; }
+  .task-controls label { display: block; font-size: 0.8125rem; font-weight: 600; color: var(--muted); margin-bottom: 2px; }
+  .task-line { grid-column: 1 / -1; font-size: 0.875rem; font-weight: 650; }
+  .task-line.saved { color: var(--ok); }
+  .task-line.saving { color: var(--muted); }
+  .task-line.failed { color: var(--danger); }
+  .task-edit { grid-column: 1 / -1; }
+  .task-edit > summary { color: var(--accent); font-size: 0.875rem; font-weight: 600; cursor: pointer; padding: 2px 0; }
+  .task-edit .stack { margin-top: 8px; }
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr)); gap: 14px; }
+  .fold > summary { cursor: pointer; }
+  .fold > summary h2 { display: inline; }
+  .confirm { max-width: 30rem; width: calc(100% - 32px); border: 0; border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow); color: var(--text); }
+  .confirm::backdrop { background: rgba(16, 24, 40, 0.45); }
+  .confirm h2 { font-size: 1.25rem; }
+  .confirm .item-title { margin-top: 2px; }
+  .confirm .item-id { display: block; margin-top: 10px; }
+  .confirm .error-text { margin-top: 8px; }
+  .confirm .actions { margin-top: 16px; justify-content: flex-end; }
+  .check { display: flex; align-items: center; gap: 8px; min-height: 44px; align-self: end; font-size: 0.9375rem; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .check input { width: 20px; height: 20px; margin: 0; }
+  .pick { width: 20px; height: 20px; margin: 0 2px 0 0; cursor: pointer; }
+  .select-bar { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; }
+  .select-bar .link-btn { min-height: 36px; padding: 6px 0; }
+  .select-bar .link-btn:disabled { color: var(--muted); text-decoration: none; opacity: 1; }
+  .select-note { margin-top: 2px; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
+  .bulk-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(16, 24, 40, 0.12); padding: 10px 16px 12px; }
+  .bulk-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; }
+  .bulk-inner .field { min-width: 12rem; }
+  .bulk-count { align-self: center; font-weight: 750; min-width: 8rem; }
+  .bulk-result { max-width: 1040px; margin: 6px auto 0; font-size: 0.875rem; font-weight: 600; }
+  .bulk-result:empty { display: none; }
+  body.has-bulk .wrap { padding-bottom: 200px; }
+  body.has-bulk .toast { bottom: 128px; }
+
+  @media (max-width: 640px) {
+    .filters, .task-controls, .task { grid-template-columns: 1fr; }
+    .wrap { padding: 24px 16px 56px; }
+    .site-header h1 { font-size: 1.5rem; }
+    .card { padding: 18px 16px; }
+    .row { grid-template-columns: 1fr; }
+    .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .pager .btn { flex: 1 1 8rem; }
+    .task .task-controls select { min-height: 44px; }
+    .bulk-inner .field { flex: 1 1 100%; }
+    body.has-bulk .wrap { padding-bottom: 320px; }
+    body.has-bulk .toast { bottom: 260px; }
+    .task-edit > summary { padding: 10px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="site-header">
+    <div>
+      <div class="brand">DCTI-Institute</div>
+      <h1>Admin</h1>
+    </div>
+    <button type="button" class="link-btn" id="logout" hidden>Sair</button>
+  </header>
+
+  <main>
+    <p class="toast" id="toast" role="status" aria-live="polite"></p>
+    <div class="notice" id="error" role="alert" hidden><p id="error-text"></p></div>
+
+    <section class="card login" id="login" aria-labelledby="login-title" hidden>
+      <h2 id="login-title">Digite a senha</h2>
+      <p class="hint">A senha fica salva só neste navegador. Use "Sair" para apagá-la.</p>
+      <form class="stack" id="login-form" novalidate>
+        <div class="field">
+          <label for="password">Senha</label>
+          <input type="password" id="password" autocomplete="current-password" required aria-describedby="login-error">
+        </div>
+        <p class="error-text" id="login-error"></p>
+        <div><button type="submit" class="btn" id="login-btn">Entrar</button></div>
+      </form>
+    </section>
+
+    <div id="app" hidden>
+      <section class="card" aria-labelledby="summary-title">
+        <h2 id="summary-title">Resumo</h2>
+        <p class="hint">Visão rápida das tarefas e da situação do painel.</p>
+        <div class="tiles" id="summary"></div>
+        <div class="publish">
+          <button type="button" class="btn" id="publish-btn">Atualizar painel agora</button>
+          <p class="hint">Recalcula o painel agora, sem esperar a segunda-feira. Não envia nada ao Scott.</p>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="tasks-title">
+        <h2 id="tasks-title" tabindex="-1">Tarefas</h2>
+        <p class="hint">Mude o status e o "Mostrar na Home" direto na linha. Cada mudança é salva na hora.</p>
+        <div class="filters">
+          <div class="field"><label for="filter-search">Buscar</label><input type="search" id="filter-search" placeholder="Código, título, responsável"></div>
+          <div class="field"><label for="filter-status">Status</label><select id="filter-status"></select></div>
+          <div class="field"><label for="filter-section">Pilar</label><select id="filter-section"></select></div>
+          <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
+          <div class="field"><label for="filter-sort">Ordenar por</label><select id="filter-sort"><option value="due">Prazo</option><option value="id">Código</option></select></div>
+          <label class="check" for="filter-hide-frozen"><input type="checkbox" id="filter-hide-frozen"> Ocultar congeladas</label>
+        </div>
+        <div class="list-bar">
+          <p class="hint" id="tasks-count" role="status" aria-live="polite"></p>
+          <button type="button" class="btn btn-quiet btn-small" id="toggle-all">Ver todas</button>
+        </div>
+        <div class="select-bar">
+          <button type="button" class="link-btn" id="select-page">Selecionar as desta página</button>
+          <button type="button" class="link-btn" id="select-all" hidden></button>
+        </div>
+        <p class="select-note" id="select-note" role="status" aria-live="polite"></p>
+        <ul id="tasks"></ul>
+        <div class="pager" id="pager" hidden>
+          <button type="button" class="btn btn-quiet btn-small" id="page-prev">Anterior</button>
+          <p class="hint" id="page-info"></p>
+          <button type="button" class="btn btn-quiet btn-small" id="page-next">Próxima</button>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="new-title">
+        <h2 id="new-title">Nova tarefa</h2>
+        <p class="hint">Cria uma tarefa à mão na planilha. O código é gerado automaticamente.</p>
+        <form class="stack" id="new-form" novalidate>
+          <div class="field">
+            <label for="new-title-pt">Título em português (obrigatório)</label>
+            <input type="text" id="new-title-pt" maxlength="300" required aria-describedby="new-error">
+          </div>
+          <div class="field">
+            <label for="new-title-en">Título em inglês (opcional)</label>
+            <input type="text" id="new-title-en" maxlength="300" aria-describedby="new-en-hint">
+            <p class="hint" id="new-en-hint">Se ficar em branco, a versão em inglês da Home mostra o título em português.</p>
+          </div>
+          <div class="form-grid">
+            <div class="field"><label for="new-owners">Responsáveis (separados por vírgula)</label><input type="text" id="new-owners" maxlength="200"></div>
+            <div class="field"><label for="new-due">Prazo</label><input type="date" id="new-due"></div>
+            <div class="field"><label for="new-section">Pilar (obrigatório)</label><select id="new-section" aria-describedby="new-error"></select></div>
+            <div class="field"><label for="new-status">Status inicial</label><select id="new-status"></select></div>
+            <div class="field"><label for="new-show">Mostrar na Home</label><select id="new-show"><option value="no">Não</option><option value="yes">Sim</option></select></div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn" id="new-btn">Criar tarefa</button>
+            <span class="error-text" id="new-error" role="alert"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" aria-labelledby="meeting-title">
+        <h2 id="meeting-title">Subir resumo de reunião</h2>
+        <p class="hint">Transforma o resumo de uma reunião em tarefas e sugestões para você revisar.</p>
+        <p class="warning" id="meeting-warning">Não suba trechos com senha, pagamento ou remuneração.</p>
+        <form class="stack" id="meeting-form" novalidate>
+          <div class="field">
+            <label for="meeting-text">Texto da reunião</label>
+            <textarea id="meeting-text" maxlength="60000" aria-describedby="meeting-warning meeting-error"></textarea>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="meeting-file">Ou envie um arquivo .md ou .txt</label>
+              <input type="file" id="meeting-file" accept=".md,.txt,text/markdown,text/plain">
+            </div>
+            <div class="field">
+              <label for="meeting-date">Data da reunião</label>
+              <input type="date" id="meeting-date" required aria-describedby="meeting-error">
+            </div>
+          </div>
+          <p class="hint">O texto só é usado nesta análise e não é guardado. Ficam salvos apenas as tarefas e o trecho de cada uma.</p>
+          <div class="actions">
+            <button type="submit" class="btn" id="analyze-btn">Analisar</button>
+            <span class="error-text" id="meeting-error" role="alert"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" id="result" aria-labelledby="result-title" tabindex="-1" hidden>
+        <h2 id="result-title">Resultado da análise</h2>
+        <div id="result-body"></div>
+      </section>
+
+      <section class="card" aria-labelledby="suggestions-title">
+        <h2 id="suggestions-title">Alterações sugeridas</h2>
+        <p class="hint">Mudanças em tarefas encontradas nas reuniões. Aceitar ou recusar só registra sua decisão. A tarefa não muda sozinha.</p>
+        <ul id="suggestions"></ul>
+        <p class="empty" id="no-suggestions" hidden>Nenhuma alteração aguardando decisão.</p>
+        <p class="error-text" id="suggestions-error" role="alert"></p>
+      </section>
+
+      <details class="card fold" id="forced-box">
+        <summary>
+          <h2 id="forced-title">Ajuste excepcional da cor</h2>
+          <p class="hint">Use só quando a cor automática não refletir a realidade. Vale por uma semana, exige um motivo e fica pública junto com a cor calculada.</p>
+        </summary>
+        <p class="hint" id="forced-week"></p>
+        <form class="stack" id="forced-form" novalidate>
+          <div class="row">
+            <div class="field">
+              <label for="forced-reason">Motivo (aparece na Home)</label>
+              <input type="text" id="forced-reason" maxlength="300" aria-describedby="forced-error">
+            </div>
+            <div class="field">
+              <label for="forced-color">Cor</label>
+              <select id="forced-color">
+                <option value="">Automática</option>
+                <option value="Green">Verde</option>
+                <option value="Yellow">Amarelo</option>
+                <option value="Red">Vermelho</option>
+                <option value="Gray">Cinza</option>
+              </select>
+            </div>
+          </div>
+          <div class="actions">
+            <button type="submit" class="btn" id="forced-btn">Salvar cor</button>
+            <span class="error-text" id="forced-error" role="alert"></span>
+          </div>
+        </form>
+      </details>
+
+      <dialog class="confirm" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-name delete-gtm delete-warning">
+        <h2 id="delete-title">Excluir esta tarefa?</h2>
+        <span class="item-id" id="delete-id"></span>
+        <p class="item-title" id="delete-name"></p>
+        <p class="warning" id="delete-gtm" hidden>Esta é uma tarefa do GTM. Excluir tira a tarefa da base do "% do GTM original". Para preservar o histórico, use o status Descartada.</p>
+        <p class="hint" id="delete-warning">A linha sai da planilha e não dá para desfazer por aqui.</p>
+        <p class="hint" id="delete-second" hidden>Clique em "Confirmar exclusão" para excluir de vez.</p>
+        <p class="error-text" id="delete-error" role="alert"></p>
+        <div class="actions">
+          <button type="button" class="btn btn-quiet" id="delete-cancel" autofocus>Cancelar</button>
+          <button type="button" class="btn btn-danger" id="delete-confirm">Excluir</button>
+        </div>
+      </dialog>
+
+      <dialog class="confirm" id="bulk-delete-dialog" aria-labelledby="bulk-delete-title" aria-describedby="bulk-delete-text bulk-delete-gtm">
+        <h2 id="bulk-delete-title"></h2>
+        <p class="hint" id="bulk-delete-text"></p>
+        <p class="warning" id="bulk-delete-gtm">Excluir tira as tarefas da base do "% do GTM original". "Descartada" mantém a linha na planilha, mas também sai das contas.</p>
+        <p class="hint">As linhas saem da planilha e não dá para desfazer por aqui.</p>
+        <div class="field" style="margin-top: 12px">
+          <label for="bulk-delete-word">Digite EXCLUIR para confirmar</label>
+          <input type="text" id="bulk-delete-word" autocomplete="off" autocapitalize="characters" spellcheck="false" autofocus aria-describedby="bulk-delete-error">
+        </div>
+        <p class="error-text" id="bulk-delete-error" role="alert"></p>
+        <div class="actions">
+          <button type="button" class="btn btn-quiet" id="bulk-delete-cancel">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="bulk-delete-confirm" disabled>Excluir</button>
+        </div>
+      </dialog>
+
+      <div class="bulk-bar" id="bulk-bar" role="region" aria-label="Ações nas tarefas selecionadas" hidden>
+        <div class="bulk-inner">
+          <p class="bulk-count" id="bulk-count"></p>
+          <div class="field">
+            <label for="bulk-action">Ação</label>
+            <select id="bulk-action">
+              <option value="">Escolha</option>
+              <option value="status">Alterar status</option>
+              <option value="show">Mostrar na Home</option>
+              <option value="owners">Definir responsáveis</option>
+              <option value="due">Definir prazo</option>
+              <option value="delete">Excluir (até 25 por vez)</option>
+            </select>
+          </div>
+          <div class="field" id="bulk-value-box" hidden>
+            <label for="bulk-value" id="bulk-value-label"></label>
+            <span id="bulk-value-slot"></span>
+          </div>
+          <button type="button" class="btn btn-small" id="bulk-apply">Aplicar</button>
+          <button type="button" class="btn btn-quiet btn-small" id="bulk-clear">Limpar seleção</button>
+        </div>
+        <p class="bulk-result" id="bulk-result" role="status" aria-live="polite"></p>
+      </div>
+    </div>
+  </main>
+  <noscript><p class="notice">Esta tela precisa de JavaScript.</p></noscript>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var API = 'api/admin-meeting';      // same origin: Vercel rewrites it to the n8n webhook (site/vercel.json)
+  var KEY_STORE = 'dcti_admin_key';   // the password, saved only in this browser
+  var TZ = 'America/Sao_Paulo';
+  var MAX_TEXT = 60000, MAX_FILE = 300 * 1024;
+  var ANALYZE_TIMEOUT = 115000, DEFAULT_TIMEOUT = 25000;
+
+  var MSG = {
+    unauthorized: 'Senha incorreta.',
+    not_configured: 'O servidor ainda não está configurado (segredo no n8n).',
+    network: 'Não foi possível falar com o servidor. Confira a conexão e tente de novo.',
+    server: 'O servidor respondeu com erro. Tente de novo em instantes.',
+    empty_text: 'Cole o texto da reunião ou envie um arquivo.',
+    text_too_long: 'O texto passa de 60.000 caracteres. Corte antes de enviar.',
+    invalid_date: 'Escolha a data da reunião (hoje ou antes).',
+    bad_file: 'Envie um arquivo .md ou .txt de até 300 KB.',
+    ai_failed: 'A IA não devolveu uma resposta válida. Nada foi gravado. Tente de novo.',
+    not_found: 'Esta sugestão não existe mais. A lista foi recarregada.',
+    already_decided: 'Esta sugestão já tinha outra decisão. A lista foi recarregada.',
+    b_not_configured: 'O ID do workflow B ainda não foi preenchido no workflow F.',
+    invalid_due_date: 'Prazo inválido.',
+    note_too_long: 'A nota passa de 500 caracteres.',
+    owners_too_long: 'A lista de responsáveis passa de 200 caracteres.',
+    reason_required: 'Escreva o motivo para forçar a cor.',
+    suggestions_unavailable: 'As alterações sugeridas estão indisponíveis agora. O resto da admin continua funcionando.',
+    title_required: 'Escreva o título em português.',
+    title_too_long: 'O título passa de 300 caracteres.',
+    invalid_section: 'Escolha o pilar.',
+    invalid_status: 'Status inválido.',
+    invalid_visibility: 'Opção de "Mostrar na Home" inválida.',
+    duplicate_title: 'Já existe uma tarefa com este título.',
+    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.',
+    row_not_found: 'Não foi possível identificar a linha com certeza. Nada foi excluído.',
+    task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.',
+    too_many: 'Selecione no máximo 100 tarefas por vez.',
+    too_many_delete: 'Exclua no máximo 25 tarefas por vez. Cada linha é uma gravação no Google, que limita as gravações por minuto.',
+    write_not_confirmed: 'A planilha não confirmou a gravação. Recarregue a página e confira.',
+    no_tasks: 'Nenhuma tarefa selecionada.'
+  };
+
+  var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
+  var STATUS = [['backlog', 'Backlog'], ['next', 'Próxima'], ['doing', 'Em andamento'], ['blocked', 'Bloqueada'], ['done', 'Concluída'], ['frozen', 'Congelada'], ['dropped', 'Descartada']];
+  var GATES = ['M1', 'M2', 'S1', 'M3'];
+  var SECTIONS = [['FND', 'Fundações'], ['WLX', 'Waalaxy'], ['CNT', 'Conteúdo e grupos'], ['CMP', 'Campanhas'], ['AUD', 'Audiências'], ['TOP', 'Top 100'], ['STL', 'Sintera Transformation Lab'], ['GATE', 'Gates'], ['MTG', 'Reuniões']];
+  var PILLAR_CODES = ['FND', 'WLX', 'CNT', 'CMP', 'AUD', 'TOP', 'STL', 'GATE', 'MTG'];
+  var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
+  var PAGE_SIZE = 10;
+  var BULK_MAX = 100, BULK_TIMEOUT = 60000;
+
+  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
+    selected: {}, shownIds: [], pageIds: [], bulkIds: [], bulkBusy: false };
+
+  function $(id) { return document.getElementById(id); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined && text !== null) n.textContent = String(text);
+    return n;
+  }
+  function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
+  function store(k, v) { try { if (v === null) window.localStorage.removeItem(k); else window.localStorage.setItem(k, v); } catch (e) { /* no storage */ } }
+  function read(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
+  function messageFor(err) { return MSG[err.code] || MSG.server; }
+  function todaySP() {
+    try { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
+    catch (e) { return new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); }
+  }
+  function fmtDate(ds) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ds || '');
+    return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  }
+
+  function api(body, timeout, url) {
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeout || DEFAULT_TIMEOUT) : null;
+    return fetch(url || API, {
+      method: 'POST', cache: 'no-store', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': state.key },
+      body: JSON.stringify(body), signal: ctrl ? ctrl.signal : undefined
+    }).then(function (res) {
+      if (timer) clearTimeout(timer);
+      return res.text().then(function (txt) {
+        var data = null;
+        try { data = JSON.parse(txt); } catch (e) { data = null; }
+        if (res.ok && data && data.ok) return data;
+        var err = new Error('api');
+        err.status = res.status;
+        err.code = data && data.error ? String(data.error) : (res.status === 401 ? 'unauthorized' : 'server');
+        err.similarTo = data && data.similar_to ? String(data.similar_to) : '';
+        err.results = data && Array.isArray(data.results) ? data.results : [];
+        err.lost = data && Array.isArray(data.lost) ? data.lost : [];
+        throw err;
+      });
+    }, function () {
+      if (timer) clearTimeout(timer);
+      var err = new Error('network');
+      err.status = 0; err.code = 'network';
+      throw err;
+    });
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var n = $('toast');
+    n.textContent = msg;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { n.textContent = ''; }, 5000);
+  }
+  function showError(msg) { $('error-text').textContent = msg; $('error').hidden = false; }
+  function hideError() { $('error').hidden = true; }
+
+  // ---------- login
+  function signOut(msg) {
+    state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
+    state.rowLine = null; state.page = 1;
+    closeDelete();
+    closeBulkDelete();
+    state.selected = {}; state.shownIds = []; state.pageIds = [];
+    $('select-note').textContent = '';
+    $('bulk-result').textContent = '';
+    $('bulk-action').value = '';
+    renderBulkValue();
+    renderSelectionUi();
+    clear($('tasks'));
+    clear($('summary'));
+    $('filter-search').value = '';
+    $('filter-status').value = '';
+    $('filter-hide-frozen').checked = false;
+    $('pager').hidden = true;
+    $('new-error').textContent = '';
+    $('new-form').reset();
+    store(KEY_STORE, null);
+    resetMeeting();
+    $('result').hidden = true;
+    clear($('result-body'));
+    $('suggestions-error').textContent = '';
+    $('app').hidden = true; $('logout').hidden = true; hideError();
+    $('login').hidden = false;
+    $('login-error').textContent = msg || '';
+    $('password').value = '';
+    $('password').setAttribute('aria-invalid', msg ? 'true' : 'false');
+    $('password').focus();
+  }
+  function enterApp() { $('login').hidden = true; $('app').hidden = false; $('logout').hidden = false; }
+  // Suggestions come from workflow D. A failure there stays in this section and never blocks the admin.
+  function loadSuggestions() {
+    $('suggestions-error').textContent = '';
+    return api({ action: 'list_suggestions' }).then(function (data) {
+      state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      renderSuggestions();
+    }, function () {
+      $('suggestions-error').textContent = MSG.suggestions_unavailable;
+    });
+  }
+  function loadSuggestionsIfIn() {
+    if (state.key && !$('app').hidden) loadSuggestions();
+  }
+  function onLogin(ev) {
+    ev.preventDefault();
+    var v = $('password').value.trim();
+    if (!v) { $('login-error').textContent = 'Digite a senha.'; $('password').setAttribute('aria-invalid', 'true'); return; }
+    state.key = v;
+    $('login-btn').disabled = true;
+    $('login-btn').textContent = 'Conferindo…';
+    $('login-error').textContent = '';
+    loadTasks(true).then(function () {
+      $('login-btn').disabled = false;
+      $('login-btn').textContent = 'Entrar';
+      loadSuggestionsIfIn();
+    });
+  }
+
+  // ---------- meeting summary (the text lives only in the field and in the request)
+  function resetMeeting() {
+    $('meeting-text').value = '';
+    $('meeting-file').value = '';
+    $('meeting-error').textContent = '';
+    $('meeting-text').setAttribute('aria-invalid', 'false');
+    $('meeting-date').setAttribute('aria-invalid', 'false');
+  }
+  function meetingError(code, field) {
+    $('meeting-error').textContent = MSG[code] || MSG.server;
+    if (field) { field.setAttribute('aria-invalid', 'true'); field.focus(); }
+  }
+  function onFile() {
+    var file = $('meeting-file').files[0];
+    $('meeting-error').textContent = '';
+    if (!file) return;
+    if (!/\.(md|txt)$/i.test(file.name) || file.size > MAX_FILE) { $('meeting-file').value = ''; meetingError('bad_file', $('meeting-file')); return; }
+    var reader = new FileReader();
+    reader.onload = function () {
+      var text = String(reader.result || '');
+      if (text.length > MAX_TEXT) { $('meeting-file').value = ''; meetingError('text_too_long', $('meeting-file')); return; }
+      $('meeting-text').value = text;
+    };
+    reader.onerror = function () { $('meeting-file').value = ''; meetingError('bad_file', $('meeting-file')); };
+    reader.readAsText(file);
+  }
+  function setBusy(on, label) {
+    state.busy = on;
+    $('analyze-btn').disabled = on;
+    $('analyze-btn').textContent = label || 'Analisar';
+    renderSuggestions();
+  }
+  function onAnalyze(ev) {
+    ev.preventDefault();
+    if (state.busy) return;
+    var textBox = $('meeting-text'), dateBox = $('meeting-date');
+    var text = textBox.value.trim(), date = dateBox.value;
+    textBox.setAttribute('aria-invalid', 'false');
+    dateBox.setAttribute('aria-invalid', 'false');
+    $('meeting-error').textContent = '';
+    hideError();
+    if (!text) { meetingError('empty_text', textBox); return; }
+    if (text.length > MAX_TEXT) { meetingError('text_too_long', textBox); return; }
+    if (!date || date > todaySP()) { meetingError('invalid_date', dateBox); return; }
+    setBusy(true, 'Analisando… pode levar até 2 min');
+    api({ action: 'analyze', meeting_date: date, text: text }, ANALYZE_TIMEOUT).then(function (data) {
+      resetMeeting();
+      state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      setBusy(false);
+      renderResult(data);
+      toast('Análise concluída.');
+    }, function (err) {
+      setBusy(false);
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'invalid_date') { meetingError('invalid_date', dateBox); return; }
+      if (err.code === 'empty_text' || err.code === 'text_too_long') { meetingError(err.code, textBox); return; }
+      // the text stays in the field; analysing again does not duplicate tasks
+      showError(messageFor(err));
+    });
+  }
+
+  // ---------- rendering (always textContent: AI and sheet values are never treated as HTML)
+  function renderResult(data) {
+    var box = $('result-body');
+    clear(box);
+    var created = Array.isArray(data.created) ? data.created : [];
+    var skipped = Array.isArray(data.skipped_duplicates) ? data.skipped_duplicates : [];
+    box.appendChild(el('p', 'hint', created.length === 1 ? '1 tarefa nova gravada em backlog.' : created.length + ' tarefas novas gravadas em backlog.'));
+    if (created.length) {
+      var ul = el('ul');
+      created.forEach(function (x) {
+        var li = el('li', 'item');
+        li.appendChild(el('span', 'item-id', x.task_id));
+        var title = el('p', 'item-title', x.title);
+        title.appendChild(el('span', 'tag', 'novo'));
+        li.appendChild(title);
+        var meta = [];
+        meta.push('Responsáveis: ' + (x.owners && x.owners.length ? x.owners.join(', ') : 'não informado'));
+        meta.push('Prazo: ' + (fmtDate(x.due_date) || 'não informado'));
+        li.appendChild(el('p', 'item-meta', meta.join(' · ')));
+        li.appendChild(el('blockquote', 'excerpt', x.excerpt));
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+    if (skipped.length) {
+      box.appendChild(el('h3', 'subhead', 'Não gravadas: já existem'));
+      var us = el('ul');
+      skipped.forEach(function (x) {
+        var li = el('li', 'item');
+        li.appendChild(el('p', 'item-title', x.title));
+        li.appendChild(el('p', 'item-meta', 'Parecida com ' + x.similar_to + ': ' + x.similar_title));
+        us.appendChild(li);
+      });
+      box.appendChild(us);
+    }
+    if (data.discarded) {
+      box.appendChild(el('p', 'hint', data.discarded === 1
+        ? '1 item da IA foi descartado: citava tarefa inexistente, vinha incompleto ou o trecho não estava no texto.'
+        : data.discarded + ' itens da IA foram descartados: citavam tarefa inexistente, vinham incompletos ou o trecho não estava no texto.'));
+    }
+    $('result').hidden = false;
+    $('result').focus();
+  }
+  function renderSuggestions() {
+    var list = $('suggestions');
+    clear(list);
+    $('no-suggestions').hidden = state.suggestions.length > 0;
+    state.suggestions.forEach(function (s) {
+      var li = el('li', 'item');
+      li.appendChild(el('span', 'item-id', s.task_id + (s.meeting_date ? ' · reunião de ' + fmtDate(s.meeting_date) : '')));
+      if (s.task_title) li.appendChild(el('p', 'item-meta', s.task_title));
+      li.appendChild(el('p', 'item-title', s.change_text));
+      li.appendChild(el('blockquote', 'excerpt', s.excerpt));
+      var acts = el('div', 'actions');
+      [['accepted', 'Aceitar', 'btn btn-small'], ['rejected', 'Recusar', 'btn btn-danger btn-small']].forEach(function (a) {
+        var b = el('button', a[2], a[1]);
+        b.type = 'button';
+        b.disabled = state.busy;
+        b.setAttribute('aria-label', a[1] + ': ' + s.task_id + ', ' + s.change_text);
+        b.addEventListener('click', function () { decide(s, a[0]); });
+        acts.appendChild(b);
+      });
+      li.appendChild(acts);
+      list.appendChild(li);
+    });
+  }
+  function decide(s, decision) {
+    if (state.busy) return;
+    hideError();
+    state.busy = true;
+    renderSuggestions();
+    api({ action: 'decide', suggestion_id: s.suggestion_id, decision: decision }).then(function () {
+      state.busy = false;
+      state.suggestions = state.suggestions.filter(function (x) { return x.suggestion_id !== s.suggestion_id; });
+      renderSuggestions();
+      toast(decision === 'accepted' ? 'Sugestão aceita. A tarefa não foi alterada: ajuste-a na lista.' : 'Sugestão recusada.');
+      $('suggestions-title').setAttribute('tabindex', '-1');
+      $('suggestions-title').focus();
+    }, function (err) {
+      state.busy = false;
+      renderSuggestions();
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'not_found' || err.code === 'already_decided') {
+        var msg = MSG[err.code];
+        loadSuggestions().then(function () { toast(msg); });
+        return;
+      }
+      showError(messageFor(err));
+    });
+  }
+
+  // ---------- tasks
+  function statusLabel(s) {
+    for (var i = 0; i < STATUS.length; i++) if (STATUS[i][0] === s) return STATUS[i][1];
+    return s || 'Sem status';
+  }
+  function sectionOf(id) {
+    if (GATES.indexOf(id) >= 0) return 'GATE';
+    if (/^M\d{4}-/.test(id)) return 'MTG';
+    var manual = /^MAN-([A-Z]+)-/.exec(id);    // manual tasks carry the pillar in the code: MAN-CMP-001
+    return manual ? manual[1] : id.split('-')[0];
+  }
+  function ownersOf(t) { return t.owners.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+  function isOpen(t) { return ['done', 'frozen', 'dropped'].indexOf(t.status) < 0; }
+  function isLate(t) { return !!t.due_date && t.due_date < todaySP() && isOpen(t); }
+  function statusClass(s) {
+    for (var i = 0; i < STATUS.length; i++) if (STATUS[i][0] === s) return 'st-' + s;
+    return 'st-none';
+  }
+  function plainText(v) { return String(v || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase(); }
+  function timeNow() {
+    try { return new Intl.DateTimeFormat('pt-BR', { timeZone: TZ, hour: '2-digit', minute: '2-digit' }).format(new Date()); }
+    catch (e) { return ''; }
+  }
+  function fillSelect(select, first, pairs) {
+    var keep = select.value;
+    clear(select);
+    var o = el('option', null, first); o.value = ''; select.appendChild(o);
+    pairs.forEach(function (p) { var op = el('option', null, p[1]); op.value = p[0]; select.appendChild(op); });
+    select.value = keep;
+    if (select.value !== keep) select.value = '';
+  }
+  // Also the login check: workflow F decides whether the password is valid.
+  function loadTasks(fromLogin) {
+    return api({ action: 'list_tasks' }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      if (fromLogin) { store(KEY_STORE, state.key); enterApp(); }
+      state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      state.forced = data.forced || null;
+      state.panel = data.panel || null;
+      renderFilters();
+      pruneSelection();
+      renderTasks();
+      renderForced();
+      renderSummary();
+    }, function (err) {
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (fromLogin) { $('login-error').textContent = messageFor(err); state.key = read(KEY_STORE) || ''; return; }
+      showError(messageFor(err));
+    });
+  }
+  function renderFilters() {
+    var owners = {};
+    state.tasks.forEach(function (t) { ownersOf(t).forEach(function (o) { owners[o] = true; }); });
+    fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto']].concat(STATUS));
+    fillSelect($('filter-owner'), 'Todos', Object.keys(owners).sort().map(function (o) { return [o, o]; }));
+    fillSelect($('filter-section'), 'Todos', SECTIONS);
+  }
+  function byId(a, b) { return a.task_id.localeCompare(b.task_id, 'pt-BR', { numeric: true }); }
+  function byDue(a, b) {
+    if (a.due_date === b.due_date) return byId(a, b);
+    if (!a.due_date) return 1;
+    if (!b.due_date) return -1;
+    return a.due_date < b.due_date ? -1 : 1;
+  }
+  function visibleTasks() {
+    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value;
+    var q = plainText($('filter-search').value).trim();
+    var hideFrozen = $('filter-hide-frozen').checked;
+    var found = state.tasks.filter(function (t) {
+      if (hideFrozen && t.status === 'frozen') return false;
+      if (st === 'open' ? !isOpen(t) : (st && t.status !== st)) return false;
+      if (ow && ownersOf(t).indexOf(ow) < 0) return false;
+      if (se && sectionOf(t.task_id) !== se) return false;
+      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note].join(' ')).indexOf(q) >= 0;
+    });
+    return found.sort($('filter-sort').value === 'id' ? byId : byDue);
+  }
+  function renderTasks() {
+    var list = $('tasks');
+    clear(list);
+    var shown = visibleTasks();
+    var pages = Math.max(1, Math.ceil(shown.length / PAGE_SIZE));
+    if (state.page > pages) state.page = pages;
+    var start = (state.page - 1) * PAGE_SIZE, end = Math.min(start + PAGE_SIZE, shown.length);
+    $('tasks-count').textContent = shown.length ? 'Mostrando ' + (start + 1) + '–' + end + ' de ' + shown.length : 'Nenhuma tarefa com esses filtros.';
+    state.shownIds = shown.map(function (t) { return t.task_id; });
+    state.pageIds = state.shownIds.slice(start, end);
+    shown.slice(start, end).forEach(function (t) { list.appendChild(taskRow(t)); });
+    renderSelectionUi();
+    $('pager').hidden = pages < 2;
+    $('page-info').textContent = 'Página ' + state.page + ' de ' + pages;
+    $('page-prev').disabled = state.page <= 1;
+    $('page-next').disabled = state.page >= pages;
+    $('toggle-all').textContent = $('filter-status').value === 'open' ? 'Ver todas' : 'Ver só em aberto';
+  }
+  function filtersChanged() {
+    state.page = 1;
+    var out = pruneSelection();
+    $('select-note').textContent = out ? outText(out) : '';
+    renderTasks();
+  }
+
+  // ---------- selection (kept across pages, never wider than the filtered list)
+  function isSelected(id) { return Object.prototype.hasOwnProperty.call(state.selected, id); }
+  function setSelected(id, on) { if (on) state.selected[id] = true; else delete state.selected[id]; }
+  function selectedIds() { return state.tasks.map(function (t) { return t.task_id; }).filter(isSelected); }
+  function pruneSelection() {
+    var visible = {}, out = 0;
+    visibleTasks().forEach(function (t) { visible[t.task_id] = true; });
+    Object.keys(state.selected).forEach(function (id) { if (!visible[id]) { delete state.selected[id]; out++; } });
+    return out;
+  }
+  function outText(n) {
+    return n === 1 ? '1 tarefa selecionada saiu da lista e foi desmarcada.' : n + ' tarefas selecionadas saíram da lista e foram desmarcadas.';
+  }
+  function renderSelectionUi() {
+    var n = Object.keys(state.selected).length;
+    var page = state.pageIds, shown = state.shownIds;
+    var pageAll = page.length > 0 && page.every(isSelected);
+    $('select-page').hidden = !page.length;
+    $('select-page').textContent = pageAll ? 'Desmarcar as desta página' : 'Selecionar as desta página';
+    var all = shown.length > 0 && shown.every(isSelected);
+    $('select-all').hidden = shown.length <= PAGE_SIZE;
+    $('select-all').disabled = all;
+    $('select-all').textContent = all ? 'Todas as ' + shown.length + ' do filtro atual estão selecionadas' : 'Selecionar todas as ' + shown.length + ' do filtro atual';
+    [].forEach.call(document.querySelectorAll('#tasks .pick'), function (c) { c.checked = isSelected(c.getAttribute('data-id')); });
+    $('bulk-bar').hidden = n === 0;
+    document.body.classList.toggle('has-bulk', n > 0);
+    $('bulk-count').textContent = n === 1 ? '1 selecionada' : n + ' selecionadas';
+  }
+  function onSelectPage() {
+    var on = !state.pageIds.every(isSelected);
+    state.pageIds.forEach(function (id) { setSelected(id, on); });
+    renderSelectionUi();
+  }
+  function onSelectAll() {
+    state.shownIds.forEach(function (id) { setSelected(id, true); });
+    renderSelectionUi();
+  }
+  function clearSelection() {
+    state.selected = {};
+    $('bulk-result').textContent = '';
+    renderSelectionUi();
+  }
+
+  // ---------- bulk actions (one request for all selected tasks)
+  var BULK_REASON = { not_found: 'não encontrada', row_not_found: 'linha não identificada com certeza', duplicate_id: 'código repetido na planilha',
+    not_saved: 'a planilha não confirmou', still_there: 'continua na planilha' };
+  // The server re-reads the sheet after deleting. This explains what it found instead of the expected result.
+  function notConfirmedText(err) {
+    var still = err.results.filter(function (r) { return r.error === 'still_there'; }).map(function (r) { return r.task_id; });
+    var parts = ['A planilha não confirmou a exclusão.'];
+    if (still.length) parts.push('Continuam lá: ' + still.join(', ') + '.');
+    if (err.lost.length) parts.push('Atenção: sumiram tarefas que não foram pedidas: ' + err.lost.join(', ') + '. Confira o histórico de versões da planilha.');
+    if (!still.length && !err.lost.length) parts.push('A aba não ficou com o número de linhas esperado. Confira a planilha.');
+    return parts.join(' ');
+  }
+  function failedText(list) {
+    return list.map(function (r) { return r.task_id + ' (' + (BULK_REASON[r.error] || r.error) + ')'; }).join(', ');
+  }
+  function renderBulkValue() {
+    var a = $('bulk-action').value, slot = $('bulk-value-slot');
+    var labels = { status: 'Novo status', show: 'Mostrar na Home', owners: 'Responsáveis (separados por vírgula)', due: 'Novo prazo' };
+    clear(slot);
+    $('bulk-value-box').hidden = !labels[a];
+    if (!labels[a]) return;
+    $('bulk-value-label').textContent = labels[a];
+    var c;
+    if (a === 'status' || a === 'show') {
+      c = el('select');
+      (a === 'status' ? STATUS : [['yes', 'Sim'], ['no', 'Não']]).forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; c.appendChild(o); });
+    } else {
+      c = el('input');
+      c.type = a === 'due' ? 'date' : 'text';
+      if (a === 'owners') c.maxLength = 200;
+    }
+    c.id = 'bulk-value';
+    slot.appendChild(c);
+  }
+  function setBulkBusy(on) {
+    state.bulkBusy = on;
+    ['bulk-apply', 'bulk-clear', 'bulk-action'].forEach(function (id) { $(id).disabled = on; });
+    if ($('bulk-value')) $('bulk-value').disabled = on;
+    $('bulk-apply').textContent = on ? 'Aplicando…' : 'Aplicar';
+  }
+  function bulkMsg(text) { $('bulk-result').textContent = text; }
+  function onBulkApply() {
+    var action = $('bulk-action').value, ids = selectedIds();
+    bulkMsg('');
+    if (!ids.length || state.bulkBusy) return;
+    if (!action) { bulkMsg('Escolha uma ação.'); $('bulk-action').focus(); return; }
+    if (ids.length > BULK_MAX) { bulkMsg(MSG.too_many); return; }
+    if (action === 'delete') {
+      if (ids.length > 25) { bulkMsg(MSG.too_many_delete); return; }
+      openBulkDelete(ids);
+      return;
+    }
+    var v = $('bulk-value').value, changes = {};
+    if (action === 'status') changes.status = v;
+    if (action === 'show') changes.show_to_scott = v;
+    if (action === 'owners') { if (!v.trim()) { bulkMsg('Escreva os responsáveis.'); $('bulk-value').focus(); return; } changes.owners = v; }
+    if (action === 'due') { if (!v) { bulkMsg('Escolha o prazo.'); $('bulk-value').focus(); return; } changes.due_date = v; }
+    hideError();
+    setBulkBusy(true);
+    api({ action: 'bulk_update', task_ids: ids, changes: changes }, BULK_TIMEOUT, ADMIN_API).then(function (data) {
+      setBulkBusy(false);
+      var byId = {};
+      (Array.isArray(data.tasks) ? data.tasks : []).forEach(function (t) { byId[t.task_id] = t; });
+      state.tasks = state.tasks.map(function (x) { return byId[x.task_id] || x; });
+      var results = Array.isArray(data.results) ? data.results : [];
+      var done = results.filter(function (r) { return r.ok; }).length;
+      var failed = results.filter(function (r) { return !r.ok; });
+      var msg = done === 1 ? '1 tarefa alterada.' : done + ' tarefas alteradas.';
+      if (failed.length) msg += ' Falharam: ' + failedText(failed) + '.';
+      renderFilters();
+      var out = pruneSelection();
+      renderTasks();
+      renderSummary();
+      if (out) msg += ' ' + outText(out);
+      bulkMsg(msg);
+      $('select-note').textContent = msg;
+      toast(msg);
+    }, function (err) {
+      setBulkBusy(false);
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      bulkMsg('Nada foi alterado. ' + messageFor(err));
+    });
+  }
+  function openBulkDelete(ids) {
+    state.bulkIds = ids.slice();
+    var gtm = state.tasks.filter(function (t) { return isSelected(t.task_id) && String(t.origin || '').toLowerCase() === 'gtm 90 dias'; }).length;
+    $('bulk-delete-title').textContent = ids.length === 1 ? 'Excluir 1 tarefa?' : 'Excluir ' + ids.length + ' tarefas?';
+    $('bulk-delete-text').textContent = gtm === 1 ? 'Destas, 1 é do GTM.' : 'Destas, ' + gtm + ' são do GTM.';
+    $('bulk-delete-word').value = '';
+    $('bulk-delete-error').textContent = '';
+    setBulkDeleteBusy(false);
+    $('bulk-delete-dialog').showModal();
+  }
+  function closeBulkDelete() {
+    state.bulkIds = [];
+    setBulkDeleteBusy(false);
+    if ($('bulk-delete-dialog').open) $('bulk-delete-dialog').close();
+  }
+  function wordOk() { return $('bulk-delete-word').value.trim() === 'EXCLUIR'; }
+  function setBulkDeleteBusy(on) {
+    state.bulkBusy = on;
+    $('bulk-delete-cancel').disabled = on;
+    $('bulk-delete-word').disabled = on;
+    $('bulk-delete-confirm').disabled = on || !wordOk();
+    $('bulk-delete-confirm').textContent = on ? 'Excluindo…' : 'Excluir';
+  }
+  function confirmBulkDelete() {
+    var ids = state.bulkIds;
+    if (!ids.length || state.bulkBusy || !wordOk()) return;
+    hideError();
+    $('bulk-delete-error').textContent = '';
+    setBulkDeleteBusy(true);
+    api({ action: 'bulk_delete', task_ids: ids }, BULK_TIMEOUT, ADMIN_API).then(function () {
+      var gone = {};
+      ids.forEach(function (id) { gone[id] = true; setSelected(id, false); });
+      state.tasks = state.tasks.filter(function (t) { return !gone[t.task_id]; });
+      closeBulkDelete();
+      renderFilters();
+      renderTasks();
+      renderSummary();
+      var msg = ids.length === 1 ? '1 tarefa excluída.' : ids.length + ' tarefas excluídas.';
+      bulkMsg('');
+      $('select-note').textContent = msg;
+      toast(msg);
+      $('tasks-title').focus();
+    }, function (err) {
+      setBulkDeleteBusy(false);
+      if (err.code === 'unauthorized') { closeBulkDelete(); signOut(MSG.unauthorized); return; }
+      var text;
+      if (err.code === 'delete_not_confirmed') {
+        text = notConfirmedText(err);
+      } else {
+        var failed = err.results.filter(function (r) { return !r.ok && r.error !== 'not_deleted'; });
+        text = 'Nada foi excluído. ' + (failed.length ? 'Problema em: ' + failedText(failed) + '.' : messageFor(err));
+      }
+      $('bulk-delete-error').textContent = text;
+      $('select-note').textContent = text;
+      $('bulk-delete-word').value = '';
+      setBulkDeleteBusy(false);
+      // reload so the list shows what the sheet really holds now
+      if (err.code === 'not_found' || err.code === 'delete_not_confirmed') loadTasks(false);
+    });
+  }
+  function goPage(delta) {
+    state.page += delta;
+    renderTasks();
+    $('tasks-title').focus();
+  }
+  function tile(cls, label, value, sub, small) {
+    var d = el('div', 'tile ' + cls);
+    d.appendChild(el('div', 'tile-label', label));
+    d.appendChild(el('div', 'tile-value' + (small ? ' small' : ''), value));
+    if (sub) d.appendChild(el('div', 'tile-sub', sub));
+    return d;
+  }
+  // Only counts what is on screen. The colour rule and the metrics stay on the server.
+  function renderSummary() {
+    var box = $('summary'), count = {};
+    clear(box);
+    state.tasks.forEach(function (t) { count[t.status] = (count[t.status] || 0) + 1; });
+    var active = state.tasks.filter(function (t) { return t.status !== 'frozen' && t.status !== 'dropped'; }).length;
+    box.appendChild(tile('st-none', 'Tarefas ativas', active, 'de ' + state.tasks.length + ' no total'));
+    STATUS.forEach(function (s) {
+      box.appendChild(tile('st-' + s[0], s[1], count[s[0]] || 0, (s[0] === 'frozen' || s[0] === 'dropped') ? 'fora do total ativo' : ''));
+    });
+    var p = state.panel || {};
+    var auto = COLOR_NAMES[p.auto_color] ? p.auto_color : '';
+    var forced = state.forced && COLOR_NAMES[state.forced.color] ? 'Forçada na semana: ' + COLOR_NAMES[state.forced.color] : '';
+    box.appendChild(tile(auto ? 'color-' + auto : 'st-none', 'Cor automática', auto ? COLOR_NAMES[auto] : 'Sem dados', forced, true));
+    box.appendChild(tile('st-none', 'Última atualização', fmtDate(p.updated_on) || 'Sem dados', p.week_start ? 'semana de ' + fmtDate(p.week_start) : '', true));
+  }
+  function labelled(labelText, control) {
+    var d = el('div');
+    var l = el('label', null, labelText);
+    l.htmlFor = control.id;
+    d.appendChild(l); d.appendChild(control);
+    return d;
+  }
+  function optionSelect(id, pairs, value, disabled) {
+    var s = el('select'); s.id = id; s.disabled = disabled;
+    pairs.forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; s.appendChild(o); });
+    s.value = value;
+    return s;
+  }
+  function field(id, labelText, control) {
+    var d = el('div', 'field');
+    var l = el('label', null, labelText);
+    l.htmlFor = id;
+    control.id = id;
+    d.appendChild(l); d.appendChild(control);
+    return d;
+  }
+  function taskRow(t) {
+    var li = el('li', 'task ' + statusClass(t.status));
+    li.setAttribute('data-task', t.task_id);
+    var saving = state.savingTask === t.task_id;
+    var main = el('div');
+    var head = el('div', 'task-head');
+    var pick = el('input', 'pick');
+    pick.type = 'checkbox';
+    pick.checked = isSelected(t.task_id);
+    pick.setAttribute('data-id', t.task_id);
+    pick.setAttribute('aria-label', 'Selecionar ' + t.task_id);
+    pick.addEventListener('change', function () { setSelected(t.task_id, pick.checked); renderSelectionUi(); });
+    head.appendChild(pick);
+    var section = sectionOf(t.task_id);
+    head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
+    head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
+    if (t.is_new === 'yes') head.appendChild(el('span', 'tag tag-new', 'novo'));
+    main.appendChild(head);
+    main.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA));
+    var meta = el('p', 'item-meta');
+    var late = isLate(t);
+    meta.appendChild(el('span', late ? 'due-late' : null, 'Prazo: ' + (fmtDate(t.due_date) || 'sem prazo') + (late ? ' (vencido)' : '')));
+    meta.appendChild(el('span', null, ' · Responsáveis: ' + (t.owners || 'não informado')));
+    main.appendChild(meta);
+    if (t.change_note) main.appendChild(el('p', 'item-meta', 'Nota: ' + t.change_note));
+    li.appendChild(main);
+
+    var controls = el('div', 'task-controls');
+    var statusSel = optionSelect('status-' + t.task_id, STATUS, t.status, saving);
+    statusSel.addEventListener('change', function () { saveTask(t, { status: statusSel.value }, statusSel.id); });
+    controls.appendChild(labelled('Status', statusSel));
+    var showSel = optionSelect('show-' + t.task_id, [['yes', 'Sim'], ['no', 'Não']], t.show_to_scott === 'yes' ? 'yes' : 'no', saving);
+    showSel.addEventListener('change', function () { saveTask(t, { show_to_scott: showSel.value }, showSel.id); });
+    controls.appendChild(labelled('Mostrar na Home', showSel));
+    li.appendChild(controls);
+
+    if (saving) li.appendChild(el('p', 'task-line saving', 'Salvando…'));
+    else if (state.rowLine && state.rowLine.id === t.task_id) li.appendChild(el('p', 'task-line ' + state.rowLine.kind, state.rowLine.text));
+
+    var det = el('details', 'task-edit');
+    det.appendChild(el('summary', null, 'Editar detalhes'));
+    var form = el('form', 'stack');
+    form.noValidate = true;
+    var owners = el('input'); owners.type = 'text'; owners.maxLength = 200; owners.value = t.owners;
+    form.appendChild(field('owners-' + t.task_id, 'Responsáveis (separados por vírgula)', owners));
+    var due = el('input'); due.type = 'date'; due.value = t.due_date;
+    form.appendChild(field('due-' + t.task_id, 'Prazo', due));
+    var note = el('textarea', 'short'); note.maxLength = 500; note.value = t.change_note;
+    form.appendChild(field('note-' + t.task_id, 'Nota de mudança (aparece na Home se a tarefa estiver visível)', note));
+    var save = el('button', 'btn btn-small', 'Salvar');
+    save.type = 'submit'; save.disabled = saving;
+    var acts = el('div', 'actions'); acts.appendChild(save);
+    var del = el('button', 'btn btn-danger btn-small', 'Excluir');
+    del.type = 'button'; del.disabled = saving;
+    del.setAttribute('aria-label', 'Excluir ' + t.task_id);
+    del.addEventListener('click', function () { askDelete(t); });
+    acts.appendChild(del);
+    form.appendChild(acts);
+    form.addEventListener('submit', function (ev) {
+      ev.preventDefault();
+      saveTask(t, { owners: owners.value, due_date: due.value, change_note: note.value }, 'owners-' + t.task_id);
+    });
+    det.appendChild(form);
+    li.appendChild(det);
+    return li;
+  }
+  function replaceRow(t, focusId) {
+    var old = document.querySelector('[data-task="' + t.task_id + '"]');
+    if (!old) return;
+    var row = taskRow(t);
+    old.parentNode.replaceChild(row, old);
+    if (focusId && $(focusId)) {
+      var d = $(focusId).closest('details');
+      if (d) d.open = true;
+      $(focusId).focus();
+    }
+  }
+  function saveTask(t, changes, focusId) {
+    if (state.savingTask) { renderTasks(); return; }
+    hideError();
+    state.savingTask = t.task_id;
+    replaceRow(t);
+    api({ action: 'update_task', task_id: t.task_id, changes: changes }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      state.savingTask = '';
+      state.tasks = state.tasks.map(function (x) { return x.task_id === data.task.task_id ? data.task : x; });
+      state.rowLine = { id: data.task.task_id, kind: 'saved', text: 'Salvo às ' + timeNow() + '.' };
+      renderFilters();
+      renderSummary();
+      if ($('filter-hide-frozen').checked && data.task.status === 'frozen') { renderTasks(); $('tasks-title').focus(); }
+      else replaceRow(data.task, focusId);
+      toast('Tarefa ' + data.task.task_id + ' salva.');
+    }, function (err) {
+      state.savingTask = '';
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      state.rowLine = { id: t.task_id, kind: 'failed', text: 'Não foi salvo. ' + messageFor(err) };
+      replaceRow(t, focusId);
+      showError(messageFor(err));
+    });
+  }
+
+  // ---------- delete (GTM tasks, and anything of unknown origin, need a second click)
+  var SECOND_CLICK_DELAY = 700;       // a double click on "Excluir" must not count as the confirmation
+  var armTimer = null;
+  function needsSecondClick(t) {
+    var origin = String(t.origin || '').toLowerCase();
+    return origin !== 'manual' && origin.indexOf('reunião') !== 0;
+  }
+  function askDelete(t) {
+    clearTimeout(armTimer);
+    state.deleting = t;
+    state.deleteArmed = false;
+    setDeleteBusy(false);
+    $('delete-id').textContent = t.task_id;
+    $('delete-name').textContent = t.title_pt_BR || t.title_en_CA;
+    $('delete-gtm').hidden = !needsSecondClick(t);
+    $('delete-second').hidden = true;
+    $('delete-error').textContent = '';
+    $('delete-dialog').showModal();
+  }
+  function closeDelete() {
+    clearTimeout(armTimer);
+    state.deleting = null;
+    state.deleteArmed = false;
+    setDeleteBusy(false);
+    if ($('delete-dialog').open) $('delete-dialog').close();
+  }
+  function setDeleteBusy(on) {
+    state.deleteBusy = on;
+    $('delete-confirm').disabled = on;
+    $('delete-cancel').disabled = on;
+    $('delete-confirm').textContent = on ? 'Excluindo…' : (state.deleteArmed ? 'Confirmar exclusão' : 'Excluir');
+  }
+  function armDelete() {
+    state.deleteArmed = true;
+    $('delete-confirm').textContent = 'Confirmar exclusão';
+    $('delete-second').hidden = false;
+    $('delete-confirm').disabled = true;
+    $('delete-cancel').focus();
+    armTimer = setTimeout(function () { $('delete-confirm').disabled = false; }, SECOND_CLICK_DELAY);
+  }
+  function confirmDelete() {
+    var t = state.deleting;
+    if (!t || state.deleteBusy) return;
+    if (needsSecondClick(t) && !state.deleteArmed) { armDelete(); return; }
+    hideError();
+    setDeleteBusy(true);
+    $('delete-error').textContent = '';
+    api({ action: 'delete_task', task_id: t.task_id }, DEFAULT_TIMEOUT, ADMIN_API).then(function () {
+      closeDelete();
+      setSelected(t.task_id, false);
+      state.tasks = state.tasks.filter(function (x) { return x.task_id !== t.task_id; });
+      renderFilters();
+      renderTasks();
+      renderSummary();
+      toast('Tarefa ' + t.task_id + ' excluída.');
+      $('tasks-title').focus();
+    }, function (err) {
+      setDeleteBusy(false);
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'not_found') {
+        closeDelete();
+        loadTasks(false).then(function () { toast(MSG.task_gone); });
+        return;
+      }
+      if (err.code === 'delete_not_confirmed') {
+        $('delete-error').textContent = notConfirmedText(err);
+        loadTasks(false);
+        return;
+      }
+      $('delete-error').textContent = messageFor(err);
+    });
+  }
+
+  // ---------- new manual task (the server generates the code)
+  function newError(code, focusId, extra) {
+    $('new-error').textContent = (MSG[code] || MSG.server) + (extra || '');
+    if (focusId) { $(focusId).setAttribute('aria-invalid', 'true'); $(focusId).focus(); }
+  }
+  function resetNewForm() {
+    $('new-form').reset();
+    ['new-title-pt', 'new-section'].forEach(function (id) { $(id).setAttribute('aria-invalid', 'false'); });
+  }
+  function onCreate(ev) {
+    ev.preventDefault();
+    var title = $('new-title-pt').value.trim(), section = $('new-section').value;
+    $('new-error').textContent = '';
+    ['new-title-pt', 'new-section'].forEach(function (id) { $(id).setAttribute('aria-invalid', 'false'); });
+    if (!title) { newError('title_required', 'new-title-pt'); return; }
+    if (!section) { newError('invalid_section', 'new-section'); return; }
+    hideError();
+    $('new-btn').disabled = true;
+    $('new-btn').textContent = 'Criando…';
+    api({ action: 'create_task', task: {
+      title_pt_BR: title, title_en_CA: $('new-title-en').value, owners: $('new-owners').value, due_date: $('new-due').value,
+      section: section, status: $('new-status').value, show_to_scott: $('new-show').value
+    } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      $('new-btn').disabled = false;
+      $('new-btn').textContent = 'Criar tarefa';
+      state.tasks.push(data.task);
+      state.rowLine = { id: data.task.task_id, kind: 'saved', text: 'Criada às ' + timeNow() + '.' };
+      resetNewForm();
+      renderFilters();
+      renderTasks();
+      renderSummary();
+      toast('Tarefa ' + data.task.task_id + ' criada.');
+    }, function (err) {
+      $('new-btn').disabled = false;
+      $('new-btn').textContent = 'Criar tarefa';
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'duplicate_title') { newError('duplicate_title', 'new-title-pt', err.similarTo ? ' Código: ' + err.similarTo + '.' : ''); return; }
+      if (err.code === 'title_required' || err.code === 'title_too_long') { newError(err.code, 'new-title-pt'); return; }
+      if (err.code === 'invalid_section') { newError(err.code, 'new-section'); return; }
+      newError(err.code);
+    });
+  }
+
+  // ---------- forced colour and publish
+  function renderForced() {
+    var f = state.forced;
+    if (!f) return;
+    $('forced-week').textContent = 'Vale só para a semana de ' + fmtDate(f.week_start) + '. O cálculo automático continua gravado.';
+    $('forced-color').value = f.color || '';
+    $('forced-reason').value = f.reason || '';
+  }
+  function onForced(ev) {
+    ev.preventDefault();
+    var color = $('forced-color').value, reason = $('forced-reason').value.trim();
+    $('forced-error').textContent = '';
+    $('forced-reason').setAttribute('aria-invalid', 'false');
+    if (color && !reason) { $('forced-error').textContent = MSG.reason_required; $('forced-reason').setAttribute('aria-invalid', 'true'); $('forced-reason').focus(); return; }
+    $('forced-btn').disabled = true;
+    api({ action: 'set_forced_color', color: color, reason: reason }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      $('forced-btn').disabled = false;
+      state.forced = data.forced;
+      renderForced();
+      renderSummary();
+      toast(color ? 'Cor forçada salva. Vale a partir da próxima atualização do painel.' : 'Cor automática restaurada.');
+    }, function (err) {
+      $('forced-btn').disabled = false;
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      showError(messageFor(err));
+    });
+  }
+  function onPublish() {
+    if (!window.confirm('Atualizar o painel agora? Isto grava uma linha nova na planilha e chama a IA.')) return;
+    hideError();
+    $('publish-btn').disabled = true;
+    api({ action: 'publish' }, DEFAULT_TIMEOUT, ADMIN_API).then(function () {
+      toast('Atualização iniciada. O resultado chega em alguns minutos, por e-mail.');
+      setTimeout(function () { $('publish-btn').disabled = false; }, 60000);
+    }, function (err) {
+      $('publish-btn').disabled = false;
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      showError(messageFor(err));
+    });
+  }
+
+  // ---------- start
+  function init() {
+    ['filter-status', 'filter-owner', 'filter-section', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
+    $('filter-search').addEventListener('input', filtersChanged);
+    $('toggle-all').addEventListener('click', function () {
+      $('filter-status').value = $('filter-status').value === 'open' ? '' : 'open';
+      filtersChanged();
+    });
+    $('page-prev').addEventListener('click', function () { goPage(-1); });
+    $('page-next').addEventListener('click', function () { goPage(1); });
+    fillSelect($('new-section'), 'Escolha', SECTIONS.filter(function (s) { return s[0] !== 'GATE' && s[0] !== 'MTG'; }));
+    STATUS.forEach(function (s) { var o = el('option', null, s[1]); o.value = s[0]; $('new-status').appendChild(o); });
+    $('new-form').addEventListener('submit', onCreate);
+    $('select-page').addEventListener('click', onSelectPage);
+    $('select-all').addEventListener('click', onSelectAll);
+    $('bulk-action').addEventListener('change', function () { bulkMsg(''); renderBulkValue(); });
+    $('bulk-apply').addEventListener('click', onBulkApply);
+    $('bulk-clear').addEventListener('click', clearSelection);
+    $('bulk-delete-word').addEventListener('input', function () { setBulkDeleteBusy(false); });
+    $('bulk-delete-cancel').addEventListener('click', closeBulkDelete);
+    $('bulk-delete-confirm').addEventListener('click', confirmBulkDelete);
+    $('bulk-delete-dialog').addEventListener('cancel', function (ev) {   // Esc
+      if (state.bulkBusy) ev.preventDefault(); else state.bulkIds = [];
+    });
+    $('delete-cancel').addEventListener('click', closeDelete);
+    $('delete-confirm').addEventListener('click', confirmDelete);
+    $('delete-dialog').addEventListener('cancel', function (ev) {   // Esc
+      if (state.deleteBusy) ev.preventDefault(); else state.deleting = null;
+    });
+    $('forced-form').addEventListener('submit', onForced);
+    $('publish-btn').addEventListener('click', onPublish);
+    $('meeting-date').max = todaySP();
+    $('meeting-date').value = todaySP();
+    $('login-form').addEventListener('submit', onLogin);
+    $('logout').addEventListener('click', function () { signOut(''); });
+    $('meeting-form').addEventListener('submit', onAnalyze);
+    $('meeting-file').addEventListener('change', onFile);
+    state.key = read(KEY_STORE) || '';
+    if (!state.key) { $('login').hidden = false; return; }
+    enterApp();
+    loadTasks(false).then(loadSuggestionsIfIn);
+  }
+  init();
+})();
+</script>
+</body>
+</html>
