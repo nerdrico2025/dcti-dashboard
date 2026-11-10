@@ -340,6 +340,27 @@
     .step-label { font-size: 9pt; margin-top: 0.5mm; line-height: 1.25; }
     .step-top { gap: 1mm 2mm; }
     .status, .badge { font-size: 8.5pt; }
+    /* task format (kpi.tasks): taller boxes; tighten so the funnel stays on page 1 */
+    .has-tasks .strategy-item p { font-size: 9.5pt; line-height: 1.28; }
+    .has-tasks section, .has-tasks .main-section { margin-top: 2.5mm; }
+    .has-tasks .box .lines, .has-tasks .box-how .lines { font-size: 9.5pt; line-height: 1.28; }
+    .has-tasks .lines li + li { margin-top: 0.8mm; }
+    .has-tasks .box-head { margin-bottom: 1.5mm; }
+    .has-tasks .box-status { margin-bottom: 1.5mm; }
+    .has-tasks .forced-note { margin: 0 0 1.5mm; font-size: 9pt; }
+    .has-tasks .how-stats { margin-top: 2mm; font-size: 9.5pt; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 0 5mm; }
+    .has-tasks .how-stats > p { grid-column: 1 / -1; }
+    .has-tasks .how-stats p + p { margin-top: 0.5mm; }
+    .has-tasks .how-bar { margin-top: 1mm; }
+    .has-tasks .how-bar-head { font-size: 9pt; }
+    .has-tasks .how-bar-track { margin-top: 0.6mm; height: 1.6mm; }
+    .has-tasks .how-diff { margin-top: 1.2mm; }
+    .has-tasks .needs { margin-top: 2.5mm; padding: 1.2mm 4mm; }
+    .has-tasks .needs-body { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0 2.5mm; }
+    .has-tasks .needs-body, .has-tasks .needs h2 { font-size: 9.5pt; }
+    .has-tasks .product-card { padding-top: 2.5mm; padding-bottom: 2.5mm; }
+    .has-tasks .product-card h3 { margin-bottom: 1mm; }
+    .has-tasks .step .value { font-size: 17pt; }
   }
 </style>
 </head>
@@ -746,6 +767,7 @@
     // boxes (at most 3 items visible each)
     // Weeks with kpi.tasks use the task lists; older weeks keep the AI texts.
     var tasks = isObj(kpi.tasks) ? kpi.tasks : null;
+    $('content').classList.toggle('has-tasks', !!tasks);   // print-only: tighter A4 layout for the task format
     $('box-executing-title').textContent = L('box.executing');
     boxLines($('box-executing'), tasks ? executingLines(tasks) : aiText(snap, 'executing_text'));
     $('box-how-title').textContent = L('box.how_its_going');
