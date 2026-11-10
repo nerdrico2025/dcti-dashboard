@@ -376,7 +376,7 @@
               <option value="show">Mostrar na Home</option>
               <option value="owners">Definir responsáveis</option>
               <option value="due">Definir prazo</option>
-              <option value="delete">Excluir</option>
+              <option value="delete">Excluir (até 25 por vez)</option>
             </select>
           </div>
           <div class="field" id="bulk-value-box" hidden>
@@ -431,6 +431,8 @@
     row_not_found: 'Não foi possível identificar a linha com certeza. Nada foi excluído.',
     task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.',
     too_many: 'Selecione no máximo 100 tarefas por vez.',
+    too_many_delete: 'Exclua no máximo 25 tarefas por vez. Cada linha é uma gravação no Google, que limita as gravações por minuto.',
+    write_not_confirmed: 'A planilha não confirmou a gravação. Recarregue a página e confira.',
     no_tasks: 'Nenhuma tarefa selecionada.'
   };
 
@@ -484,6 +486,7 @@
         err.code = data && data.error ? String(data.error) : (res.status === 401 ? 'unauthorized' : 'server');
         err.similarTo = data && data.similar_to ? String(data.similar_to) : '';
         err.results = data && Array.isArray(data.results) ? data.results : [];
+        err.lost = data && Array.isArray(data.lost) ? data.lost : [];
         throw err;
       });
     }, function () {
@@ -862,7 +865,17 @@
   }
 
   // ---------- bulk actions (one request for all selected tasks)
-  var BULK_REASON = { not_found: 'não encontrada', row_not_found: 'linha não identificada com certeza', duplicate_id: 'código repetido na planilha' };
+  var BULK_REASON = { not_found: 'não encontrada', row_not_found: 'linha não identificada com certeza', duplicate_id: 'código repetido na planilha',
+    not_saved: 'a planilha não confirmou', still_there: 'continua na planilha' };
+  // The server re-reads the sheet after deleting. This explains what it found instead of the expected result.
+  function notConfirmedText(err) {
+    var still = err.results.filter(function (r) { return r.error === 'still_there'; }).map(function (r) { return r.task_id; });
+    var parts = ['A planilha não confirmou a exclusão.'];
+    if (still.length) parts.push('Continuam lá: ' + still.join(', ') + '.');
+    if (err.lost.length) parts.push('Atenção: sumiram tarefas que não foram pedidas: ' + err.lost.join(', ') + '. Confira o histórico de versões da planilha.');
+    if (!still.length && !err.lost.length) parts.push('A aba não ficou com o número de linhas esperado. Confira a planilha.');
+    return parts.join(' ');
+  }
   function failedText(list) {
     return list.map(function (r) { return r.task_id + ' (' + (BULK_REASON[r.error] || r.error) + ')'; }).join(', ');
   }
@@ -898,7 +911,11 @@
     if (!ids.length || state.bulkBusy) return;
     if (!action) { bulkMsg('Escolha uma ação.'); $('bulk-action').focus(); return; }
     if (ids.length > BULK_MAX) { bulkMsg(MSG.too_many); return; }
-    if (action === 'delete') { openBulkDelete(ids); return; }
+    if (action === 'delete') {
+      if (ids.length > 25) { bulkMsg(MSG.too_many_delete); return; }
+      openBulkDelete(ids);
+      return;
+    }
     var v = $('bulk-value').value, changes = {};
     if (action === 'status') changes.status = v;
     if (action === 'show') changes.show_to_scott = v;
@@ -975,11 +992,19 @@
     }, function (err) {
       setBulkDeleteBusy(false);
       if (err.code === 'unauthorized') { closeBulkDelete(); signOut(MSG.unauthorized); return; }
-      var failed = err.results.filter(function (r) { return !r.ok && r.error !== 'not_deleted'; });
-      $('bulk-delete-error').textContent = 'Nada foi excluído. ' + (failed.length ? 'Problema em: ' + failedText(failed) + '.' : messageFor(err));
+      var text;
+      if (err.code === 'delete_not_confirmed') {
+        text = notConfirmedText(err);
+      } else {
+        var failed = err.results.filter(function (r) { return !r.ok && r.error !== 'not_deleted'; });
+        text = 'Nada foi excluído. ' + (failed.length ? 'Problema em: ' + failedText(failed) + '.' : messageFor(err));
+      }
+      $('bulk-delete-error').textContent = text;
+      $('select-note').textContent = text;
       $('bulk-delete-word').value = '';
       setBulkDeleteBusy(false);
-      if (err.code === 'not_found') loadTasks(false);
+      // reload so the list shows what the sheet really holds now
+      if (err.code === 'not_found' || err.code === 'delete_not_confirmed') loadTasks(false);
     });
   }
   function goPage(delta) {
@@ -1193,6 +1218,11 @@
       if (err.code === 'not_found') {
         closeDelete();
         loadTasks(false).then(function () { toast(MSG.task_gone); });
+        return;
+      }
+      if (err.code === 'delete_not_confirmed') {
+        $('delete-error').textContent = notConfirmedText(err);
+        loadTasks(false);
         return;
       }
       $('delete-error').textContent = messageFor(err);
