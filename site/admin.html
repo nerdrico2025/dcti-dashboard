@@ -142,6 +142,19 @@
   .confirm .actions { margin-top: 16px; justify-content: flex-end; }
   .check { display: flex; align-items: center; gap: 8px; min-height: 44px; align-self: end; font-size: 0.9375rem; font-weight: 600; color: var(--muted); cursor: pointer; }
   .check input { width: 20px; height: 20px; margin: 0; }
+  .pick { width: 20px; height: 20px; margin: 0 2px 0 0; cursor: pointer; }
+  .select-bar { margin-top: 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 0 18px; }
+  .select-bar .link-btn { min-height: 36px; padding: 6px 0; }
+  .select-bar .link-btn:disabled { color: var(--muted); text-decoration: none; opacity: 1; }
+  .select-note { margin-top: 2px; color: var(--muted); font-size: 0.9375rem; font-weight: 600; }
+  .bulk-bar { position: fixed; left: 0; right: 0; bottom: 0; z-index: 9; background: #fff; border-top: 1px solid var(--line); box-shadow: 0 -6px 20px rgba(16, 24, 40, 0.12); padding: 10px 16px 12px; }
+  .bulk-inner { max-width: 1040px; margin: 0 auto; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; }
+  .bulk-inner .field { min-width: 12rem; }
+  .bulk-count { align-self: center; font-weight: 750; min-width: 8rem; }
+  .bulk-result { max-width: 1040px; margin: 6px auto 0; font-size: 0.875rem; font-weight: 600; }
+  .bulk-result:empty { display: none; }
+  body.has-bulk .wrap { padding-bottom: 200px; }
+  body.has-bulk .toast { bottom: 128px; }
 
   @media (max-width: 640px) {
     .filters, .task-controls, .task { grid-template-columns: 1fr; }
@@ -152,6 +165,9 @@
     .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
     .pager .btn { flex: 1 1 8rem; }
     .task .task-controls select { min-height: 44px; }
+    .bulk-inner .field { flex: 1 1 100%; }
+    body.has-bulk .wrap { padding-bottom: 320px; }
+    body.has-bulk .toast { bottom: 260px; }
     .task-edit > summary { padding: 10px 0; }
   }
 </style>
@@ -209,6 +225,11 @@
           <p class="hint" id="tasks-count" role="status" aria-live="polite"></p>
           <button type="button" class="btn btn-quiet btn-small" id="toggle-all">Ver todas</button>
         </div>
+        <div class="select-bar">
+          <button type="button" class="link-btn" id="select-page">Selecionar as desta página</button>
+          <button type="button" class="link-btn" id="select-all" hidden></button>
+        </div>
+        <p class="select-note" id="select-note" role="status" aria-live="polite"></p>
         <ul id="tasks"></ul>
         <div class="pager" id="pager" hidden>
           <button type="button" class="btn btn-quiet btn-small" id="page-prev">Anterior</button>
@@ -327,6 +348,46 @@
           <button type="button" class="btn btn-danger" id="delete-confirm">Excluir</button>
         </div>
       </dialog>
+
+      <dialog class="confirm" id="bulk-delete-dialog" aria-labelledby="bulk-delete-title" aria-describedby="bulk-delete-text bulk-delete-gtm">
+        <h2 id="bulk-delete-title"></h2>
+        <p class="hint" id="bulk-delete-text"></p>
+        <p class="warning" id="bulk-delete-gtm">Excluir tira as tarefas da base do "% do GTM original". "Descartada" mantém a linha na planilha, mas também sai das contas.</p>
+        <p class="hint">As linhas saem da planilha e não dá para desfazer por aqui.</p>
+        <div class="field" style="margin-top: 12px">
+          <label for="bulk-delete-word">Digite EXCLUIR para confirmar</label>
+          <input type="text" id="bulk-delete-word" autocomplete="off" autocapitalize="characters" spellcheck="false" autofocus aria-describedby="bulk-delete-error">
+        </div>
+        <p class="error-text" id="bulk-delete-error" role="alert"></p>
+        <div class="actions">
+          <button type="button" class="btn btn-quiet" id="bulk-delete-cancel">Cancelar</button>
+          <button type="button" class="btn btn-danger" id="bulk-delete-confirm" disabled>Excluir</button>
+        </div>
+      </dialog>
+
+      <div class="bulk-bar" id="bulk-bar" role="region" aria-label="Ações nas tarefas selecionadas" hidden>
+        <div class="bulk-inner">
+          <p class="bulk-count" id="bulk-count"></p>
+          <div class="field">
+            <label for="bulk-action">Ação</label>
+            <select id="bulk-action">
+              <option value="">Escolha</option>
+              <option value="status">Alterar status</option>
+              <option value="show">Mostrar na Home</option>
+              <option value="owners">Definir responsáveis</option>
+              <option value="due">Definir prazo</option>
+              <option value="delete">Excluir</option>
+            </select>
+          </div>
+          <div class="field" id="bulk-value-box" hidden>
+            <label for="bulk-value" id="bulk-value-label"></label>
+            <span id="bulk-value-slot"></span>
+          </div>
+          <button type="button" class="btn btn-small" id="bulk-apply">Aplicar</button>
+          <button type="button" class="btn btn-quiet btn-small" id="bulk-clear">Limpar seleção</button>
+        </div>
+        <p class="bulk-result" id="bulk-result" role="status" aria-live="polite"></p>
+      </div>
     </div>
   </main>
   <noscript><p class="notice">Esta tela precisa de JavaScript.</p></noscript>
@@ -368,7 +429,9 @@
     duplicate_title: 'Já existe uma tarefa com este título.',
     invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.',
     row_not_found: 'Não foi possível identificar a linha com certeza. Nada foi excluído.',
-    task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.'
+    task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.',
+    too_many: 'Selecione no máximo 100 tarefas por vez.',
+    no_tasks: 'Nenhuma tarefa selecionada.'
   };
 
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
@@ -378,8 +441,10 @@
   var PILLAR_CODES = ['FND', 'WLX', 'CNT', 'CMP', 'AUD', 'TOP', 'STL', 'GATE', 'MTG'];
   var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
   var PAGE_SIZE = 10;
+  var BULK_MAX = 100, BULK_TIMEOUT = 60000;
 
-  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1 };
+  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
+    selected: {}, shownIds: [], pageIds: [], bulkIds: [], bulkBusy: false };
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
@@ -418,6 +483,7 @@
         err.status = res.status;
         err.code = data && data.error ? String(data.error) : (res.status === 401 ? 'unauthorized' : 'server');
         err.similarTo = data && data.similar_to ? String(data.similar_to) : '';
+        err.results = data && Array.isArray(data.results) ? data.results : [];
         throw err;
       });
     }, function () {
@@ -443,6 +509,13 @@
     state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
     state.rowLine = null; state.page = 1;
     closeDelete();
+    closeBulkDelete();
+    state.selected = {}; state.shownIds = []; state.pageIds = [];
+    $('select-note').textContent = '';
+    $('bulk-result').textContent = '';
+    $('bulk-action').value = '';
+    renderBulkValue();
+    renderSelectionUi();
     clear($('tasks'));
     clear($('summary'));
     $('filter-search').value = '';
@@ -683,6 +756,7 @@
       state.forced = data.forced || null;
       state.panel = data.panel || null;
       renderFilters();
+      pruneSelection();
       renderTasks();
       renderForced();
       renderSummary();
@@ -727,14 +801,187 @@
     if (state.page > pages) state.page = pages;
     var start = (state.page - 1) * PAGE_SIZE, end = Math.min(start + PAGE_SIZE, shown.length);
     $('tasks-count').textContent = shown.length ? 'Mostrando ' + (start + 1) + '–' + end + ' de ' + shown.length : 'Nenhuma tarefa com esses filtros.';
+    state.shownIds = shown.map(function (t) { return t.task_id; });
+    state.pageIds = state.shownIds.slice(start, end);
     shown.slice(start, end).forEach(function (t) { list.appendChild(taskRow(t)); });
+    renderSelectionUi();
     $('pager').hidden = pages < 2;
     $('page-info').textContent = 'Página ' + state.page + ' de ' + pages;
     $('page-prev').disabled = state.page <= 1;
     $('page-next').disabled = state.page >= pages;
     $('toggle-all').textContent = $('filter-status').value === 'open' ? 'Ver todas' : 'Ver só em aberto';
   }
-  function filtersChanged() { state.page = 1; renderTasks(); }
+  function filtersChanged() {
+    state.page = 1;
+    var out = pruneSelection();
+    $('select-note').textContent = out ? outText(out) : '';
+    renderTasks();
+  }
+
+  // ---------- selection (kept across pages, never wider than the filtered list)
+  function isSelected(id) { return Object.prototype.hasOwnProperty.call(state.selected, id); }
+  function setSelected(id, on) { if (on) state.selected[id] = true; else delete state.selected[id]; }
+  function selectedIds() { return state.tasks.map(function (t) { return t.task_id; }).filter(isSelected); }
+  function pruneSelection() {
+    var visible = {}, out = 0;
+    visibleTasks().forEach(function (t) { visible[t.task_id] = true; });
+    Object.keys(state.selected).forEach(function (id) { if (!visible[id]) { delete state.selected[id]; out++; } });
+    return out;
+  }
+  function outText(n) {
+    return n === 1 ? '1 tarefa selecionada saiu da lista e foi desmarcada.' : n + ' tarefas selecionadas saíram da lista e foram desmarcadas.';
+  }
+  function renderSelectionUi() {
+    var n = Object.keys(state.selected).length;
+    var page = state.pageIds, shown = state.shownIds;
+    var pageAll = page.length > 0 && page.every(isSelected);
+    $('select-page').hidden = !page.length;
+    $('select-page').textContent = pageAll ? 'Desmarcar as desta página' : 'Selecionar as desta página';
+    var all = shown.length > 0 && shown.every(isSelected);
+    $('select-all').hidden = shown.length <= PAGE_SIZE;
+    $('select-all').disabled = all;
+    $('select-all').textContent = all ? 'Todas as ' + shown.length + ' do filtro atual estão selecionadas' : 'Selecionar todas as ' + shown.length + ' do filtro atual';
+    [].forEach.call(document.querySelectorAll('#tasks .pick'), function (c) { c.checked = isSelected(c.getAttribute('data-id')); });
+    $('bulk-bar').hidden = n === 0;
+    document.body.classList.toggle('has-bulk', n > 0);
+    $('bulk-count').textContent = n === 1 ? '1 selecionada' : n + ' selecionadas';
+  }
+  function onSelectPage() {
+    var on = !state.pageIds.every(isSelected);
+    state.pageIds.forEach(function (id) { setSelected(id, on); });
+    renderSelectionUi();
+  }
+  function onSelectAll() {
+    state.shownIds.forEach(function (id) { setSelected(id, true); });
+    renderSelectionUi();
+  }
+  function clearSelection() {
+    state.selected = {};
+    $('bulk-result').textContent = '';
+    renderSelectionUi();
+  }
+
+  // ---------- bulk actions (one request for all selected tasks)
+  var BULK_REASON = { not_found: 'não encontrada', row_not_found: 'linha não identificada com certeza', duplicate_id: 'código repetido na planilha' };
+  function failedText(list) {
+    return list.map(function (r) { return r.task_id + ' (' + (BULK_REASON[r.error] || r.error) + ')'; }).join(', ');
+  }
+  function renderBulkValue() {
+    var a = $('bulk-action').value, slot = $('bulk-value-slot');
+    var labels = { status: 'Novo status', show: 'Mostrar na Home', owners: 'Responsáveis (separados por vírgula)', due: 'Novo prazo' };
+    clear(slot);
+    $('bulk-value-box').hidden = !labels[a];
+    if (!labels[a]) return;
+    $('bulk-value-label').textContent = labels[a];
+    var c;
+    if (a === 'status' || a === 'show') {
+      c = el('select');
+      (a === 'status' ? STATUS : [['yes', 'Sim'], ['no', 'Não']]).forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; c.appendChild(o); });
+    } else {
+      c = el('input');
+      c.type = a === 'due' ? 'date' : 'text';
+      if (a === 'owners') c.maxLength = 200;
+    }
+    c.id = 'bulk-value';
+    slot.appendChild(c);
+  }
+  function setBulkBusy(on) {
+    state.bulkBusy = on;
+    ['bulk-apply', 'bulk-clear', 'bulk-action'].forEach(function (id) { $(id).disabled = on; });
+    if ($('bulk-value')) $('bulk-value').disabled = on;
+    $('bulk-apply').textContent = on ? 'Aplicando…' : 'Aplicar';
+  }
+  function bulkMsg(text) { $('bulk-result').textContent = text; }
+  function onBulkApply() {
+    var action = $('bulk-action').value, ids = selectedIds();
+    bulkMsg('');
+    if (!ids.length || state.bulkBusy) return;
+    if (!action) { bulkMsg('Escolha uma ação.'); $('bulk-action').focus(); return; }
+    if (ids.length > BULK_MAX) { bulkMsg(MSG.too_many); return; }
+    if (action === 'delete') { openBulkDelete(ids); return; }
+    var v = $('bulk-value').value, changes = {};
+    if (action === 'status') changes.status = v;
+    if (action === 'show') changes.show_to_scott = v;
+    if (action === 'owners') { if (!v.trim()) { bulkMsg('Escreva os responsáveis.'); $('bulk-value').focus(); return; } changes.owners = v; }
+    if (action === 'due') { if (!v) { bulkMsg('Escolha o prazo.'); $('bulk-value').focus(); return; } changes.due_date = v; }
+    hideError();
+    setBulkBusy(true);
+    api({ action: 'bulk_update', task_ids: ids, changes: changes }, BULK_TIMEOUT, ADMIN_API).then(function (data) {
+      setBulkBusy(false);
+      var byId = {};
+      (Array.isArray(data.tasks) ? data.tasks : []).forEach(function (t) { byId[t.task_id] = t; });
+      state.tasks = state.tasks.map(function (x) { return byId[x.task_id] || x; });
+      var results = Array.isArray(data.results) ? data.results : [];
+      var done = results.filter(function (r) { return r.ok; }).length;
+      var failed = results.filter(function (r) { return !r.ok; });
+      var msg = done === 1 ? '1 tarefa alterada.' : done + ' tarefas alteradas.';
+      if (failed.length) msg += ' Falharam: ' + failedText(failed) + '.';
+      renderFilters();
+      var out = pruneSelection();
+      renderTasks();
+      renderSummary();
+      if (out) msg += ' ' + outText(out);
+      bulkMsg(msg);
+      $('select-note').textContent = msg;
+      toast(msg);
+    }, function (err) {
+      setBulkBusy(false);
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      bulkMsg('Nada foi alterado. ' + messageFor(err));
+    });
+  }
+  function openBulkDelete(ids) {
+    state.bulkIds = ids.slice();
+    var gtm = state.tasks.filter(function (t) { return isSelected(t.task_id) && String(t.origin || '').toLowerCase() === 'gtm 90 dias'; }).length;
+    $('bulk-delete-title').textContent = ids.length === 1 ? 'Excluir 1 tarefa?' : 'Excluir ' + ids.length + ' tarefas?';
+    $('bulk-delete-text').textContent = gtm === 1 ? 'Destas, 1 é do GTM.' : 'Destas, ' + gtm + ' são do GTM.';
+    $('bulk-delete-word').value = '';
+    $('bulk-delete-error').textContent = '';
+    setBulkDeleteBusy(false);
+    $('bulk-delete-dialog').showModal();
+  }
+  function closeBulkDelete() {
+    state.bulkIds = [];
+    setBulkDeleteBusy(false);
+    if ($('bulk-delete-dialog').open) $('bulk-delete-dialog').close();
+  }
+  function wordOk() { return $('bulk-delete-word').value.trim() === 'EXCLUIR'; }
+  function setBulkDeleteBusy(on) {
+    state.bulkBusy = on;
+    $('bulk-delete-cancel').disabled = on;
+    $('bulk-delete-word').disabled = on;
+    $('bulk-delete-confirm').disabled = on || !wordOk();
+    $('bulk-delete-confirm').textContent = on ? 'Excluindo…' : 'Excluir';
+  }
+  function confirmBulkDelete() {
+    var ids = state.bulkIds;
+    if (!ids.length || state.bulkBusy || !wordOk()) return;
+    hideError();
+    $('bulk-delete-error').textContent = '';
+    setBulkDeleteBusy(true);
+    api({ action: 'bulk_delete', task_ids: ids }, BULK_TIMEOUT, ADMIN_API).then(function () {
+      var gone = {};
+      ids.forEach(function (id) { gone[id] = true; setSelected(id, false); });
+      state.tasks = state.tasks.filter(function (t) { return !gone[t.task_id]; });
+      closeBulkDelete();
+      renderFilters();
+      renderTasks();
+      renderSummary();
+      var msg = ids.length === 1 ? '1 tarefa excluída.' : ids.length + ' tarefas excluídas.';
+      bulkMsg('');
+      $('select-note').textContent = msg;
+      toast(msg);
+      $('tasks-title').focus();
+    }, function (err) {
+      setBulkDeleteBusy(false);
+      if (err.code === 'unauthorized') { closeBulkDelete(); signOut(MSG.unauthorized); return; }
+      var failed = err.results.filter(function (r) { return !r.ok && r.error !== 'not_deleted'; });
+      $('bulk-delete-error').textContent = 'Nada foi excluído. ' + (failed.length ? 'Problema em: ' + failedText(failed) + '.' : messageFor(err));
+      $('bulk-delete-word').value = '';
+      setBulkDeleteBusy(false);
+      if (err.code === 'not_found') loadTasks(false);
+    });
+  }
   function goPage(delta) {
     state.page += delta;
     renderTasks();
@@ -790,6 +1037,13 @@
     var saving = state.savingTask === t.task_id;
     var main = el('div');
     var head = el('div', 'task-head');
+    var pick = el('input', 'pick');
+    pick.type = 'checkbox';
+    pick.checked = isSelected(t.task_id);
+    pick.setAttribute('data-id', t.task_id);
+    pick.setAttribute('aria-label', 'Selecionar ' + t.task_id);
+    pick.addEventListener('change', function () { setSelected(t.task_id, pick.checked); renderSelectionUi(); });
+    head.appendChild(pick);
     var section = sectionOf(t.task_id);
     head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
     head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
@@ -926,6 +1180,7 @@
     $('delete-error').textContent = '';
     api({ action: 'delete_task', task_id: t.task_id }, DEFAULT_TIMEOUT, ADMIN_API).then(function () {
       closeDelete();
+      setSelected(t.task_id, false);
       state.tasks = state.tasks.filter(function (x) { return x.task_id !== t.task_id; });
       renderFilters();
       renderTasks();
@@ -1041,6 +1296,17 @@
     fillSelect($('new-section'), 'Escolha', SECTIONS.filter(function (s) { return s[0] !== 'GATE' && s[0] !== 'MTG'; }));
     STATUS.forEach(function (s) { var o = el('option', null, s[1]); o.value = s[0]; $('new-status').appendChild(o); });
     $('new-form').addEventListener('submit', onCreate);
+    $('select-page').addEventListener('click', onSelectPage);
+    $('select-all').addEventListener('click', onSelectAll);
+    $('bulk-action').addEventListener('change', function () { bulkMsg(''); renderBulkValue(); });
+    $('bulk-apply').addEventListener('click', onBulkApply);
+    $('bulk-clear').addEventListener('click', clearSelection);
+    $('bulk-delete-word').addEventListener('input', function () { setBulkDeleteBusy(false); });
+    $('bulk-delete-cancel').addEventListener('click', closeBulkDelete);
+    $('bulk-delete-confirm').addEventListener('click', confirmBulkDelete);
+    $('bulk-delete-dialog').addEventListener('cancel', function (ev) {   // Esc
+      if (state.bulkBusy) ev.preventDefault(); else state.bulkIds = [];
+    });
     $('delete-cancel').addEventListener('click', closeDelete);
     $('delete-confirm').addEventListener('click', confirmDelete);
     $('delete-dialog').addEventListener('cancel', function (ev) {   // Esc
