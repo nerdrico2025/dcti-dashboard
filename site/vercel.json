@@ -1,7 +1,9 @@
 {
   "rewrites": [
     { "source": "/api/timelog", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog" },
-    { "source": "/api/timelog-public", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog?public=1" }
+    { "source": "/api/timelog-public", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog?public=1" },
+    { "source": "/api/admin-meeting", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-admin-meeting" },
+    { "source": "/api/admin", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-admin" }
   ],
   "headers": [
     {
