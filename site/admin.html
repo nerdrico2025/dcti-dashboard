@@ -140,6 +140,8 @@
   .confirm .item-id { display: block; margin-top: 10px; }
   .confirm .error-text { margin-top: 8px; }
   .confirm .actions { margin-top: 16px; justify-content: flex-end; }
+  .check { display: flex; align-items: center; gap: 8px; min-height: 44px; align-self: end; font-size: 0.9375rem; font-weight: 600; color: var(--muted); cursor: pointer; }
+  .check input { width: 20px; height: 20px; margin: 0; }
 
   @media (max-width: 640px) {
     .filters, .task-controls, .task { grid-template-columns: 1fr; }
@@ -201,6 +203,7 @@
           <div class="field"><label for="filter-section">Pilar</label><select id="filter-section"></select></div>
           <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
           <div class="field"><label for="filter-sort">Ordenar por</label><select id="filter-sort"><option value="due">Prazo</option><option value="id">Código</option></select></div>
+          <label class="check" for="filter-hide-frozen"><input type="checkbox" id="filter-hide-frozen"> Ocultar congeladas</label>
         </div>
         <div class="list-bar">
           <p class="hint" id="tasks-count" role="status" aria-live="polite"></p>
@@ -311,11 +314,13 @@
         </form>
       </details>
 
-      <dialog class="confirm" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-name delete-warning">
+      <dialog class="confirm" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-name delete-gtm delete-warning">
         <h2 id="delete-title">Excluir esta tarefa?</h2>
         <span class="item-id" id="delete-id"></span>
         <p class="item-title" id="delete-name"></p>
+        <p class="warning" id="delete-gtm" hidden>Esta é uma tarefa do GTM. Excluir tira a tarefa da base do "% do GTM original". Para preservar o histórico, use o status Descartada.</p>
         <p class="hint" id="delete-warning">A linha sai da planilha e não dá para desfazer por aqui.</p>
+        <p class="hint" id="delete-second" hidden>Clique em "Confirmar exclusão" para excluir de vez.</p>
         <p class="error-text" id="delete-error" role="alert"></p>
         <div class="actions">
           <button type="button" class="btn btn-quiet" id="delete-cancel" autofocus>Cancelar</button>
@@ -362,7 +367,7 @@
     invalid_visibility: 'Opção de "Mostrar na Home" inválida.',
     duplicate_title: 'Já existe uma tarefa com este título.',
     invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.',
-    delete_not_allowed: 'Tarefas do GTM não podem ser excluídas. Use o status Descartada.',
+    row_not_found: 'Não foi possível identificar a linha com certeza. Nada foi excluído.',
     task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.'
   };
 
@@ -374,7 +379,7 @@
   var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
   var PAGE_SIZE = 10;
 
-  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1, filtersReady: false };
+  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1 };
 
   function $(id) { return document.getElementById(id); }
   function el(tag, cls, text) {
@@ -436,11 +441,13 @@
   // ---------- login
   function signOut(msg) {
     state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
-    state.rowLine = null; state.page = 1; state.filtersReady = false;
+    state.rowLine = null; state.page = 1;
     closeDelete();
     clear($('tasks'));
     clear($('summary'));
     $('filter-search').value = '';
+    $('filter-status').value = '';
+    $('filter-hide-frozen').checked = false;
     $('pager').hidden = true;
     $('new-error').textContent = '';
     $('new-form').reset();
@@ -691,7 +698,6 @@
     fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto']].concat(STATUS));
     fillSelect($('filter-owner'), 'Todos', Object.keys(owners).sort().map(function (o) { return [o, o]; }));
     fillSelect($('filter-section'), 'Todos', SECTIONS);
-    if (!state.filtersReady) { $('filter-status').value = 'open'; state.filtersReady = true; }
   }
   function byId(a, b) { return a.task_id.localeCompare(b.task_id, 'pt-BR', { numeric: true }); }
   function byDue(a, b) {
@@ -703,7 +709,9 @@
   function visibleTasks() {
     var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value;
     var q = plainText($('filter-search').value).trim();
+    var hideFrozen = $('filter-hide-frozen').checked;
     var found = state.tasks.filter(function (t) {
+      if (hideFrozen && t.status === 'frozen') return false;
       if (st === 'open' ? !isOpen(t) : (st && t.status !== st)) return false;
       if (ow && ownersOf(t).indexOf(ow) < 0) return false;
       if (se && sectionOf(t.task_id) !== se) return false;
@@ -821,13 +829,11 @@
     var save = el('button', 'btn btn-small', 'Salvar');
     save.type = 'submit'; save.disabled = saving;
     var acts = el('div', 'actions'); acts.appendChild(save);
-    if (canDelete(t)) {
-      var del = el('button', 'btn btn-danger btn-small', 'Excluir');
-      del.type = 'button'; del.disabled = saving;
-      del.setAttribute('aria-label', 'Excluir ' + t.task_id);
-      del.addEventListener('click', function () { askDelete(t); });
-      acts.appendChild(del);
-    }
+    var del = el('button', 'btn btn-danger btn-small', 'Excluir');
+    del.type = 'button'; del.disabled = saving;
+    del.setAttribute('aria-label', 'Excluir ' + t.task_id);
+    del.addEventListener('click', function () { askDelete(t); });
+    acts.appendChild(del);
     form.appendChild(acts);
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
@@ -859,7 +865,8 @@
       state.rowLine = { id: data.task.task_id, kind: 'saved', text: 'Salvo às ' + timeNow() + '.' };
       renderFilters();
       renderSummary();
-      replaceRow(data.task, focusId);
+      if ($('filter-hide-frozen').checked && data.task.status === 'frozen') { renderTasks(); $('tasks-title').focus(); }
+      else replaceRow(data.task, focusId);
       toast('Tarefa ' + data.task.task_id + ' salva.');
     }, function (err) {
       state.savingTask = '';
@@ -870,21 +877,29 @@
     });
   }
 
-  // ---------- delete (manual and meeting tasks only; the server enforces the same rule)
-  function canDelete(t) {
+  // ---------- delete (GTM tasks, and anything of unknown origin, need a second click)
+  var SECOND_CLICK_DELAY = 700;       // a double click on "Excluir" must not count as the confirmation
+  var armTimer = null;
+  function needsSecondClick(t) {
     var origin = String(t.origin || '').toLowerCase();
-    return origin === 'manual' || origin.indexOf('reunião') === 0;
+    return origin !== 'manual' && origin.indexOf('reunião') !== 0;
   }
   function askDelete(t) {
+    clearTimeout(armTimer);
     state.deleting = t;
+    state.deleteArmed = false;
+    setDeleteBusy(false);
     $('delete-id').textContent = t.task_id;
     $('delete-name').textContent = t.title_pt_BR || t.title_en_CA;
+    $('delete-gtm').hidden = !needsSecondClick(t);
+    $('delete-second').hidden = true;
     $('delete-error').textContent = '';
     $('delete-dialog').showModal();
   }
   function closeDelete() {
+    clearTimeout(armTimer);
     state.deleting = null;
-    state.deleteBusy = false;
+    state.deleteArmed = false;
     setDeleteBusy(false);
     if ($('delete-dialog').open) $('delete-dialog').close();
   }
@@ -892,11 +907,20 @@
     state.deleteBusy = on;
     $('delete-confirm').disabled = on;
     $('delete-cancel').disabled = on;
-    $('delete-confirm').textContent = on ? 'Excluindo…' : 'Excluir';
+    $('delete-confirm').textContent = on ? 'Excluindo…' : (state.deleteArmed ? 'Confirmar exclusão' : 'Excluir');
+  }
+  function armDelete() {
+    state.deleteArmed = true;
+    $('delete-confirm').textContent = 'Confirmar exclusão';
+    $('delete-second').hidden = false;
+    $('delete-confirm').disabled = true;
+    $('delete-cancel').focus();
+    armTimer = setTimeout(function () { $('delete-confirm').disabled = false; }, SECOND_CLICK_DELAY);
   }
   function confirmDelete() {
     var t = state.deleting;
     if (!t || state.deleteBusy) return;
+    if (needsSecondClick(t) && !state.deleteArmed) { armDelete(); return; }
     hideError();
     setDeleteBusy(true);
     $('delete-error').textContent = '';
@@ -1006,7 +1030,7 @@
 
   // ---------- start
   function init() {
-    ['filter-status', 'filter-owner', 'filter-section', 'filter-sort'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
+    ['filter-status', 'filter-owner', 'filter-section', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
     $('filter-search').addEventListener('input', filtersChanged);
     $('toggle-all').addEventListener('click', function () {
       $('filter-status').value = $('filter-status').value === 'open' ? '' : 'open';
