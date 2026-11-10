@@ -205,6 +205,7 @@
         <p class="hint">Aceitar ou recusar só registra sua decisão. A tarefa não muda sozinha.</p>
         <ul id="suggestions"></ul>
         <p class="empty" id="no-suggestions" hidden>Nenhuma alteração aguardando decisão.</p>
+        <p class="error-text" id="suggestions-error" role="alert"></p>
       </section>
     </div>
   </main>
@@ -237,7 +238,8 @@
     invalid_due_date: 'Prazo inválido.',
     note_too_long: 'A nota passa de 500 caracteres.',
     owners_too_long: 'A lista de responsáveis passa de 200 caracteres.',
-    reason_required: 'Escreva o motivo para forçar a cor.'
+    reason_required: 'Escreva o motivo para forçar a cor.',
+    suggestions_unavailable: 'As alterações sugeridas estão indisponíveis agora. O resto da admin continua funcionando.'
   };
 
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
@@ -311,6 +313,7 @@
     resetMeeting();
     $('result').hidden = true;
     clear($('result-body'));
+    $('suggestions-error').textContent = '';
     $('app').hidden = true; $('logout').hidden = true; hideError();
     $('login').hidden = false;
     $('login-error').textContent = msg || '';
@@ -319,17 +322,18 @@
     $('password').focus();
   }
   function enterApp() { $('login').hidden = true; $('app').hidden = false; $('logout').hidden = false; }
-  function loadSuggestions(fromLogin) {
-    hideError();
+  // Suggestions come from workflow D. A failure there stays in this section and never blocks the admin.
+  function loadSuggestions() {
+    $('suggestions-error').textContent = '';
     return api({ action: 'list_suggestions' }).then(function (data) {
-      if (fromLogin) { store(KEY_STORE, state.key); enterApp(); loadTasks(); }
       state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
       renderSuggestions();
-    }, function (err) {
-      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
-      if (fromLogin) { $('login-error').textContent = messageFor(err); state.key = read(KEY_STORE) || ''; return; }
-      showError(messageFor(err));
+    }, function () {
+      $('suggestions-error').textContent = MSG.suggestions_unavailable;
     });
+  }
+  function loadSuggestionsIfIn() {
+    if (state.key && !$('app').hidden) loadSuggestions();
   }
   function onLogin(ev) {
     ev.preventDefault();
@@ -339,9 +343,10 @@
     $('login-btn').disabled = true;
     $('login-btn').textContent = 'Conferindo…';
     $('login-error').textContent = '';
-    loadSuggestions(true).then(function () {
+    loadTasks(true).then(function () {
       $('login-btn').disabled = false;
       $('login-btn').textContent = 'Entrar';
+      loadSuggestionsIfIn();
     });
   }
 
@@ -490,7 +495,7 @@
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
       if (err.code === 'not_found' || err.code === 'already_decided') {
         var msg = MSG[err.code];
-        loadSuggestions(false).then(function () { toast(msg); });
+        loadSuggestions().then(function () { toast(msg); });
         return;
       }
       showError(messageFor(err));
@@ -516,8 +521,10 @@
     select.value = keep;
     if (select.value !== keep) select.value = '';
   }
-  function loadTasks() {
+  // Also the login check: workflow F decides whether the password is valid.
+  function loadTasks(fromLogin) {
     return api({ action: 'list_tasks' }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      if (fromLogin) { store(KEY_STORE, state.key); enterApp(); }
       state.tasks = Array.isArray(data.tasks) ? data.tasks : [];
       state.forced = data.forced || null;
       renderFilters();
@@ -525,6 +532,7 @@
       renderForced();
     }, function (err) {
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (fromLogin) { $('login-error').textContent = messageFor(err); state.key = read(KEY_STORE) || ''; return; }
       showError(messageFor(err));
     });
   }
@@ -696,8 +704,7 @@
     state.key = read(KEY_STORE) || '';
     if (!state.key) { $('login').hidden = false; return; }
     enterApp();
-    loadSuggestions(false);
-    loadTasks();
+    loadTasks(false).then(loadSuggestionsIfIn);
   }
   init();
 })();
