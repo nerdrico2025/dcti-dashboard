@@ -214,7 +214,8 @@
         <h2 id="tasks-title" tabindex="-1">Tarefas</h2>
         <p class="hint">Mude o status e o "Mostrar na Home" direto na linha. Cada mudança é salva na hora.</p>
         <div class="filters">
-          <div class="field"><label for="filter-search">Buscar</label><input type="search" id="filter-search" placeholder="Código, título, responsável"></div>
+          <div class="field"><label for="filter-search">Buscar</label><input type="search" id="filter-search" placeholder="Código, título, responsável, origem"></div>
+          <div class="field"><label for="filter-origin">Origem</label><select id="filter-origin"><option value="">Todas</option><option value="gtm">GTM</option><option value="meeting">Reunião</option><option value="manual">Manual</option></select></div>
           <div class="field"><label for="filter-status">Status</label><select id="filter-status"></select></div>
           <div class="field"><label for="filter-section">Pilar</label><select id="filter-section"></select></div>
           <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
@@ -523,6 +524,7 @@
     clear($('summary'));
     $('filter-search').value = '';
     $('filter-status').value = '';
+    $('filter-origin').value = '';
     $('filter-hide-frozen').checked = false;
     $('pager').hidden = true;
     $('new-error').textContent = '';
@@ -732,6 +734,13 @@
     return manual ? manual[1] : id.split('-')[0];
   }
   function ownersOf(t) { return t.owners.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+  // Origin: "manual" = created here; starts with "reunião" (any case or accent) = meeting; empty or anything else = GTM.
+  var ORIGINS = [['gtm', 'GTM'], ['meeting', 'Reunião'], ['manual', 'Manual']];
+  function originKind(t) {
+    var o = plainText(t.origin).trim();
+    if (o === 'manual') return 'manual';
+    return o.indexOf('reuniao') === 0 ? 'meeting' : 'gtm';
+  }
   function isOpen(t) { return ['done', 'frozen', 'dropped'].indexOf(t.status) < 0; }
   function isLate(t) { return !!t.due_date && t.due_date < todaySP() && isOpen(t); }
   function statusClass(s) {
@@ -784,7 +793,7 @@
     return a.due_date < b.due_date ? -1 : 1;
   }
   function visibleTasks() {
-    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value;
+    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value, orig = $('filter-origin').value;
     var q = plainText($('filter-search').value).trim();
     var hideFrozen = $('filter-hide-frozen').checked;
     var found = state.tasks.filter(function (t) {
@@ -792,7 +801,8 @@
       if (st === 'open' ? !isOpen(t) : (st && t.status !== st)) return false;
       if (ow && ownersOf(t).indexOf(ow) < 0) return false;
       if (se && sectionOf(t.task_id) !== se) return false;
-      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note].join(' ')).indexOf(q) >= 0;
+      if (orig && originKind(t) !== orig) return false;
+      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.origin].join(' ')).indexOf(q) >= 0;
     });
     return found.sort($('filter-sort').value === 'id' ? byId : byDue);
   }
@@ -949,7 +959,7 @@
   }
   function openBulkDelete(ids) {
     state.bulkIds = ids.slice();
-    var gtm = state.tasks.filter(function (t) { return isSelected(t.task_id) && String(t.origin || '').toLowerCase() === 'gtm 90 dias'; }).length;
+    var gtm = state.tasks.filter(function (t) { return isSelected(t.task_id) && originKind(t) === 'gtm'; }).length;
     $('bulk-delete-title').textContent = ids.length === 1 ? 'Excluir 1 tarefa?' : 'Excluir ' + ids.length + ' tarefas?';
     $('bulk-delete-text').textContent = gtm === 1 ? 'Destas, 1 é do GTM.' : 'Destas, ' + gtm + ' são do GTM.';
     $('bulk-delete-word').value = '';
@@ -1028,6 +1038,12 @@
     box.appendChild(tile('st-none', 'Tarefas ativas', active, 'de ' + state.tasks.length + ' no total'));
     STATUS.forEach(function (s) {
       box.appendChild(tile('st-' + s[0], s[1], count[s[0]] || 0, (s[0] === 'frozen' || s[0] === 'dropped') ? 'fora do total ativo' : ''));
+    });
+    // by origin, from the current task list (not from the last weekly report)
+    ORIGINS.forEach(function (o) {
+      var mine = state.tasks.filter(function (t) { return originKind(t) === o[0]; });
+      var done = mine.filter(function (t) { return t.status === 'done'; }).length;
+      box.appendChild(tile('st-none', 'Origem: ' + o[1], mine.length, done === 1 ? '1 concluída' : done + ' concluídas'));
     });
     var p = state.panel || {};
     var auto = COLOR_NAMES[p.auto_color] ? p.auto_color : '';
@@ -1160,8 +1176,7 @@
   var SECOND_CLICK_DELAY = 700;       // a double click on "Excluir" must not count as the confirmation
   var armTimer = null;
   function needsSecondClick(t) {
-    var origin = String(t.origin || '').toLowerCase();
-    return origin !== 'manual' && origin.indexOf('reunião') !== 0;
+    return originKind(t) === 'gtm';
   }
   function askDelete(t) {
     clearTimeout(armTimer);
@@ -1315,7 +1330,7 @@
 
   // ---------- start
   function init() {
-    ['filter-status', 'filter-owner', 'filter-section', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
+    ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
     $('filter-search').addEventListener('input', filtersChanged);
     $('toggle-all').addEventListener('click', function () {
       $('filter-status').value = $('filter-status').value === 'open' ? '' : 'open';
