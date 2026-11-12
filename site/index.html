@@ -235,17 +235,15 @@
   .pillar-item .kpi-value { font-weight: 700; font-size: 1.15rem; font-variant-numeric: tabular-nums; }
   .muted { color: var(--muted); }
 
-  /* ---------- hours by task (details; read-only, live from /api/timelog-public) */
+  /* ---------- hours by category (details; read-only, live from /api/timelog-public) */
   .hours-card { padding: 8px 0 4px; }
   .hours-card .hours-msg { padding: 14px 22px; color: var(--muted); }
   table.hours-table { min-width: 0; }
   .hours-table th, .hours-table td { padding: 9px 22px; }
   .hours-table .num { text-align: right; white-space: nowrap; font-variant-numeric: tabular-nums; }
   .hours-table tbody th { font-weight: 500; white-space: normal; }
-  .hours-table th.group-row { font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); padding-top: 16px; }
   .hours-table tfoot th, .hours-table tfoot td { font-weight: 700; border-top: 2px solid #d6dde6; }
   .hours-table .zero { color: var(--faint); }
-  .hours-tag { display: inline-block; margin-left: 8px; padding: 0 8px; border-radius: 999px; font-size: 0.75rem; font-weight: 650; background: #eef1f5; color: var(--muted); }
   .hours-note { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
 
   /* ---------- process health (details) */
@@ -499,18 +497,15 @@
     'label.see_less':    { 'en-CA': 'See less', 'pt-BR': 'Ver menos' },
     'label.see_details': { 'en-CA': 'See details', 'pt-BR': 'Ver detalhes' },
     'label.time_log':    { 'en-CA': 'Time log', 'pt-BR': 'Registro de horas' },
-    'label.hours_by_task':     { 'en-CA': 'Hours by task', 'pt-BR': 'Horas por tarefa' },
-    'label.hours_task':        { 'en-CA': 'Task', 'pt-BR': 'Tarefa' },
+    'label.hours_by_category': { 'en-CA': 'Hours by category', 'pt-BR': 'Horas por categoria' },
+    'label.hours_category':    { 'en-CA': 'Category', 'pt-BR': 'Categoria' },
     'label.hours_week':        { 'en-CA': 'This week ({date})', 'pt-BR': 'Esta semana ({date})' },
     'label.hours_to_date':     { 'en-CA': 'To date', 'pt-BR': 'Acumulado' },
     'label.hours_sum':         { 'en-CA': 'Total', 'pt-BR': 'Total' },
-    'label.hours_fixed':       { 'en-CA': 'Meetings and extras', 'pt-BR': 'Reuniões e extras' },
     'label.hours_other':       { 'en-CA': 'Other', 'pt-BR': 'Outras' },
     'label.hours_loading':     { 'en-CA': 'Loading…', 'pt-BR': 'Carregando…' },
     'label.hours_unavailable': { 'en-CA': 'Unavailable right now.', 'pt-BR': 'Indisponível no momento.' },
     'label.hours_none':        { 'en-CA': 'No hours logged yet.', 'pt-BR': 'Nenhuma hora registrada ainda.' },
-    'label.hours_paused':      { 'en-CA': 'paused', 'pt-BR': 'pausada' },
-    'label.hours_finished':    { 'en-CA': 'finished', 'pt-BR': 'concluída' },
     'label.hours_note':        { 'en-CA': 'Read-only. "To date" = all hours since the log started.', 'pt-BR': 'Somente leitura. "Acumulado" = todas as horas desde o início do registro.' },
     'label.tasks_this_week':   { 'en-CA': 'This week', 'pt-BR': 'Esta semana' },
     'label.tasks_next_week':   { 'en-CA': 'Next week', 'pt-BR': 'Próxima semana' },
@@ -1093,10 +1088,10 @@
     try { return new Intl.NumberFormat(state.lang, { maximumFractionDigits: 2 }).format(n) + ' h'; } catch (e) { return n + ' h'; }
   }
   function renderHours() {
-    $('hours-title').textContent = uiText('label.hours_by_task');
+    $('hours-title').textContent = uiText('label.hours_by_category');
     $('hours-note').textContent = uiText('label.hours_note');
     var ws = hoursWeekStart();
-    $('hours-h-task').textContent = uiText('label.hours_task');
+    $('hours-h-task').textContent = uiText('label.hours_category');
     $('hours-h-week').textContent = fill(uiText('label.hours_week'), { date: ws ? hoursWeekRange(ws) : DASH });
     $('hours-h-total').textContent = uiText('label.hours_to_date');
     $('hours-f-label').textContent = uiText('label.hours_sum');
@@ -1114,39 +1109,17 @@
     }
     msg.hidden = true;
     clear(body);
+    // one row per category (the API sends only categories and totals)
     var pt = state.lang === 'pt-BR';
-    var groups = [], byKey = {};
     rows.forEach(function (r) {
-      var k = r.fixed ? '~fixed' : (str(r.group) || '~other');
-      if (!byKey[k]) {
-        var name = r.fixed ? uiText('label.hours_fixed')
-          : (str(pt ? r.group_pt : r.group_en) || str(r.group) || uiText('label.hours_other'));
-        byKey[k] = { name: name, rows: [] };
-        groups.push(k);
-      }
-      byKey[k].rows.push(r);
-    });
-    groups.sort(function (a, b) { return (a.charAt(0) === '~') - (b.charAt(0) === '~'); });
-    groups.forEach(function (k) {
-      var g = byKey[k];
-      var gr = el('tr');
-      var gh = el('th', 'group-row', g.name);
-      gh.colSpan = 3; gh.scope = 'colgroup';
-      gr.appendChild(gh);
-      body.appendChild(gr);
-      g.rows.forEach(function (r) {
-        var tr = el('tr');
-        var th = el('th', null, str(pt ? r.name_pt : r.name_en) || str(r.task_id));
-        th.scope = 'row';
-        if (r.status === 'pausada' || r.status === 'concluida') {
-          th.appendChild(el('span', 'hours-tag', uiText(r.status === 'pausada' ? 'label.hours_paused' : 'label.hours_finished')));
-        }
-        tr.appendChild(th);
-        [r.week_hours, r.total_hours].forEach(function (h) {
-          tr.appendChild(el('td', 'num' + (isNum(h) && h > 0 ? '' : ' zero'), fmtHoursValue(h)));
-        });
-        body.appendChild(tr);
+      var tr = el('tr');
+      var th = el('th', null, str(pt ? r.name_pt : r.name_en) || uiText('label.hours_other'));
+      th.scope = 'row';
+      tr.appendChild(th);
+      [r.week_hours, r.total_hours].forEach(function (h) {
+        tr.appendChild(el('td', 'num' + (isNum(h) && h > 0 ? '' : ' zero'), fmtHoursValue(h)));
       });
+      body.appendChild(tr);
     });
     $('hours-f-week').textContent = fmtHoursValue(d.total_week_hours);
     $('hours-f-total').textContent = fmtHoursValue(d.total_hours);

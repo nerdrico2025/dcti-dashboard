@@ -188,6 +188,15 @@
   .lh-quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
   .lh-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 14px; }
   .lh-body .error-text { min-height: 1.25em; margin: 0; }
+  .lh-cat-fixed { margin: 0; font-size: 0.9375rem; }
+  .lh-cat-fixed .link-btn { min-height: 0; padding: 0 2px; }
+  .lh-cats { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+  .lh-cats legend { font-size: 0.875rem; font-weight: 600; color: var(--muted); padding: 0; margin-bottom: 4px; }
+  .lh-cats label { display: flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+  .lh-cats input { width: 18px; height: 18px; margin: 0; }
+  .lh-cats .lh-sugg { color: var(--muted); font-size: 0.8125rem; }
+  .lh-done { color: var(--text); font-weight: 600; }
+  .tag-cat { background: #eef2f7; color: var(--muted); }
   .h-loading { margin-top: 24px; color: var(--muted); }
   .h-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
   .h-total-label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
@@ -298,6 +307,7 @@
           <div class="field"><label for="filter-origin">Origem</label><select id="filter-origin"><option value="">Todas</option><option value="gtm">GTM</option><option value="meeting">Reunião</option><option value="manual">Manual</option></select></div>
           <div class="field"><label for="filter-status">Status</label><select id="filter-status"></select></div>
           <div class="field"><label for="filter-section">Pilar</label><select id="filter-section"></select></div>
+          <div class="field"><label for="filter-category">Categoria</label><select id="filter-category"></select></div>
           <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
           <div class="field"><label for="filter-sort">Ordenar por</label><select id="filter-sort"><option value="due">Prazo</option><option value="id">Código</option></select></div>
           <label class="check" for="filter-hide-frozen"><input type="checkbox" id="filter-hide-frozen"> Ocultar congeladas</label>
@@ -500,16 +510,16 @@
                 <button type="button" class="btn btn-quiet btn-small" data-lh-hours="2">2 h</button>
               </div>
             </div>
-            <div class="lh-row">
-              <div class="field">
-                <label for="lh-date">Data</label>
-                <input type="date" id="lh-date" aria-describedby="lh-error">
-              </div>
-              <div class="field">
-                <label for="lh-front">Frente</label>
-                <select id="lh-front" aria-describedby="lh-error"></select>
-              </div>
+            <div class="field">
+              <label for="lh-date">Data</label>
+              <input type="date" id="lh-date" aria-describedby="lh-error">
             </div>
+            <p class="lh-cat-fixed" id="lh-cat-fixed" hidden>Categoria: <strong id="lh-cat-name"></strong> · <button type="button" class="link-btn" id="lh-cat-change" aria-label="Trocar a categoria">trocar</button></p>
+            <fieldset class="lh-cats" id="lh-cats" aria-describedby="lh-error" hidden>
+              <legend>Categoria</legend>
+              <div id="lh-cat-options"></div>
+            </fieldset>
+            <label class="check" id="lh-save-wrap" hidden><input type="checkbox" id="lh-save" checked> Guardar na tarefa</label>
             <div class="field">
               <label for="lh-note">Nota</label>
               <input type="text" id="lh-note" maxlength="500" autocomplete="off">
@@ -534,6 +544,7 @@
               <option value="show">Mostrar na Home</option>
               <option value="owners">Definir responsáveis</option>
               <option value="due">Definir prazo</option>
+              <option value="category">Definir categoria</option>
               <option value="delete">Excluir (até 25 por vez)</option>
             </select>
           </div>
@@ -592,6 +603,8 @@
     too_many_delete: 'Exclua no máximo 25 tarefas por vez. Cada linha é uma gravação no Google, que limita as gravações por minuto.',
     write_not_confirmed: 'A planilha não confirmou a gravação. Recarregue a página e confira.',
     no_tasks: 'Nenhuma tarefa selecionada.',
+    invalid_category: 'Categoria inválida.',
+    column_missing_categoria: 'Falta a coluna categoria na aba tasks (logo depois de meeting_updates). Crie a coluna e tente de novo.',
     too_many_add: 'Adicione no máximo 25 tarefas por vez.',
     invalid_key: 'Pedido inválido. Analise a reunião de novo.',
     excerpt_too_long: 'O trecho passa de 500 caracteres.',
@@ -625,7 +638,10 @@
   function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
   function store(k, v) { try { if (v === null) window.localStorage.removeItem(k); else window.localStorage.setItem(k, v); } catch (e) { /* no storage */ } }
   function read(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
-  function messageFor(err) { return MSG[err.code] || MSG.server; }
+  function messageFor(err) {
+    if (err.code === 'column_missing' && err.field === 'categoria') return MSG.column_missing_categoria;
+    return MSG[err.code] || MSG.server;
+  }
   function todaySP() {
     try { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
     catch (e) { return new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); }
@@ -658,6 +674,7 @@
         err.results = data && Array.isArray(data.results) ? data.results : [];
         err.lost = data && Array.isArray(data.lost) ? data.lost : [];
         err.key = data && data.key ? String(data.key) : '';
+        err.field = data && data.field ? String(data.field) : '';
         throw err;
       });
     }, function () {
@@ -695,6 +712,7 @@
     $('filter-search').value = '';
     $('filter-status').value = '';
     $('filter-origin').value = '';
+    $('filter-category').value = '';
     $('filter-hide-frozen').checked = false;
     $('pager').hidden = true;
     $('new-error').textContent = '';
@@ -1162,6 +1180,25 @@
     var manual = /^MAN-([A-Z]+)-/.exec(id);    // manual tasks carry the pillar in the code: MAN-CMP-001
     return manual ? manual[1] : id.split('-')[0];
   }
+  // Categories for the time log = the groups of the pillars tab + "Reuniões e extras". tasks.categoria holds the Portuguese name.
+  // front: where the hours go in the timelog (one general row per category, made by the timelog workflow; extras for the last one).
+  var CATEGORIES = [
+    { key: 'content', pt: 'Conteúdo', en: 'Content', front: 'CAT-CONTENT' },
+    { key: 'external_authority', pt: 'Autoridade externa', en: 'External authority', front: 'CAT-AUTHORITY' },
+    { key: 'lead_capture', pt: 'Captação de leads', en: 'Lead capture', front: 'CAT-LEADS' },
+    { key: 'community', pt: 'Comunidade', en: 'Community', front: 'CAT-COMMUNITY' },
+    { key: 'meetings_extras', pt: 'Reuniões e extras', en: 'Meetings and extras', front: 'T-EXTRA' }
+  ];
+  var SECTION_CATEGORY = { CNT: 'content', WLX: 'lead_capture', CMP: 'lead_capture', AUD: 'lead_capture', TOP: 'lead_capture', FND: 'lead_capture', STL: 'lead_capture' };
+  function catByKey(k) { return CATEGORIES.filter(function (c) { return c.key === k; })[0] || null; }
+  // "Conteúdo", "conteudo", "content" -> "content"; anything else -> ''
+  function catKey(v) {
+    var p = plainText(String(v || '')).replace(/[^a-z0-9]+/g, ' ').trim();
+    if (!p) return '';
+    var c = CATEGORIES.filter(function (x) { return plainText(x.pt) === p || x.en.toLowerCase() === p || x.key.replace(/_/g, ' ') === p; })[0];
+    return c ? c.key : '';
+  }
+  function suggestedCat(t) { return SECTION_CATEGORY[sectionOf(t.task_id)] || ''; }
   // meeting_updates: one "[DD/MM] text" per accepted suggestion. null = never updated.
   function lastMeetingUpdate(t) {
     var lines = String(t.meeting_updates || '').trim().split('\n').filter(function (l) { return l.trim(); });
@@ -1220,6 +1257,7 @@
     fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto']].concat(STATUS));
     fillSelect($('filter-owner'), 'Todos', Object.keys(owners).sort().map(function (o) { return [o, o]; }));
     fillSelect($('filter-section'), 'Todos', SECTIONS);
+    fillSelect($('filter-category'), 'Todas', [['none', 'Sem categoria']].concat(CATEGORIES.map(function (c) { return [c.key, c.pt]; })));
   }
   function byId(a, b) { return a.task_id.localeCompare(b.task_id, 'pt-BR', { numeric: true }); }
   function byDue(a, b) {
@@ -1229,7 +1267,7 @@
     return a.due_date < b.due_date ? -1 : 1;
   }
   function visibleTasks() {
-    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value, orig = $('filter-origin').value;
+    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value, orig = $('filter-origin').value, cat = $('filter-category').value;
     var q = plainText($('filter-search').value).trim();
     var hideFrozen = $('filter-hide-frozen').checked;
     var found = state.tasks.filter(function (t) {
@@ -1238,6 +1276,7 @@
       if (ow && ownersOf(t).indexOf(ow) < 0) return false;
       if (se && sectionOf(t.task_id) !== se) return false;
       if (orig && originKind(t) !== orig) return false;
+      if (cat && (catKey(t.categoria) || 'none') !== cat) return false;
       return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.meeting_updates, t.origin].join(' ')).indexOf(q) >= 0;
     });
     return found.sort($('filter-sort').value === 'id' ? byId : byDue);
@@ -1328,15 +1367,15 @@
   }
   function renderBulkValue() {
     var a = $('bulk-action').value, slot = $('bulk-value-slot');
-    var labels = { status: 'Novo status', show: 'Mostrar na Home', owners: 'Responsáveis (separados por vírgula)', due: 'Novo prazo' };
+    var labels = { status: 'Novo status', show: 'Mostrar na Home', owners: 'Responsáveis (separados por vírgula)', due: 'Novo prazo', category: 'Categoria' };
     clear(slot);
     $('bulk-value-box').hidden = !labels[a];
     if (!labels[a]) return;
     $('bulk-value-label').textContent = labels[a];
     var c;
-    if (a === 'status' || a === 'show') {
+    if (a === 'status' || a === 'show' || a === 'category') {
       c = el('select');
-      (a === 'status' ? STATUS : [['yes', 'Sim'], ['no', 'Não']]).forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; c.appendChild(o); });
+      (a === 'status' ? STATUS : a === 'category' ? CATEGORIES.map(function (x) { return [x.pt, x.pt]; }) : [['yes', 'Sim'], ['no', 'Não']]).forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; c.appendChild(o); });
     } else {
       c = el('input');
       c.type = a === 'due' ? 'date' : 'text';
@@ -1368,6 +1407,7 @@
     if (action === 'show') changes.show_to_scott = v;
     if (action === 'owners') { if (!v.trim()) { bulkMsg('Escreva os responsáveis.'); $('bulk-value').focus(); return; } changes.owners = v; }
     if (action === 'due') { if (!v) { bulkMsg('Escolha o prazo.'); $('bulk-value').focus(); return; } changes.due_date = v; }
+    if (action === 'category') changes.categoria = v;
     hideError();
     setBulkBusy(true);
     api({ action: 'bulk_update', task_ids: ids, changes: changes }, BULK_TIMEOUT, ADMIN_API).then(function (data) {
@@ -1526,6 +1566,8 @@
     head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
     head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
     if (t.is_new === 'yes') head.appendChild(el('span', 'tag tag-new', 'novo'));
+    var rowCat = catByKey(catKey(t.categoria));
+    if (rowCat) head.appendChild(el('span', 'tag tag-cat', rowCat.pt));
     var lastUpdate = lastMeetingUpdate(t);
     if (lastUpdate !== null) head.appendChild(el('span', 'tag tag-updated', 'atualizada em reunião' + (lastUpdate ? ' ' + lastUpdate : '')));
     main.appendChild(head);
@@ -1563,6 +1605,13 @@
     form.appendChild(field('owners-' + t.task_id, 'Responsáveis (separados por vírgula)', owners));
     var due = el('input'); due.type = 'date'; due.value = t.due_date;
     form.appendChild(field('due-' + t.task_id, 'Prazo', due));
+    var catSel = optionSelect('cat-' + t.task_id, [['', 'Sem categoria']].concat(CATEGORIES.map(function (c) { return [c.pt, c.pt]; })), '', false);
+    var curCat = catByKey(catKey(t.categoria));
+    catSel.value = curCat ? curCat.pt : '';
+    var catField = el('div', 'field');
+    var catLabel = el('label', null, 'Categoria (para o registro de horas)'); catLabel.htmlFor = catSel.id;
+    catField.appendChild(catLabel); catField.appendChild(catSel);
+    form.appendChild(catField);
     var note = el('textarea', 'short'); note.maxLength = 500; note.value = t.change_note;
     form.appendChild(field('note-' + t.task_id, 'Nota de mudança (aparece na Home se a tarefa estiver visível)', note));
     if (String(t.meeting_updates || '').trim()) {
@@ -1587,7 +1636,9 @@
     form.appendChild(acts);
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
-      saveTask(t, { owners: owners.value, due_date: due.value, change_note: note.value }, 'owners-' + t.task_id);
+      var changes = { owners: owners.value, due_date: due.value, change_note: note.value };
+      if (catSel.value !== (curCat ? curCat.pt : '')) changes.categoria = catSel.value;   // only when changed: works before the column exists
+      saveTask(t, changes, 'owners-' + t.task_id);
     });
     det.appendChild(form);
     li.appendChild(det);
@@ -1890,10 +1941,15 @@
   function hTaskName(task, lang) { return lang === 'en-CA' ? (task.name_en || task.name_pt) : (task.name_pt || task.name_en); }
   function hFixed(task) { return task.fixed || H_FIXED.indexOf(task.task_id) >= 0; }
   function hOpen(task) { return hFixed(task) || task.status === 'ativa'; }
+  // category of a timelog row: sent by the workflow; worked out from the group if the workflow is older
+  function hCatOf(task) { return task.category || (hFixed(task) ? 'meetings_extras' : (catKey(task.group) || 'other')); }
+  // With the general row per category, new periods go there; a workstream shows only when it has periods this week.
+  function hHasGeneral() { return horas.tasks.some(function (x) { return x.general; }); }
+  function hShown(task) { return !hHasGeneral() || task.general || entriesOf(task.task_id).length > 0; }
   function hGroups() {
     var list = [], byKey = {};
-    horas.tasks.forEach(function (task) {
-      if (hFixed(task)) return;
+    horas.tasks.slice().sort(function (a, b) { return (b.general ? 1 : 0) - (a.general ? 1 : 0); }).forEach(function (task) {
+      if (hFixed(task) || !hShown(task)) return;
       var k = task.group || '';
       if (!byKey[k]) { byKey[k] = { key: k, pt: task.group_pt || task.group || 'Fora da aba pillars', tasks: [] }; list.push(byKey[k]); }
       byKey[k].tasks.push(task);
@@ -1939,7 +1995,6 @@
       horas.tasks = Array.isArray(data.tasks) ? data.tasks : [];
       horas.entries = Array.isArray(data.entries) ? data.entries : [];
       horas.loaded = true;
-      if (!lh.task) lh.fronts = null;     // the modal now uses this fresher list
       $('h-loading').hidden = true;
       $('h-content').hidden = false;
       hRender();
@@ -2022,7 +2077,7 @@
     }
     if (form && form.mode === 'add' && form.taskId === task.task_id) {
       box.appendChild(hPeriodForm(task, null));
-    } else if (hOpen(task)) {
+    } else if (hOpen(task) && (task.general || hFixed(task) || !hHasGeneral())) {
       var add = el('button', 'btn btn-quiet btn-small h-add', '+ adicionar período');
       add.type = 'button';
       add.id = 'h-add-' + task.task_id;
@@ -2174,19 +2229,12 @@
       ? (ws.slice(5, 7) === we.slice(5, 7) ? day(ws) + '–' + (+we.slice(8, 10)) : day(ws) + ' – ' + day(we)) + ', ' + we.slice(0, 4)
       : day(ws) + ', ' + ws.slice(0, 4) + ' – ' + day(we) + ', ' + we.slice(0, 4);
     var m = /^(\d{4})-W(\d{2})$/.exec(horas.week);
-    var lines = ['Time log – week ' + (+m[2]) + ' (' + range + ')', '', 'Hours by deliverable:'];
-    var any = false;
-    hGroups().forEach(function (g) {
-      g.tasks.forEach(function (task) {
-        var h = sumOf(entriesOf(task.task_id));
-        if (!h) return;
-        any = true;
-        lines.push('- ' + hTaskName(task, EN) + ': ' + fmtHours(h, EN));
-      });
-    });
-    if (!any) lines.push('- No hours logged');
-    lines.push('');
-    hFixedTasks().forEach(function (task) { lines.push(hTaskName(task, EN) + ': ' + fmtHours(sumOf(entriesOf(task.task_id)), EN)); });
+    // only categories and totals: no workstreams, task titles or notes
+    var lines = ['Time log – week ' + (+m[2]) + ' (' + range + ')', '', 'Hours by category:'];
+    var byCat = {};
+    horas.tasks.forEach(function (task) { var k = hCatOf(task); byCat[k] = round2((byCat[k] || 0) + sumOf(entriesOf(task.task_id))); });
+    CATEGORIES.forEach(function (c) { lines.push('- ' + c.en + ': ' + fmtHours(byCat[c.key] || 0, EN)); });
+    if (byCat.other) lines.push('- Other: ' + fmtHours(byCat.other, EN));
     lines.push('');
     lines.push('Total: ' + fmtHours(sumOf(horas.entries), EN));
     return lines.join('\n');
@@ -2199,103 +2247,88 @@
     else fallback();
   }
   // ---------- "Registrar horas" on a task: a modal over the list. Tab, filters, page and scroll stay as they were.
-  // It writes with the same "add" action as the Horas tab (same server checks, same re-read of the sheet).
-  // The timelog rows keep their shape: the task only goes into the note (the link to the task is part 2).
-  var FRONT_STORE = 'dcti_last_front';      // { pillar: front id } - only a convenience of this browser
+  // Hours go by category: the timelog "add" action (same server checks as the Horas tab) on the category's general row.
+  // The task's category comes from tasks.categoria; if missing, the pillar suggests one and "Guardar na tarefa"
+  // writes it with update_task right after the hours. If that second write fails, the hours stay saved and the modal says so.
   var LHMSG = {
     hours: 'Tempo inválido. Use 1,5 ou 1:30 (mais que 0 e até 24 h).',
     date: 'Escolha uma data válida, até hoje.',
-    front: 'Escolha a frente.',
-    fronts: 'As frentes ainda não carregaram. Tentando de novo…'
+    category: 'Escolha a categoria.',
+    no_front: 'Esta categoria ainda não existe no registro de horas. Reimporte o workflow de horas (timelog) no n8n.'
   };
-  var lh = { task: null, opener: null, section: '', want: '', id: '', busy: false, fronts: null, frontsSeq: 0, frontsError: '', scroll: 0, downOutside: false };
+  var lh = { task: null, opener: null, id: '', busy: false, cat: '', choosing: false, hoursDone: null, scroll: 0, downOutside: false };
 
-  function lhLastFronts() {
-    try { var o = JSON.parse(read(FRONT_STORE) || '{}'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; } catch (e) { return {}; }
-  }
-  function lhRemember(section, frontId) { var o = lhLastFronts(); o[section] = frontId; store(FRONT_STORE, JSON.stringify(o)); }
-  // the Horas tab's list when it is loaded; otherwise the modal's own copy (same "list" action)
-  function lhSource() { return lh.fronts || (horas.loaded ? horas.tasks : null); }
-  function lhError(msg) { $('lh-error').textContent = msg || ''; }
+  function lhError(msg) { $('lh-error').textContent = msg || ''; $('lh-error').className = 'error-text'; }
+  function lhInfo(msg) { $('lh-error').textContent = msg; $('lh-error').className = 'error-text lh-done'; }
   function lhInvalid(id) {
-    ['lh-hours', 'lh-date', 'lh-front'].forEach(function (x) {
+    ['lh-hours', 'lh-date'].forEach(function (x) {
       if (x === id) $(x).setAttribute('aria-invalid', 'true'); else $(x).removeAttribute('aria-invalid');
     });
   }
-  function lhFail(id, msg) { lhInvalid(id); lhError(msg); $(id).focus(); }
+  function lhFail(id, msg) { lhInvalid(id); lhError(msg); if ($(id)) $(id).focus(); }
+  function lhTaskCat() { return lh.task ? catKey(lh.task.categoria) : ''; }
+  function lhRadios() { return Array.prototype.slice.call(document.querySelectorAll('#lh-cat-options input[name="lh-cat"]')); }
+  function lhRenderCats() {
+    var saved = lhTaskCat(), sugg = lh.task ? suggestedCat(lh.task) : '';
+    $('lh-cat-fixed').hidden = lh.choosing;
+    $('lh-cats').hidden = !lh.choosing;
+    $('lh-cat-name').textContent = saved ? catByKey(saved).pt : '';
+    var box = $('lh-cat-options');
+    clear(box);
+    CATEGORIES.forEach(function (c) {
+      var lab = el('label'), r = el('input');
+      r.type = 'radio'; r.name = 'lh-cat'; r.value = c.key; r.id = 'lh-cat-' + c.key;
+      r.checked = lh.cat === c.key;
+      r.addEventListener('change', function () { if (r.checked) { lh.cat = c.key; lhRenderSave(); lhError(''); } });
+      lab.appendChild(r);
+      lab.appendChild(document.createTextNode(c.pt));
+      if (c.key === sugg && !saved) lab.appendChild(el('span', 'lh-sugg', '(sugerida pelo pilar)'));
+      box.appendChild(lab);
+    });
+    lhRenderSave();
+  }
+  // "Guardar na tarefa" only when the choice would change the task
+  function lhRenderSave() { $('lh-save-wrap').hidden = !lh.choosing || !lh.cat || lh.cat === lhTaskCat(); }
   function lhSetBusy(on) {
     lh.busy = on;
+    var done = !!lh.hoursDone;
     $('lh-submit').disabled = on;
-    $('lh-submit').textContent = on ? 'Registrando…' : 'Registrar';
+    $('lh-submit').textContent = on ? (done ? 'Guardando…' : 'Registrando…') : (done ? 'Tentar guardar de novo' : 'Registrar');
     $('lh-cancel').disabled = on;
-    $('lh-front').disabled = on || !lhSource();
-  }
-  function lhRenderFronts() {
-    var sel = $('lh-front'), keep = sel.value || lh.want || '', list = lhSource();
-    clear(sel);
-    if (!list) {
-      var wait = el('option', null, lh.frontsError ? 'Frentes não carregadas' : 'Carregando frentes…');
-      wait.value = ''; sel.appendChild(wait); sel.disabled = true;
-      return;
-    }
-    var none = el('option', null, 'Escolha a frente'); none.value = ''; sel.appendChild(none);
-    var FIXED = '\u0000fixed', keys = [], byKey = {};
-    list.filter(hOpen).forEach(function (task) {
-      var k = hFixed(task) ? FIXED : (task.group || '');
-      if (!byKey[k]) {
-        byKey[k] = el('optgroup');
-        byKey[k].label = k === FIXED ? 'Reuniões e extras' : (task.group_pt || task.group || 'Fora da aba pillars');
-        keys.push(k);
-      }
-      var o = el('option', null, hTaskName(task)); o.value = task.task_id; byKey[k].appendChild(o);
-    });
-    keys.filter(function (k) { return k !== FIXED; }).concat(byKey[FIXED] ? [FIXED] : []).forEach(function (k) { sel.appendChild(byKey[k]); });
-    sel.value = keep;
-    if (sel.value !== keep) sel.value = '';     // the remembered front is closed or gone: the admin chooses
-    sel.disabled = lh.busy;
-  }
-  function lhLoadFronts() {
-    var seq = ++lh.frontsSeq;
-    lh.frontsError = '';
-    lhRenderFronts();
-    return hApi({ action: 'list', week: isoWeek(todaySP()) }).then(function (data) {
-      if (seq !== lh.frontsSeq) return;
-      lh.fronts = Array.isArray(data.tasks) ? data.tasks : [];
-      lhRenderFronts();
-    }, function (err) {
-      if (seq !== lh.frontsSeq) return;
-      lh.frontsError = hMessage(err);
-      lhRenderFronts();
-      if (lh.task) lhError(lh.frontsError);
-    });
+    $('lh-cancel').textContent = done ? 'Fechar' : 'Cancelar';
+    ['lh-hours', 'lh-date', 'lh-note', 'lh-save', 'lh-cat-change'].forEach(function (id) { $(id).disabled = on || done; });
+    Array.prototype.forEach.call(document.querySelectorAll('#lh-dialog [data-lh-hours]'), function (b) { b.disabled = on || done; });
+    lhRadios().forEach(function (r) { r.disabled = on || done; });
   }
   function logHoursFor(t, opener) {
     if (lh.task) return;
     var title = t.title_pt_BR || t.title_en_CA || '';
-    lh.task = t; lh.opener = opener || null; lh.id = newPeriodId();
+    lh.task = t; lh.opener = opener || null; lh.id = newPeriodId(); lh.hoursDone = null;
     lh.scroll = window.pageYOffset || 0;
-    lh.section = sectionOf(t.task_id);
-    lh.want = String(lhLastFronts()[lh.section] || '');
+    var saved = catKey(t.categoria);
+    lh.cat = saved || suggestedCat(t);
+    lh.choosing = !saved;
     $('lh-task-id').textContent = t.task_id;
     $('lh-task-title').textContent = title;
     $('lh-hours').value = '';
     $('lh-date').max = todaySP(); $('lh-date').value = todaySP();
     $('lh-note').value = (t.task_id + ' · ' + title).slice(0, 500);
-    clear($('lh-front'));
-    lhError(''); lhInvalid(null); lhSetBusy(false);
+    $('lh-save').checked = true;
+    lhError(''); lhInvalid(null);
+    lhRenderCats();
+    lhSetBusy(false);
     var d = $('lh-dialog');
     if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
-    if (lhSource()) lhRenderFronts(); else lhLoadFronts();
-    lhSetBusy(false);
     $('lh-hours').focus();
   }
   function closeLogHours(signingOut) {
     if (!lh.task || (lh.busy && !signingOut)) return;
-    var d = $('lh-dialog'), opener = lh.opener, task = lh.task;
-    lh.task = null; lh.opener = null;
-    if (signingOut) { lh.fronts = null; lh.frontsSeq++; lhSetBusy(false); }
+    var d = $('lh-dialog'), opener = lh.opener, task = lh.task, done = lh.hoursDone;
+    lh.task = null; lh.opener = null; lh.hoursDone = null;
+    if (signingOut) lhSetBusy(false);
     if (d.open) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }
     if (signingOut) return;
+    if (done) toast(done.text);
     // focus back on the button that opened it (or the same button if the row was redrawn), without moving the page
     var target = opener && document.body.contains(opener) ? opener : document.querySelector('[data-task="' + task.task_id + '"] .task-hours');
     if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
@@ -2304,55 +2337,76 @@
   function lhValidDate(ds) {
     return /^\d{4}-\d{2}-\d{2}$/.test(ds) && new Date(toUTC(ds)).toISOString().slice(0, 10) === ds && ds <= todaySP();
   }
-  function lhSubmit(ev) {
-    if (ev) ev.preventDefault();
-    if (!lh.task || lh.busy) return;
-    var hours = parseHours($('lh-hours').value), date = $('lh-date').value, front = $('lh-front').value;
-    if (!isFinite(hours)) { lhFail('lh-hours', LHMSG.hours); return; }
-    if (!lhValidDate(date)) { lhFail('lh-date', LHMSG.date); return; }
-    if (!lhSource()) { lhInvalid(null); lhError(LHMSG.fronts); lhLoadFronts(); return; }
-    if (!front) { lhFail('lh-front', LHMSG.front); return; }
-    var frontTask = lhSource().filter(function (x) { return x.task_id === front; })[0];
-    var section = lh.section;
-    lhInvalid(null); lhError(''); lhSetBusy(true);
-    hApi({ action: 'add', id: lh.id, task_id: front, date: date, hours: hours, note: $('lh-note').value.trim() }).then(function (data) {
-      if (!lh.task) return;           // signed out meanwhile
+  // second step: category into the task (F update_task, with its own re-read of the sheet)
+  function lhSaveCategory() {
+    var t = lh.task, cat = catByKey(lh.hoursDone.cat);
+    lhSetBusy(true);
+    return api({ action: 'update_task', task_id: t.task_id, changes: { categoria: cat.pt } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      if (!lh.task) return;
+      state.tasks = state.tasks.map(function (x) { return x.task_id === data.task.task_id ? data.task : x; });
+      lh.task = data.task;
+      lh.hoursDone.text += ' Categoria guardada na tarefa.';
       lhSetBusy(false);
-      lhRemember(section, front);
-      if (horas.started) horas.stale = true;     // the Horas tab reloads the next time it opens
-      var saved = data && data.entry && isFinite(+data.entry.hours) ? +data.entry.hours : hours;
+      replaceRow(data.task);          // same row, same page and filters
       closeLogHours(false);
-      toast(fmtHours(saved) + ' registradas em ' + (frontTask ? hTaskName(frontTask) : front));
     }, function (err) {
       if (!lh.task) return;
       lhSetBusy(false);
-      if (err.code === 'invalid_task' || err.code === 'task_closed') {
-        lh.fronts = null;
-        if (horas.started) horas.stale = true;
-        lhLoadFronts().then(function () { if (lh.task) lhFail('lh-front', HMSG[err.code]); });
-        lhFail('lh-front', HMSG[err.code]);
-        return;
-      }
+      lhInfo(lh.hoursDone.text + ' Mas a categoria não foi guardada na tarefa: ' + messageFor(err));
+      $('lh-submit').focus();
+    });
+  }
+  function lhSubmit(ev) {
+    if (ev) ev.preventDefault();
+    if (!lh.task || lh.busy) return;
+    if (lh.hoursDone) { lhSaveCategory(); return; }
+    var hours = parseHours($('lh-hours').value), date = $('lh-date').value, cat = catByKey(lh.cat);
+    if (!isFinite(hours)) { lhFail('lh-hours', LHMSG.hours); return; }
+    if (!lhValidDate(date)) { lhFail('lh-date', LHMSG.date); return; }
+    if (!cat) { lhInvalid(null); lhError(LHMSG.category); var r = lhRadios()[0]; if (r) r.focus(); return; }
+    var save = lh.choosing && $('lh-save').checked && cat.key !== lhTaskCat();
+    lhInvalid(null); lhError(''); lhSetBusy(true);
+    hApi({ action: 'add', id: lh.id, task_id: cat.front, date: date, hours: hours, note: $('lh-note').value.trim() }).then(function (data) {
+      if (!lh.task) return;           // signed out meanwhile
+      if (horas.started) horas.stale = true;     // the Horas tab reloads the next time it opens
+      var got = data && data.entry && isFinite(+data.entry.hours) ? +data.entry.hours : hours;
+      lh.hoursDone = { cat: cat.key, text: fmtHours(got) + ' registradas em ' + cat.pt + '.' };
+      if (save) { lhSaveCategory(); return; }
+      lhSetBusy(false);
+      closeLogHours(false);
+    }, function (err) {
+      if (!lh.task) return;
+      lhSetBusy(false);
+      if (err.code === 'invalid_task' && /^CAT-/.test(cat.front)) { lhError(LHMSG.no_front); return; }
+      if (err.code === 'invalid_task' || err.code === 'task_closed') { lhError(HMSG[err.code].replace(' A lista foi recarregada.', '')); return; }
       if (err.code === 'invalid_hours') { lhFail('lh-hours', LHMSG.hours); return; }
       if (err.code === 'invalid_date') { lhFail('lh-date', LHMSG.date); return; }
       lhError(hMessage(err));     // network or server error: the modal keeps the same id, so trying again never duplicates
     });
   }
   function lhFocusables() {
-    return Array.prototype.filter.call($('lh-dialog').querySelectorAll('button, input, select, textarea'), function (n) { return !n.disabled && !n.hidden; });
+    return Array.prototype.filter.call($('lh-dialog').querySelectorAll('button, input, select, textarea'), function (n) {
+      return !n.disabled && !n.closest('[hidden]');
+    });
   }
   function initLogHours() {
     var d = $('lh-dialog');
     $('lh-form').addEventListener('submit', lhSubmit);
     $('lh-cancel').addEventListener('click', function () { closeLogHours(false); });
+    $('lh-cat-change').addEventListener('click', function () {
+      lh.choosing = true;
+      lhRenderCats();
+      var r = lhRadios().filter(function (x) { return x.checked; })[0] || lhRadios()[0];
+      if (r) r.focus();
+    });
     Array.prototype.forEach.call(d.querySelectorAll('[data-lh-hours]'), function (b) {
       b.addEventListener('click', function () { $('lh-hours').value = b.getAttribute('data-lh-hours'); lhInvalid(null); lhError(''); });
     });
     d.addEventListener('cancel', function (ev) { ev.preventDefault(); closeLogHours(false); });     // Esc (native dialog)
     d.addEventListener('keydown', function (ev) {
-      var tag = ev.target && ev.target.tagName;
+      var tag = ev.target && ev.target.tagName, type = ev.target && ev.target.type;
       if (ev.key === 'Escape') { ev.preventDefault(); closeLogHours(false); return; }
-      if (ev.key === 'Enter' && (tag === 'INPUT' || tag === 'SELECT')) { ev.preventDefault(); lhSubmit(); return; }
+      if (ev.key === 'Enter' && (tag === 'SELECT' || (tag === 'INPUT' && type !== 'checkbox'))) { ev.preventDefault(); lhSubmit(); return; }
       if (ev.key !== 'Tab') return;
       var f = lhFocusables(); if (!f.length) return;
       var first = f[0], last = f[f.length - 1], a = document.activeElement;
@@ -2380,7 +2434,7 @@
 
   // ---------- start
   function init() {
-    ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
+    ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-category', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
     $('filter-search').addEventListener('input', filtersChanged);
     $('toggle-all').addEventListener('click', function () {
       $('filter-status').value = $('filter-status').value === 'open' ? '' : 'open';
