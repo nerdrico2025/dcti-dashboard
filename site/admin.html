@@ -181,8 +181,13 @@
   .h-weekbar .h-week-name { font-size: 1.25rem; font-weight: 700; }
   .h-weekbar .hint { margin-top: 2px; }
   .h-nav { display: flex; gap: 8px; flex-wrap: wrap; }
-  .h-from-task { border-left: 6px solid var(--accent); }
-  .h-from-task:focus { outline: none; }
+  .lh-dialog { padding: 0; max-width: 32rem; }
+  .lh-body { padding: 22px 24px; }
+  .lh-body .item-id { margin-right: 6px; }
+  .lh-body form { margin-top: 12px; }
+  .lh-quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .lh-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 14px; }
+  .lh-body .error-text { min-height: 1.25em; margin: 0; }
   .h-loading { margin-top: 24px; color: var(--muted); }
   .h-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
   .h-total-label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
@@ -384,11 +389,6 @@
             <button type="button" class="btn btn-quiet btn-small" id="h-next-week" aria-label="Próxima semana">Próxima →</button>
           </div>
         </section>
-        <div class="card h-from-task" id="h-from-task" tabindex="-1" hidden>
-          <p><strong>Registrar horas da tarefa <span id="h-from-task-name"></span></strong></p>
-          <p class="hint">As frentes ainda não estão ligadas às tarefas. Escolha a frente abaixo e clique em "+ adicionar período": o código e o título da tarefa já entram na nota.</p>
-          <button type="button" class="link-btn" id="h-from-task-cancel">Não usar esta tarefa</button>
-        </div>
         <div class="notice" id="h-error" role="alert" hidden><p id="h-error-text"></p><button type="button" class="btn btn-quiet" id="h-retry">Tentar de novo</button></div>
         <p class="h-loading" id="h-loading" hidden>Carregando…</p>
         <div id="h-content" hidden>
@@ -482,6 +482,44 @@
         <div class="actions">
           <button type="button" class="btn btn-quiet" id="bulk-delete-cancel">Cancelar</button>
           <button type="button" class="btn btn-danger" id="bulk-delete-confirm" disabled>Excluir</button>
+        </div>
+      </dialog>
+
+      <dialog class="confirm lh-dialog" id="lh-dialog" aria-labelledby="lh-title" aria-describedby="lh-task">
+        <div class="lh-body">
+          <h2 id="lh-title">Registrar horas</h2>
+          <p class="item-title" id="lh-task"><span class="item-id" id="lh-task-id"></span><span id="lh-task-title"></span></p>
+          <form class="stack" id="lh-form" novalidate>
+            <div class="field">
+              <label for="lh-hours">Tempo</label>
+              <input type="text" id="lh-hours" inputmode="decimal" autocomplete="off" aria-describedby="lh-hours-hint lh-error">
+              <span class="hint" id="lh-hours-hint">Ex.: 1,5 ou 1:30</span>
+              <div class="lh-quick" role="group" aria-label="Atalhos de tempo">
+                <button type="button" class="btn btn-quiet btn-small" data-lh-hours="0,5">0,5 h</button>
+                <button type="button" class="btn btn-quiet btn-small" data-lh-hours="1">1 h</button>
+                <button type="button" class="btn btn-quiet btn-small" data-lh-hours="2">2 h</button>
+              </div>
+            </div>
+            <div class="lh-row">
+              <div class="field">
+                <label for="lh-date">Data</label>
+                <input type="date" id="lh-date" aria-describedby="lh-error">
+              </div>
+              <div class="field">
+                <label for="lh-front">Frente</label>
+                <select id="lh-front" aria-describedby="lh-error"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="lh-note">Nota</label>
+              <input type="text" id="lh-note" maxlength="500" autocomplete="off">
+            </div>
+            <p class="error-text" id="lh-error" role="alert"></p>
+            <div class="actions">
+              <button type="button" class="btn btn-quiet" id="lh-cancel">Cancelar</button>
+              <button type="submit" class="btn" id="lh-submit">Registrar</button>
+            </div>
+          </form>
         </div>
       </dialog>
 
@@ -663,6 +701,7 @@
     $('new-form').reset();
     store(KEY_STORE, null);
     resetMeeting();
+    closeLogHours(true);
     resetHoras();
     $('result').hidden = true;
     clear($('result-body'));
@@ -1500,7 +1539,7 @@
     var hoursBtn = el('button', 'btn btn-quiet btn-small task-hours', 'Registrar horas');
     hoursBtn.type = 'button';
     hoursBtn.setAttribute('aria-label', 'Registrar horas: ' + t.task_id);
-    hoursBtn.addEventListener('click', function () { logHoursFor(t); });
+    hoursBtn.addEventListener('click', function () { logHoursFor(t, hoursBtn); });
     main.appendChild(hoursBtn);
     li.appendChild(main);
 
@@ -1539,6 +1578,11 @@
     del.type = 'button'; del.disabled = saving;
     del.setAttribute('aria-label', 'Excluir ' + t.task_id);
     del.addEventListener('click', function () { askDelete(t); });
+    var hoursBtn2 = el('button', 'btn btn-quiet btn-small', 'Registrar horas');
+    hoursBtn2.type = 'button';
+    hoursBtn2.setAttribute('aria-label', 'Registrar horas: ' + t.task_id);
+    hoursBtn2.addEventListener('click', function () { logHoursFor(t, hoursBtn2); });
+    acts.appendChild(hoursBtn2);
     acts.appendChild(del);
     form.appendChild(acts);
     form.addEventListener('submit', function (ev) {
@@ -1766,7 +1810,10 @@
       $('panel-' + t).hidden = !on;
     });
     renderSelectionUi();
-    if (name === 'horas' && state.key && !$('app').hidden) startHoras();
+    if (name === 'horas' && state.key && !$('app').hidden) {
+      if (horas.stale && horas.started) { horas.stale = false; hLoadWeek(); }   // hours were logged from a task since the last load
+      else startHoras();
+    }
     if (focusPanel) $('panel-' + name).focus();
   }
   function goTab(name) {
@@ -1801,7 +1848,7 @@
     invalid_task: 'Esta frente não existe mais na planilha. A lista foi recarregada.',
     task_closed: 'Esta frente está pausada ou concluída: não aceita novos períodos. A lista foi recarregada.'
   };
-  var horas = { week: '', tasks: [], entries: [], form: null, loaded: false, started: false, reqSeq: 0, focusAfter: null, fromTask: null };
+  var horas = { week: '', tasks: [], entries: [], form: null, loaded: false, started: false, reqSeq: 0, focusAfter: null, stale: false };
 
   function pad2(n) { return (n < 10 ? '0' : '') + n; }
   function toUTC(ds) { var a = ds.split('-'); return Date.UTC(+a[0], +a[1] - 1, +a[2]); }
@@ -1877,9 +1924,9 @@
     hLoadWeek();
   }
   function resetHoras() {
-    horas.tasks = []; horas.entries = []; horas.form = null; horas.loaded = false; horas.started = false; horas.fromTask = null;
+    horas.tasks = []; horas.entries = []; horas.form = null; horas.loaded = false; horas.started = false; horas.stale = false;
     horas.reqSeq++;
-    $('h-content').hidden = true; $('h-loading').hidden = true; $('h-from-task').hidden = true; hHideError();
+    $('h-content').hidden = true; $('h-loading').hidden = true; hHideError();
   }
   function hLoadWeek() {
     var seq = ++horas.reqSeq;
@@ -1892,6 +1939,7 @@
       horas.tasks = Array.isArray(data.tasks) ? data.tasks : [];
       horas.entries = Array.isArray(data.entries) ? data.entries : [];
       horas.loaded = true;
+      if (!lh.task) lh.fronts = null;     // the modal now uses this fresher list
       $('h-loading').hidden = true;
       $('h-content').hidden = false;
       hRender();
@@ -1918,14 +1966,8 @@
     $('h-week-range').textContent = fmtDay(a) + ' – ' + fmtDay(b) + ' ' + b.slice(0, 4);
     $('h-this-week').disabled = horas.week === isoWeek(todaySP());
   }
-  function hRenderFromTask() {
-    var f = horas.fromTask;
-    $('h-from-task').hidden = !f;
-    $('h-from-task-name').textContent = f ? f.task_id + ' · ' + f.title : '';
-  }
   function hRender() {
     hRenderWeekBar();
-    hRenderFromTask();
     if (!horas.loaded) return;
     $('h-total-value').textContent = fmtHours(sumOf(horas.entries));
     var g = $('h-groups'); clear(g);
@@ -2058,9 +2100,7 @@
     return isoWeek(today) === horas.week ? today : weekStart(horas.week);
   }
   function hOpenAdd(task) {
-    var f = horas.fromTask;
-    var note = f ? (f.task_id + ' · ' + f.title).slice(0, 500) : '';
-    horas.form = { mode: 'add', taskId: task.task_id, newId: newPeriodId(), date: hDefaultDate(), hours: '', note: note, fromTask: !!f, error: '', busy: false };
+    horas.form = { mode: 'add', taskId: task.task_id, newId: newPeriodId(), date: hDefaultDate(), hours: '', note: '', error: '', busy: false };
     horas.focusAfter = 'h-form-hours';
     hRender();
   }
@@ -2090,7 +2130,6 @@
       var entry = data.entry;
       if (s.mode === 'add') {
         if (!horas.entries.some(function (x) { return x.id === entry.id; })) horas.entries.push(entry);
-        if (s.fromTask) horas.fromTask = null;
       } else {
         horas.entries = horas.entries.map(function (x) { return x.id === entry.id ? entry : x; });
       }
@@ -2159,13 +2198,173 @@
     if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast('Resumo copiado. É só colar no e-mail.'); }, fallback);
     else fallback();
   }
-  // "Registrar horas" on a task: opens the Horas tab; the task's code and title go into the note of the next period.
-  function logHoursFor(t) {
-    horas.fromTask = { task_id: t.task_id, title: t.title_pt_BR || t.title_en_CA || '' };
-    horas.form = horas.form && horas.form.busy ? horas.form : null;
-    hRender();
-    goTab('horas');
-    $('h-from-task').focus();
+  // ---------- "Registrar horas" on a task: a modal over the list. Tab, filters, page and scroll stay as they were.
+  // It writes with the same "add" action as the Horas tab (same server checks, same re-read of the sheet).
+  // The timelog rows keep their shape: the task only goes into the note (the link to the task is part 2).
+  var FRONT_STORE = 'dcti_last_front';      // { pillar: front id } - only a convenience of this browser
+  var LHMSG = {
+    hours: 'Tempo inválido. Use 1,5 ou 1:30 (mais que 0 e até 24 h).',
+    date: 'Escolha uma data válida, até hoje.',
+    front: 'Escolha a frente.',
+    fronts: 'As frentes ainda não carregaram. Tentando de novo…'
+  };
+  var lh = { task: null, opener: null, section: '', want: '', id: '', busy: false, fronts: null, frontsSeq: 0, frontsError: '', scroll: 0, downOutside: false };
+
+  function lhLastFronts() {
+    try { var o = JSON.parse(read(FRONT_STORE) || '{}'); return o && typeof o === 'object' && !Array.isArray(o) ? o : {}; } catch (e) { return {}; }
+  }
+  function lhRemember(section, frontId) { var o = lhLastFronts(); o[section] = frontId; store(FRONT_STORE, JSON.stringify(o)); }
+  // the Horas tab's list when it is loaded; otherwise the modal's own copy (same "list" action)
+  function lhSource() { return lh.fronts || (horas.loaded ? horas.tasks : null); }
+  function lhError(msg) { $('lh-error').textContent = msg || ''; }
+  function lhInvalid(id) {
+    ['lh-hours', 'lh-date', 'lh-front'].forEach(function (x) {
+      if (x === id) $(x).setAttribute('aria-invalid', 'true'); else $(x).removeAttribute('aria-invalid');
+    });
+  }
+  function lhFail(id, msg) { lhInvalid(id); lhError(msg); $(id).focus(); }
+  function lhSetBusy(on) {
+    lh.busy = on;
+    $('lh-submit').disabled = on;
+    $('lh-submit').textContent = on ? 'Registrando…' : 'Registrar';
+    $('lh-cancel').disabled = on;
+    $('lh-front').disabled = on || !lhSource();
+  }
+  function lhRenderFronts() {
+    var sel = $('lh-front'), keep = sel.value || lh.want || '', list = lhSource();
+    clear(sel);
+    if (!list) {
+      var wait = el('option', null, lh.frontsError ? 'Frentes não carregadas' : 'Carregando frentes…');
+      wait.value = ''; sel.appendChild(wait); sel.disabled = true;
+      return;
+    }
+    var none = el('option', null, 'Escolha a frente'); none.value = ''; sel.appendChild(none);
+    var FIXED = '\u0000fixed', keys = [], byKey = {};
+    list.filter(hOpen).forEach(function (task) {
+      var k = hFixed(task) ? FIXED : (task.group || '');
+      if (!byKey[k]) {
+        byKey[k] = el('optgroup');
+        byKey[k].label = k === FIXED ? 'Reuniões e extras' : (task.group_pt || task.group || 'Fora da aba pillars');
+        keys.push(k);
+      }
+      var o = el('option', null, hTaskName(task)); o.value = task.task_id; byKey[k].appendChild(o);
+    });
+    keys.filter(function (k) { return k !== FIXED; }).concat(byKey[FIXED] ? [FIXED] : []).forEach(function (k) { sel.appendChild(byKey[k]); });
+    sel.value = keep;
+    if (sel.value !== keep) sel.value = '';     // the remembered front is closed or gone: the admin chooses
+    sel.disabled = lh.busy;
+  }
+  function lhLoadFronts() {
+    var seq = ++lh.frontsSeq;
+    lh.frontsError = '';
+    lhRenderFronts();
+    return hApi({ action: 'list', week: isoWeek(todaySP()) }).then(function (data) {
+      if (seq !== lh.frontsSeq) return;
+      lh.fronts = Array.isArray(data.tasks) ? data.tasks : [];
+      lhRenderFronts();
+    }, function (err) {
+      if (seq !== lh.frontsSeq) return;
+      lh.frontsError = hMessage(err);
+      lhRenderFronts();
+      if (lh.task) lhError(lh.frontsError);
+    });
+  }
+  function logHoursFor(t, opener) {
+    if (lh.task) return;
+    var title = t.title_pt_BR || t.title_en_CA || '';
+    lh.task = t; lh.opener = opener || null; lh.id = newPeriodId();
+    lh.scroll = window.pageYOffset || 0;
+    lh.section = sectionOf(t.task_id);
+    lh.want = String(lhLastFronts()[lh.section] || '');
+    $('lh-task-id').textContent = t.task_id;
+    $('lh-task-title').textContent = title;
+    $('lh-hours').value = '';
+    $('lh-date').max = todaySP(); $('lh-date').value = todaySP();
+    $('lh-note').value = (t.task_id + ' · ' + title).slice(0, 500);
+    clear($('lh-front'));
+    lhError(''); lhInvalid(null); lhSetBusy(false);
+    var d = $('lh-dialog');
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    if (lhSource()) lhRenderFronts(); else lhLoadFronts();
+    lhSetBusy(false);
+    $('lh-hours').focus();
+  }
+  function closeLogHours(signingOut) {
+    if (!lh.task || (lh.busy && !signingOut)) return;
+    var d = $('lh-dialog'), opener = lh.opener, task = lh.task;
+    lh.task = null; lh.opener = null;
+    if (signingOut) { lh.fronts = null; lh.frontsSeq++; lhSetBusy(false); }
+    if (d.open) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }
+    if (signingOut) return;
+    // focus back on the button that opened it (or the same button if the row was redrawn), without moving the page
+    var target = opener && document.body.contains(opener) ? opener : document.querySelector('[data-task="' + task.task_id + '"] .task-hours');
+    if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
+    if ((window.pageYOffset || 0) !== lh.scroll) window.scrollTo(0, lh.scroll);
+  }
+  function lhValidDate(ds) {
+    return /^\d{4}-\d{2}-\d{2}$/.test(ds) && new Date(toUTC(ds)).toISOString().slice(0, 10) === ds && ds <= todaySP();
+  }
+  function lhSubmit(ev) {
+    if (ev) ev.preventDefault();
+    if (!lh.task || lh.busy) return;
+    var hours = parseHours($('lh-hours').value), date = $('lh-date').value, front = $('lh-front').value;
+    if (!isFinite(hours)) { lhFail('lh-hours', LHMSG.hours); return; }
+    if (!lhValidDate(date)) { lhFail('lh-date', LHMSG.date); return; }
+    if (!lhSource()) { lhInvalid(null); lhError(LHMSG.fronts); lhLoadFronts(); return; }
+    if (!front) { lhFail('lh-front', LHMSG.front); return; }
+    var frontTask = lhSource().filter(function (x) { return x.task_id === front; })[0];
+    var section = lh.section;
+    lhInvalid(null); lhError(''); lhSetBusy(true);
+    hApi({ action: 'add', id: lh.id, task_id: front, date: date, hours: hours, note: $('lh-note').value.trim() }).then(function (data) {
+      if (!lh.task) return;           // signed out meanwhile
+      lhSetBusy(false);
+      lhRemember(section, front);
+      if (horas.started) horas.stale = true;     // the Horas tab reloads the next time it opens
+      var saved = data && data.entry && isFinite(+data.entry.hours) ? +data.entry.hours : hours;
+      closeLogHours(false);
+      toast(fmtHours(saved) + ' registradas em ' + (frontTask ? hTaskName(frontTask) : front));
+    }, function (err) {
+      if (!lh.task) return;
+      lhSetBusy(false);
+      if (err.code === 'invalid_task' || err.code === 'task_closed') {
+        lh.fronts = null;
+        if (horas.started) horas.stale = true;
+        lhLoadFronts().then(function () { if (lh.task) lhFail('lh-front', HMSG[err.code]); });
+        lhFail('lh-front', HMSG[err.code]);
+        return;
+      }
+      if (err.code === 'invalid_hours') { lhFail('lh-hours', LHMSG.hours); return; }
+      if (err.code === 'invalid_date') { lhFail('lh-date', LHMSG.date); return; }
+      lhError(hMessage(err));     // network or server error: the modal keeps the same id, so trying again never duplicates
+    });
+  }
+  function lhFocusables() {
+    return Array.prototype.filter.call($('lh-dialog').querySelectorAll('button, input, select, textarea'), function (n) { return !n.disabled && !n.hidden; });
+  }
+  function initLogHours() {
+    var d = $('lh-dialog');
+    $('lh-form').addEventListener('submit', lhSubmit);
+    $('lh-cancel').addEventListener('click', function () { closeLogHours(false); });
+    Array.prototype.forEach.call(d.querySelectorAll('[data-lh-hours]'), function (b) {
+      b.addEventListener('click', function () { $('lh-hours').value = b.getAttribute('data-lh-hours'); lhInvalid(null); lhError(''); });
+    });
+    d.addEventListener('cancel', function (ev) { ev.preventDefault(); closeLogHours(false); });     // Esc (native dialog)
+    d.addEventListener('keydown', function (ev) {
+      var tag = ev.target && ev.target.tagName;
+      if (ev.key === 'Escape') { ev.preventDefault(); closeLogHours(false); return; }
+      if (ev.key === 'Enter' && (tag === 'INPUT' || tag === 'SELECT')) { ev.preventDefault(); lhSubmit(); return; }
+      if (ev.key !== 'Tab') return;
+      var f = lhFocusables(); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1], a = document.activeElement;
+      if (ev.shiftKey && (a === first || !d.contains(a))) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && (a === last || !d.contains(a))) { ev.preventDefault(); first.focus(); }
+    });
+    // click on the backdrop (outside the box) closes; a drag that started inside does not
+    d.addEventListener('mousedown', function (ev) { lh.downOutside = ev.target === d; });
+    d.addEventListener('click', function (ev) { if (ev.target === d && lh.downOutside) closeLogHours(false); lh.downOutside = false; });
+    document.addEventListener('focusin', function (ev) {
+      if (lh.task && !d.contains(ev.target)) { var f = lhFocusables(); if (f.length) f[0].focus(); }
+    });
   }
   function initHoras() {
     var w = String(new URLSearchParams(window.location.search).get('week') || '');
@@ -2176,12 +2375,7 @@
     $('h-this-week').addEventListener('click', function () { hGoWeek(isoWeek(todaySP())); });
     $('h-retry').addEventListener('click', function () { horas.started = true; hLoadWeek(); });
     $('h-copy-btn').addEventListener('click', hCopy);
-    $('h-from-task-cancel').addEventListener('click', function () {
-      horas.fromTask = null;
-      if (horas.form && horas.form.fromTask && !horas.form.busy) horas.form = null;
-      hRender();
-      $('panel-horas').focus();
-    });
+    initLogHours();
   }
 
   // ---------- start
