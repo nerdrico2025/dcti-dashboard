@@ -69,6 +69,13 @@
   .subhead { margin-top: 20px; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
   .item .actions { margin-top: 10px; }
   .empty { margin-top: 10px; color: var(--faint); }
+  .proposal .form-grid { margin-top: 10px; }
+  .proposal.off .form-grid, .proposal.off .excerpt { opacity: 0.55; }
+  .proposal .check { min-height: 36px; color: var(--text); }
+  .excerpt-label { margin-top: 10px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+  .item .error-text { display: block; margin-top: 6px; }
+  .updates { white-space: pre-line; overflow-wrap: anywhere; margin-top: 4px; padding: 8px 12px; border-radius: 10px; background: #f5f7fa; font-size: 0.9375rem; }
+  .tag-updated { background: #e6f0fb; color: #174a85; border: 1px solid #9cc0ea; }
 
   .field select, .task-controls select { min-height: 44px; padding: 8px 10px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; font: inherit; color: inherit; width: 100%; }
   .field textarea.short { min-height: 72px; }
@@ -285,7 +292,7 @@
               <input type="date" id="meeting-date" required aria-describedby="meeting-error">
             </div>
           </div>
-          <p class="hint">O texto só é usado nesta análise e não é guardado. Ficam salvos apenas as tarefas e o trecho de cada uma.</p>
+          <p class="hint">O texto só é usado nesta análise e não é guardado. A análise não grava nada: você revisa as propostas e grava só as que escolher, com o trecho de cada uma.</p>
           <div class="actions">
             <button type="submit" class="btn" id="analyze-btn">Analisar</button>
             <span class="error-text" id="meeting-error" role="alert"></span>
@@ -300,7 +307,7 @@
 
       <section class="card" aria-labelledby="suggestions-title">
         <h2 id="suggestions-title">Alterações sugeridas</h2>
-        <p class="hint">Mudanças em tarefas encontradas nas reuniões. Aceitar ou recusar só registra sua decisão. A tarefa não muda sozinha.</p>
+        <p class="hint">Mudanças em tarefas encontradas nas reuniões. Aceitar acrescenta o texto abaixo (pode editar antes) às atualizações da tarefa, com a data da reunião no início e sem apagar o que já havia. Recusar só registra a decisão e não altera a tarefa. As atualizações aparecem em "Editar detalhes" da tarefa e não vão para a Home.</p>
         <ul id="suggestions"></ul>
         <p class="empty" id="no-suggestions" hidden>Nenhuma alteração aguardando decisão.</p>
         <p class="error-text" id="suggestions-error" role="alert"></p>
@@ -428,13 +435,21 @@
     invalid_status: 'Status inválido.',
     invalid_visibility: 'Opção de "Mostrar na Home" inválida.',
     duplicate_title: 'Já existe uma tarefa com este título.',
-    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.',
+    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte os workflows D e F.',
     row_not_found: 'Não foi possível identificar a linha com certeza. Nada foi excluído.',
     task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.',
     too_many: 'Selecione no máximo 100 tarefas por vez.',
     too_many_delete: 'Exclua no máximo 25 tarefas por vez. Cada linha é uma gravação no Google, que limita as gravações por minuto.',
     write_not_confirmed: 'A planilha não confirmou a gravação. Recarregue a página e confira.',
-    no_tasks: 'Nenhuma tarefa selecionada.'
+    no_tasks: 'Nenhuma tarefa selecionada.',
+    too_many_add: 'Adicione no máximo 25 tarefas por vez.',
+    invalid_key: 'Pedido inválido. Analise a reunião de novo.',
+    excerpt_too_long: 'O trecho passa de 500 caracteres.',
+    change_required: 'Escreva o texto que será acrescentado à tarefa.',
+    change_too_long: 'O texto passa de 400 caracteres.',
+    updates_too_long: 'As atualizações desta tarefa passam de 5.000 caracteres. Resuma a coluna meeting_updates na planilha antes de aceitar.',
+    column_missing: 'Falta a coluna meeting_updates na aba tasks. Crie a coluna e tente de novo.',
+    duplicate_id: 'Há mais de uma linha com este código na planilha. Corrija a planilha antes.'
   };
 
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
@@ -445,8 +460,9 @@
   var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
   var PAGE_SIZE = 10;
   var BULK_MAX = 100, BULK_TIMEOUT = 60000;
+  var ADD_MAX = 25, ADD_TIMEOUT = 60000, CHANGE_MAX = 400;
 
-  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
+  var state = { key: '', suggestions: [], proposals: [], meeting: null, adding: false, addMsg: '', busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
     selected: {}, shownIds: [], pageIds: [], bulkIds: [], bulkBusy: false };
 
   function $(id) { return document.getElementById(id); }
@@ -488,6 +504,7 @@
         err.similarTo = data && data.similar_to ? String(data.similar_to) : '';
         err.results = data && Array.isArray(data.results) ? data.results : [];
         err.lost = data && Array.isArray(data.lost) ? data.lost : [];
+        err.key = data && data.key ? String(data.key) : '';
         throw err;
       });
     }, function () {
@@ -510,7 +527,7 @@
 
   // ---------- login
   function signOut(msg) {
-    state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
+    state.key = ''; state.suggestions = []; state.proposals = []; state.meeting = null; state.addMsg = ''; state.tasks = []; state.forced = null; state.panel = null;
     state.rowLine = null; state.page = 1;
     closeDelete();
     closeBulkDelete();
@@ -546,7 +563,7 @@
   function loadSuggestions() {
     $('suggestions-error').textContent = '';
     return api({ action: 'list_suggestions' }).then(function (data) {
-      state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      state.suggestions = mergeSuggestions(data.suggestions);
       renderSuggestions();
     }, function () {
       $('suggestions-error').textContent = MSG.suggestions_unavailable;
@@ -614,51 +631,144 @@
     if (!text) { meetingError('empty_text', textBox); return; }
     if (text.length > MAX_TEXT) { meetingError('text_too_long', textBox); return; }
     if (!date || date > todaySP()) { meetingError('invalid_date', dateBox); return; }
+    if (pendingProposals().length && !window.confirm('Há propostas da análise anterior que não foram gravadas. Analisar de novo descarta essas propostas. Continuar?')) return;
     setBusy(true, 'Analisando… pode levar até 2 min');
     api({ action: 'analyze', meeting_date: date, text: text }, ANALYZE_TIMEOUT).then(function (data) {
       resetMeeting();
-      state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      state.suggestions = mergeSuggestions(data.suggestions);
+      setProposals(data, date);
       setBusy(false);
-      renderResult(data);
-      toast('Análise concluída.');
+      renderResult();
+      $('result').focus();
+      toast('Análise concluída. Nada foi gravado ainda.');
     }, function (err) {
       setBusy(false);
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
       if (err.code === 'invalid_date') { meetingError('invalid_date', dateBox); return; }
       if (err.code === 'empty_text' || err.code === 'text_too_long') { meetingError(err.code, textBox); return; }
-      // the text stays in the field; analysing again does not duplicate tasks
+      // the text stays in the field; the analysis never writes, so trying again is safe
       showError(messageFor(err));
     });
   }
 
   // ---------- rendering (always textContent: AI and sheet values are never treated as HTML)
-  function renderResult(data) {
-    var box = $('result-body');
+  // ---------- proposals: only in this page until "Adicionar selecionadas". The analysis writes nothing.
+  function pendingProposals() { return state.proposals.filter(function (p) { return !p.task_id; }); }
+  function checkedProposals() { return pendingProposals().filter(function (p) { return p.checked; }); }
+  function unsavedWork() {
+    return pendingProposals().length > 0 || state.suggestions.some(function (s) { return s.saved === false; });
+  }
+  function setProposals(data, date) {
+    state.meeting = {
+      date: String(data.meeting_date || date || ''),
+      skipped: Array.isArray(data.skipped_duplicates) ? data.skipped_duplicates : [],
+      discarded: Number(data.discarded) || 0
+    };
+    state.proposals = (Array.isArray(data.proposals) ? data.proposals : []).map(function (p, i) {
+      return { key: String(p.key || ('p' + (i + 1))), title_pt_BR: String(p.title_pt_BR || ''), title_en_CA: String(p.title_en_CA || ''),
+        owners: Array.isArray(p.owners) ? p.owners.join(', ') : String(p.owners || ''), due_date: String(p.due_date || ''),
+        excerpt: String(p.excerpt || ''), checked: true, task_id: '', already: false, error: '' };
+    });
+    state.addMsg = '';
+  }
+  function proposalInput(p, name, labelText, type, max) {
+    var input = el('input');
+    input.type = type;
+    if (max) input.maxLength = max;
+    input.value = p[name];
+    input.disabled = state.adding;
+    input.addEventListener('input', function () { p[name] = input.value; });
+    return field('prop-' + name + '-' + p.key, labelText, input);
+  }
+  function proposalItem(p) {
+    var li = el('li', 'item proposal' + (p.checked || p.task_id ? '' : ' off'));
+    li.setAttribute('data-proposal', p.key);
+    if (p.task_id) {
+      li.appendChild(el('span', 'item-id', p.task_id));
+      var t = el('p', 'item-title', p.title_pt_BR);
+      t.appendChild(el('span', 'tag tag-new', p.already ? 'já estava gravada' : 'gravada em backlog'));
+      li.appendChild(t);
+      li.appendChild(el('p', 'item-meta', 'Responsáveis: ' + (p.owners || 'não informado') + ' · Prazo: ' + (fmtDate(p.due_date) || 'não informado')));
+      li.appendChild(el('blockquote', 'excerpt', p.excerpt));
+      return li;
+    }
+    var check = el('label', 'check');
+    var box = el('input');
+    box.type = 'checkbox'; box.className = 'prop-pick'; box.checked = p.checked; box.disabled = state.adding;
+    box.id = 'prop-pick-' + p.key;
+    box.addEventListener('change', function () {
+      p.checked = box.checked;
+      li.className = 'item proposal' + (p.checked ? '' : ' off');
+      renderAddBar();
+    });
+    check.htmlFor = box.id;
+    check.appendChild(box);
+    check.appendChild(document.createTextNode(' Adicionar esta tarefa'));
+    li.appendChild(check);
+    var grid = el('div', 'form-grid');
+    grid.appendChild(proposalInput(p, 'title_pt_BR', 'Título (português)', 'text', 200));
+    grid.appendChild(proposalInput(p, 'title_en_CA', 'Título (inglês)', 'text', 200));
+    grid.appendChild(proposalInput(p, 'owners', 'Responsáveis (separados por vírgula)', 'text', 200));
+    grid.appendChild(proposalInput(p, 'due_date', 'Prazo', 'date', 0));
+    li.appendChild(grid);
+    li.appendChild(el('p', 'excerpt-label', 'Trecho da reunião que originou a proposta'));
+    li.appendChild(el('blockquote', 'excerpt', p.excerpt));
+    if (p.error) li.appendChild(el('span', 'error-text', p.error));
+    return li;
+  }
+  function renderAddBar() {
+    var bar = $('proposal-count');
+    if (!bar) return;
+    var pend = pendingProposals().length, n = checkedProposals().length;
+    bar.textContent = n + ' de ' + pend + (pend === 1 ? ' proposta selecionada.' : ' propostas selecionadas.');
+    $('add-btn').disabled = state.adding || !n;
+    $('add-btn').textContent = state.adding ? 'Gravando…' : (n === 1 ? 'Adicionar a selecionada' : 'Adicionar selecionadas (' + n + ')');
+    $('mark-all').disabled = state.adding || n === pend;
+    $('mark-none').disabled = state.adding || !n;
+  }
+  function markAll(on) {
+    pendingProposals().forEach(function (p) { p.checked = on; });
+    renderResult();
+  }
+  function renderResult() {
+    var box = $('result-body'), m = state.meeting || { date: '', skipped: [], discarded: 0 };
     clear(box);
-    var created = Array.isArray(data.created) ? data.created : [];
-    var skipped = Array.isArray(data.skipped_duplicates) ? data.skipped_duplicates : [];
-    box.appendChild(el('p', 'hint', created.length === 1 ? '1 tarefa nova gravada em backlog.' : created.length + ' tarefas novas gravadas em backlog.'));
-    if (created.length) {
+    var pend = pendingProposals();
+    var total = state.proposals.length;
+    box.appendChild(el('p', 'hint', 'Reunião de ' + (fmtDate(m.date) || 'data não informada') + '. ' +
+      (total === 1 ? '1 tarefa nova proposta.' : total + ' tarefas novas propostas.')));
+    if (pend.length) {
+      box.appendChild(el('p', 'warning', 'Nada foi gravado ainda. Desmarque o que não quer, ajuste título, responsáveis e prazo e clique em "Adicionar selecionadas". Se fechar ou recarregar a página antes disso, estas propostas se perdem.'));
+      var sel = el('div', 'select-bar');
+      var all = el('button', 'link-btn', 'Marcar todas'); all.type = 'button'; all.id = 'mark-all';
+      all.addEventListener('click', function () { markAll(true); });
+      var none = el('button', 'link-btn', 'Desmarcar todas'); none.type = 'button'; none.id = 'mark-none';
+      none.addEventListener('click', function () { markAll(false); });
+      sel.appendChild(all); sel.appendChild(none);
+      box.appendChild(sel);
+      var count = el('p', 'select-note'); count.id = 'proposal-count'; count.setAttribute('aria-live', 'polite');
+      box.appendChild(count);
+    }
+    if (total) {
       var ul = el('ul');
-      created.forEach(function (x) {
-        var li = el('li', 'item');
-        li.appendChild(el('span', 'item-id', x.task_id));
-        var title = el('p', 'item-title', x.title);
-        title.appendChild(el('span', 'tag', 'novo'));
-        li.appendChild(title);
-        var meta = [];
-        meta.push('Responsáveis: ' + (x.owners && x.owners.length ? x.owners.join(', ') : 'não informado'));
-        meta.push('Prazo: ' + (fmtDate(x.due_date) || 'não informado'));
-        li.appendChild(el('p', 'item-meta', meta.join(' · ')));
-        li.appendChild(el('blockquote', 'excerpt', x.excerpt));
-        ul.appendChild(li);
-      });
+      state.proposals.forEach(function (p) { ul.appendChild(proposalItem(p)); });
       box.appendChild(ul);
     }
-    if (skipped.length) {
-      box.appendChild(el('h3', 'subhead', 'Não gravadas: já existem'));
+    if (pend.length) {
+      var acts = el('div', 'actions');
+      var add = el('button', 'btn', 'Adicionar selecionadas'); add.type = 'button'; add.id = 'add-btn';
+      add.addEventListener('click', onAdd);
+      acts.appendChild(add);
+      var msg = el('span', 'error-text', state.addMsg); msg.id = 'add-error'; msg.setAttribute('role', 'alert');
+      acts.appendChild(msg);
+      box.appendChild(acts);
+    } else if (state.addMsg) {
+      box.appendChild(el('p', 'hint', state.addMsg));
+    }
+    if (m.skipped.length) {
+      box.appendChild(el('h3', 'subhead', 'Não propostas: já existem'));
       var us = el('ul');
-      skipped.forEach(function (x) {
+      m.skipped.forEach(function (x) {
         var li = el('li', 'item');
         li.appendChild(el('p', 'item-title', x.title));
         li.appendChild(el('p', 'item-meta', 'Parecida com ' + x.similar_to + ': ' + x.similar_title));
@@ -666,13 +776,71 @@
       });
       box.appendChild(us);
     }
-    if (data.discarded) {
-      box.appendChild(el('p', 'hint', data.discarded === 1
+    if (m.discarded) {
+      box.appendChild(el('p', 'hint', m.discarded === 1
         ? '1 item da IA foi descartado: citava tarefa inexistente, vinha incompleto ou o trecho não estava no texto.'
-        : data.discarded + ' itens da IA foram descartados: citavam tarefa inexistente, vinham incompletos ou o trecho não estava no texto.'));
+        : m.discarded + ' itens da IA foram descartados: citavam tarefa inexistente, vinham incompletos ou o trecho não estava no texto.'));
     }
+    renderAddBar();
     $('result').hidden = false;
-    $('result').focus();
+  }
+  function onAdd() {
+    if (state.adding) return;
+    hideError();
+    var list = checkedProposals();
+    state.addMsg = '';
+    pendingProposals().forEach(function (p) { p.error = ''; });
+    if (!list.length) { state.addMsg = 'Marque pelo menos uma proposta.'; renderResult(); return; }
+    if (list.length > ADD_MAX) { state.addMsg = MSG.too_many_add; renderResult(); return; }
+    var empty = list.filter(function (p) { return !p.title_pt_BR.trim(); })[0];
+    if (empty) {
+      empty.error = MSG.title_required;
+      renderResult();
+      $('prop-title_pt_BR-' + empty.key).focus();
+      return;
+    }
+    state.adding = true;
+    renderResult();
+    api({ action: 'add_tasks', meeting_date: state.meeting.date, tasks: list.map(function (p) {
+      return { key: p.key, title_pt_BR: p.title_pt_BR.trim(), title_en_CA: p.title_en_CA.trim(), owners: p.owners, due_date: p.due_date, excerpt: p.excerpt };
+    }) }, ADD_TIMEOUT).then(function (data) {
+      state.adding = false;
+      var saved = 0, failed = 0;
+      (Array.isArray(data.results) ? data.results : []).forEach(function (r) {
+        var p = state.proposals.filter(function (x) { return x.key === r.key; })[0];
+        if (!p) return;
+        if (r.ok && r.task_id) { p.task_id = String(r.task_id); p.already = !!r.already; saved++; return; }
+        failed++;
+        p.error = r.error === 'duplicate_title'
+          ? 'Já existe uma tarefa com este título' + (r.similar_to ? ' (' + r.similar_to + ')' : '') + '. Mude o título ou desmarque.'
+          : 'A planilha não confirmou esta tarefa. Clique de novo para tentar.';
+      });
+      state.addMsg = (saved === 1 ? '1 tarefa gravada em backlog.' : saved + ' tarefas gravadas em backlog.') +
+        (failed ? ' ' + failed + ' não ' + (failed === 1 ? 'foi gravada' : 'foram gravadas') + ': veja abaixo.' : '');
+      renderResult();
+      toast(state.addMsg);
+      if (saved) loadTasks(false);
+    }, function (err) {
+      state.adding = false;
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      var p = err.key ? state.proposals.filter(function (x) { return x.key === err.key; })[0] : null;
+      if (p) p.error = messageFor(err);
+      // 4xx = refused before any write. Otherwise part may be saved: clicking again never repeats a task already saved.
+      state.addMsg = err.status >= 400 && err.status < 500
+        ? messageFor(err) + ' Nada foi gravado.'
+        : 'Sem confirmação do servidor. Pode ter gravado parte. Clique de novo: tarefas já gravadas não se repetem.';
+      renderResult();
+    });
+  }
+  function mergeSuggestions(list) {
+    var fresh = Array.isArray(list) ? list.filter(function (s) { return s && s.suggestion_id; }) : [];
+    var ids = {};
+    fresh.forEach(function (s) { ids[s.suggestion_id] = true; });
+    var old = {};
+    state.suggestions.forEach(function (s) { old[s.suggestion_id] = s; });
+    // Keeps edited text, and suggestions of an earlier analysis in this page that were not decided yet.
+    fresh.forEach(function (s) { if (old[s.suggestion_id] && old[s.suggestion_id].draft !== undefined) s.draft = old[s.suggestion_id].draft; });
+    return fresh.concat(state.suggestions.filter(function (s) { return s.saved === false && !ids[s.suggestion_id]; }));
   }
   function renderSuggestions() {
     var list = $('suggestions');
@@ -680,10 +848,22 @@
     $('no-suggestions').hidden = state.suggestions.length > 0;
     state.suggestions.forEach(function (s) {
       var li = el('li', 'item');
-      li.appendChild(el('span', 'item-id', s.task_id + (s.meeting_date ? ' · reunião de ' + fmtDate(s.meeting_date) : '')));
-      if (s.task_title) li.appendChild(el('p', 'item-meta', s.task_title));
-      li.appendChild(el('p', 'item-title', s.change_text));
+      var head = el('span', 'item-id', s.task_id + (s.meeting_date ? ' · reunião de ' + fmtDate(s.meeting_date) : ''));
+      if (s.saved === false) head.appendChild(el('span', 'tag tag-new', 'não gravada'));
+      li.appendChild(head);
+      if (s.task_title) li.appendChild(el('p', 'item-title', s.task_title));
+      var text = el('textarea', 'short');
+      text.maxLength = CHANGE_MAX;
+      text.value = s.draft !== undefined ? s.draft : s.change_text;
+      text.disabled = state.busy;
+      text.addEventListener('input', function () { s.draft = text.value; });
+      var f = field('change-' + s.suggestion_id, 'Texto a acrescentar à tarefa (pode editar)', text);
+      f.style.marginTop = '8px';
+      li.appendChild(f);
+      li.appendChild(el('p', 'excerpt-label', 'Trecho da reunião'));
       li.appendChild(el('blockquote', 'excerpt', s.excerpt));
+      if (s.saved === false) li.appendChild(el('p', 'hint', 'Ainda não gravada: se a página for fechada antes de aceitar ou recusar, esta sugestão se perde.'));
+      if (s.error) li.appendChild(el('span', 'error-text', s.error));
       var acts = el('div', 'actions');
       [['accepted', 'Aceitar', 'btn btn-small'], ['rejected', 'Recusar', 'btn btn-danger btn-small']].forEach(function (a) {
         var b = el('button', a[2], a[1]);
@@ -700,17 +880,29 @@
   function decide(s, decision) {
     if (state.busy) return;
     hideError();
+    var text = String(s.draft !== undefined ? s.draft : s.change_text).replace(/\s+/g, ' ').trim();
+    s.error = '';
+    if (decision === 'accepted' && !text) { s.error = MSG.change_required; renderSuggestions(); $('change-' + s.suggestion_id).focus(); return; }
+    if (text.length > CHANGE_MAX) { s.error = MSG.change_too_long; renderSuggestions(); $('change-' + s.suggestion_id).focus(); return; }
     state.busy = true;
     renderSuggestions();
-    api({ action: 'decide', suggestion_id: s.suggestion_id, decision: decision }).then(function () {
+    api({ action: 'decide', suggestion_id: s.suggestion_id, decision: decision, change_text: text,
+      task_id: s.task_id, meeting_date: s.meeting_date, excerpt: s.excerpt }).then(function (data) {
       state.busy = false;
       state.suggestions = state.suggestions.filter(function (x) { return x.suggestion_id !== s.suggestion_id; });
       renderSuggestions();
-      toast(decision === 'accepted' ? 'Sugestão aceita. A tarefa não foi alterada: ajuste-a na lista.' : 'Sugestão recusada.');
+      var t = data.task && data.task.task_id ? data.task : null;
+      if (t) {
+        state.tasks = state.tasks.map(function (x) { return x.task_id === t.task_id ? Object.assign({}, x, { meeting_updates: String(t.meeting_updates || '') }) : x; });
+        var updated = state.tasks.filter(function (x) { return x.task_id === t.task_id; })[0];
+        if (updated) replaceRow(updated);
+      }
+      toast(decision === 'accepted' ? 'Sugestão aceita. Texto acrescentado à tarefa ' + s.task_id + '.' : 'Sugestão recusada. A tarefa não mudou.');
       $('suggestions-title').setAttribute('tabindex', '-1');
       $('suggestions-title').focus();
     }, function (err) {
       state.busy = false;
+      if (err.code !== 'unauthorized') s.error = messageFor(err);
       renderSuggestions();
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
       if (err.code === 'not_found' || err.code === 'already_decided') {
@@ -732,6 +924,13 @@
     if (/^M\d{4}-/.test(id)) return 'MTG';
     var manual = /^MAN-([A-Z]+)-/.exec(id);    // manual tasks carry the pillar in the code: MAN-CMP-001
     return manual ? manual[1] : id.split('-')[0];
+  }
+  // meeting_updates: one "[DD/MM] text" per accepted suggestion. null = never updated.
+  function lastMeetingUpdate(t) {
+    var lines = String(t.meeting_updates || '').trim().split('\n').filter(function (l) { return l.trim(); });
+    if (!lines.length) return null;
+    var m = /^\[(\d{2}\/\d{2})\]/.exec(lines[lines.length - 1].trim());
+    return m ? m[1] : '';
   }
   function ownersOf(t) { return t.owners.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
   // Origin: "manual" = created here; starts with "reunião" (any case or accent) = meeting; empty or anything else = GTM.
@@ -802,7 +1001,7 @@
       if (ow && ownersOf(t).indexOf(ow) < 0) return false;
       if (se && sectionOf(t.task_id) !== se) return false;
       if (orig && originKind(t) !== orig) return false;
-      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.origin].join(' ')).indexOf(q) >= 0;
+      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.meeting_updates, t.origin].join(' ')).indexOf(q) >= 0;
     });
     return found.sort($('filter-sort').value === 'id' ? byId : byDue);
   }
@@ -1089,6 +1288,8 @@
     head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
     head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
     if (t.is_new === 'yes') head.appendChild(el('span', 'tag tag-new', 'novo'));
+    var lastUpdate = lastMeetingUpdate(t);
+    if (lastUpdate !== null) head.appendChild(el('span', 'tag tag-updated', 'atualizada em reunião' + (lastUpdate ? ' ' + lastUpdate : '')));
     main.appendChild(head);
     main.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA));
     var meta = el('p', 'item-meta');
@@ -1121,6 +1322,12 @@
     form.appendChild(field('due-' + t.task_id, 'Prazo', due));
     var note = el('textarea', 'short'); note.maxLength = 500; note.value = t.change_note;
     form.appendChild(field('note-' + t.task_id, 'Nota de mudança (aparece na Home se a tarefa estiver visível)', note));
+    if (String(t.meeting_updates || '').trim()) {
+      var upd = el('div', 'field');
+      upd.appendChild(el('span', 'excerpt-label', 'Atualizações das reuniões (só na admin, não vão para a Home)'));
+      upd.appendChild(el('p', 'updates', String(t.meeting_updates).trim()));
+      form.appendChild(upd);
+    }
     var save = el('button', 'btn btn-small', 'Salvar');
     save.type = 'submit'; save.disabled = saving;
     var acts = el('div', 'actions'); acts.appendChild(save);
@@ -1365,6 +1572,11 @@
     $('logout').addEventListener('click', function () { signOut(''); });
     $('meeting-form').addEventListener('submit', onAnalyze);
     $('meeting-file').addEventListener('change', onFile);
+    window.addEventListener('beforeunload', function (ev) {   // proposals and new suggestions exist only in this page
+      if (!state.key || !unsavedWork()) return;
+      ev.preventDefault();
+      ev.returnValue = '';
+    });
     state.key = read(KEY_STORE) || '';
     if (!state.key) { $('login').hidden = false; return; }
     enterApp();
