@@ -75,6 +75,10 @@
   .excerpt-label { margin-top: 10px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
   .item .error-text { display: block; margin-top: 6px; }
   .updates { white-space: pre-line; overflow-wrap: anywhere; margin-top: 4px; padding: 8px 12px; border-radius: 10px; background: #f5f7fa; font-size: 0.9375rem; }
+  .tag-similar { margin-left: 0; background: #fff5d6; color: #5f4200; border: 1px solid #e6c66a; }
+  .compare-wrap { margin-top: 8px; }
+  .compare { margin-top: 6px; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 10px; }
+  .compare > div { padding: 8px 12px; border-radius: 10px; background: #f5f7fa; overflow-wrap: anywhere; }
   .tag-updated { background: #e6f0fb; color: #174a85; border: 1px solid #9cc0ea; }
 
   .field select, .task-controls select { min-height: 44px; padding: 8px 10px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; font: inherit; color: inherit; width: 100%; }
@@ -771,18 +775,67 @@
   function unsavedWork() {
     return pendingProposals().length > 0 || state.suggestions.some(function (s) { return s.saved === false; });
   }
+  function readProposal(p, key, checked, similar) {
+    return { key: key, title_pt_BR: String(p.title_pt_BR || ''), title_en_CA: String(p.title_en_CA || ''),
+      owners: Array.isArray(p.owners) ? p.owners.join(', ') : String(p.owners || ''), due_date: String(p.due_date || ''),
+      excerpt: String(p.excerpt || ''), checked: checked, similar: similar || null, origTitle: [String(p.title_pt_BR || ''), String(p.title_en_CA || '')],
+      task_id: '', already: false, error: '' };
+  }
   function setProposals(data, date) {
+    var list = Array.isArray(data.proposals) ? data.proposals : [];
+    var covered = Array.isArray(data.covered) ? data.covered : [];
+    var discarded = Array.isArray(data.discarded) ? data.discarded : [];
+    var c = data.counts || {};
     state.meeting = {
       date: String(data.meeting_date || date || ''),
-      skipped: Array.isArray(data.skipped_duplicates) ? data.skipped_duplicates : [],
-      discarded: Number(data.discarded) || 0
+      covered: covered.map(function (x, i) { return { item: x, key: String(x.key || ('c' + (i + 1))), added: false }; }),
+      discarded: discarded,
+      counts: {
+        new: typeof c.new === 'number' ? c.new : list.filter(function (p) { return !p.similar; }).length,
+        similar: typeof c.similar === 'number' ? c.similar : list.filter(function (p) { return p.similar; }).length,
+        covered: typeof c.covered === 'number' ? c.covered : covered.length,
+        discarded: typeof c.discarded === 'number' ? c.discarded : discarded.length
+      }
     };
-    state.proposals = (Array.isArray(data.proposals) ? data.proposals : []).map(function (p, i) {
-      return { key: String(p.key || ('p' + (i + 1))), title_pt_BR: String(p.title_pt_BR || ''), title_en_CA: String(p.title_en_CA || ''),
-        owners: Array.isArray(p.owners) ? p.owners.join(', ') : String(p.owners || ''), due_date: String(p.due_date || ''),
-        excerpt: String(p.excerpt || ''), checked: true, task_id: '', already: false, error: '' };
+    // Similar ones come unchecked from the server (checked: false): you decide.
+    state.proposals = list.map(function (p, i) {
+      return readProposal(p, String(p.key || ('p' + (i + 1))), p.checked !== false, p.similar && p.similar.task_id ? p.similar : null);
     });
     state.addMsg = '';
+  }
+  function statusWord(st) { return st ? statusLabel(st).toLowerCase() : 'status desconhecido'; }
+  // "Parecida com CNT-01 (concluída)" plus the two titles side by side
+  function similarBox(p) {
+    var x = p.similar, wrap = el('div', 'compare-wrap');
+    var tag = el('span', 'tag tag-similar', (p.fromCovered ? 'Coberta por ' : 'Parecida com ') + x.task_id + ' (' + statusWord(x.status) + ')');
+    wrap.appendChild(tag);
+    var cmp = el('div', 'compare');
+    var a = el('div'); a.appendChild(el('span', 'excerpt-label', 'Proposta'));
+    a.appendChild(el('p', null, p.origTitle[0] || '(sem título)'));
+    if (p.origTitle[1]) a.appendChild(el('p', 'item-meta', p.origTitle[1]));
+    var b = el('div'); b.appendChild(el('span', 'excerpt-label', 'Tarefa existente ' + x.task_id));
+    b.appendChild(el('p', null, x.title_pt_BR || x.title_en_CA || '(sem título)'));
+    if (x.title_en_CA && x.title_pt_BR) b.appendChild(el('p', 'item-meta', x.title_en_CA));
+    cmp.appendChild(a); cmp.appendChild(b);
+    wrap.appendChild(cmp);
+    return wrap;
+  }
+  var DISCARD_REASON = {
+    excerpt_not_in_text: 'o trecho citado pela IA não está no texto da reunião',
+    repeated_in_analysis: 'repetida nesta análise (mesmo título em português e em inglês)',
+    change_unknown_task: 'alteração para uma tarefa que não existe na aba',
+    change_already_listed: 'alteração igual a uma já listada para a mesma tarefa'
+  };
+  function addCovered(c) {
+    if (c.added || state.adding) return;
+    var x = c.item, t = x.task || {};
+    var p = readProposal(x, c.key, false, t.task_id && !t.missing ? t : null);
+    p.fromCovered = true;
+    state.proposals.push(p);
+    c.added = true;
+    renderResult();
+    var n = $('prop-title_pt_BR-' + p.key);
+    if (n) n.focus();
   }
   function proposalInput(p, name, labelText, type, max) {
     var input = el('input');
@@ -818,6 +871,8 @@
     check.appendChild(box);
     check.appendChild(document.createTextNode(' Adicionar esta tarefa'));
     li.appendChild(check);
+    if (p.similar) li.appendChild(similarBox(p));
+    else if (p.fromCovered) li.appendChild(el('span', 'tag tag-similar', 'Vinda de "Já cobertas"'));
     var grid = el('div', 'form-grid');
     grid.appendChild(proposalInput(p, 'title_pt_BR', 'Título (português)', 'text', 200));
     grid.appendChild(proposalInput(p, 'title_en_CA', 'Título (inglês)', 'text', 200));
@@ -844,12 +899,21 @@
     renderResult();
   }
   function renderResult() {
-    var box = $('result-body'), m = state.meeting || { date: '', skipped: [], discarded: 0 };
+    var box = $('result-body'), m = state.meeting || { date: '', covered: [], discarded: [], counts: { new: 0, similar: 0, covered: 0, discarded: 0 } };
     clear(box);
     var pend = pendingProposals();
     var total = state.proposals.length;
-    box.appendChild(el('p', 'hint', 'Reunião de ' + (fmtDate(m.date) || 'data não informada') + '. ' +
-      (total === 1 ? '1 tarefa nova proposta.' : total + ' tarefas novas propostas.')));
+    box.appendChild(el('p', 'hint', 'Reunião de ' + (fmtDate(m.date) || 'data não informada') + '.'));
+    var tiles = el('div', 'tiles'); tiles.id = 'result-counts';
+    [['new', 'Propostas novas'], ['similar', 'Parecidas'], ['covered', 'Já cobertas'], ['discarded', 'Descartadas']].forEach(function (k) {
+      var tile = el('div', 'tile st-none');
+      tile.setAttribute('data-count', k[0]);
+      tile.appendChild(el('p', 'tile-label', k[1]));
+      tile.appendChild(el('p', 'tile-value', m.counts[k[0]]));
+      tiles.appendChild(tile);
+    });
+    box.appendChild(tiles);
+    if (m.counts.similar) box.appendChild(el('p', 'hint', 'As parecidas com tarefas existentes vêm desmarcadas: compare os títulos e marque só o que for realmente novo.'));
     if (pend.length) {
       box.appendChild(el('p', 'warning', 'Nada foi gravado ainda. Desmarque o que não quer, ajuste título, responsáveis e prazo e clique em "Adicionar selecionadas". Se fechar ou recarregar a página antes disso, estas propostas se perdem.'));
       var sel = el('div', 'select-bar');
@@ -878,21 +942,42 @@
     } else if (state.addMsg) {
       box.appendChild(el('p', 'hint', state.addMsg));
     }
-    if (m.skipped.length) {
-      box.appendChild(el('h3', 'subhead', 'Não propostas: já existem'));
-      var us = el('ul');
-      m.skipped.forEach(function (x) {
+    if (m.covered.length) {
+      var hc = el('h3', 'subhead', 'Já cobertas por tarefas existentes'); hc.id = 'covered-title';
+      box.appendChild(hc);
+      box.appendChild(el('p', 'hint', 'A IA achou que estes itens da reunião já estão em tarefas da aba. Se discordar, use "Adicionar mesmo assim": vira uma proposta desmarcada, para editar.'));
+      var uc = el('ul'); uc.id = 'covered-list';
+      m.covered.forEach(function (c) {
+        var x = c.item, t = x.task || {};
         var li = el('li', 'item');
-        li.appendChild(el('p', 'item-title', x.title));
-        li.appendChild(el('p', 'item-meta', 'Parecida com ' + x.similar_to + ': ' + x.similar_title));
-        us.appendChild(li);
+        li.setAttribute('data-covered', c.key);
+        li.appendChild(el('span', 'item-id', (t.task_id || '?') + (t.missing ? ' (código não encontrado na aba)' : ' · ' + statusWord(t.status))));
+        li.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA || '(tarefa sem título)'));
+        if (x.title_pt_BR) li.appendChild(el('p', 'item-meta', 'Item da reunião: ' + x.title_pt_BR));
+        li.appendChild(el('blockquote', 'excerpt', x.excerpt));
+        var acts = el('div', 'actions');
+        var b = el('button', 'btn btn-quiet btn-small', c.added ? 'Adicionada às propostas' : 'Adicionar mesmo assim');
+        b.type = 'button'; b.disabled = c.added || state.adding;
+        b.setAttribute('aria-label', 'Adicionar mesmo assim: ' + (x.title_pt_BR || t.task_id));
+        b.addEventListener('click', function () { addCovered(c); });
+        acts.appendChild(b);
+        li.appendChild(acts);
+        uc.appendChild(li);
       });
-      box.appendChild(us);
+      box.appendChild(uc);
     }
-    if (m.discarded) {
-      box.appendChild(el('p', 'hint', m.discarded === 1
-        ? '1 item da IA foi descartado: citava tarefa inexistente, vinha incompleto ou o trecho não estava no texto.'
-        : m.discarded + ' itens da IA foram descartados: citavam tarefa inexistente, vinham incompletos ou o trecho não estava no texto.'));
+    if (m.discarded.length) {
+      var hd = el('h3', 'subhead', m.discarded.length === 1 ? '1 item descartado' : m.discarded.length + ' itens descartados');
+      box.appendChild(hd);
+      var ud = el('ul'); ud.id = 'discarded-list';
+      m.discarded.forEach(function (x) {
+        var li = el('li', 'item');
+        li.appendChild(el('p', 'item-title', x.title || '(sem título)'));
+        li.appendChild(el('p', 'item-meta', 'Motivo: ' + (DISCARD_REASON[x.reason] || x.reason) + (x.task_id ? ' (' + x.task_id + ')' : '')));
+        if (x.excerpt) li.appendChild(el('blockquote', 'excerpt', x.excerpt));
+        ud.appendChild(li);
+      });
+      box.appendChild(ud);
     }
     renderAddBar();
     $('result').hidden = false;
