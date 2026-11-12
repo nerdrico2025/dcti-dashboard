@@ -69,6 +69,17 @@
   .subhead { margin-top: 20px; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
   .item .actions { margin-top: 10px; }
   .empty { margin-top: 10px; color: var(--faint); }
+  .proposal .form-grid { margin-top: 10px; }
+  .proposal.off .form-grid, .proposal.off .excerpt { opacity: 0.55; }
+  .proposal .check { min-height: 36px; color: var(--text); }
+  .excerpt-label { margin-top: 10px; font-size: 0.8125rem; font-weight: 600; color: var(--muted); }
+  .item .error-text { display: block; margin-top: 6px; }
+  .updates { white-space: pre-line; overflow-wrap: anywhere; margin-top: 4px; padding: 8px 12px; border-radius: 10px; background: #f5f7fa; font-size: 0.9375rem; }
+  .tag-similar { margin-left: 0; background: #fff5d6; color: #5f4200; border: 1px solid #e6c66a; }
+  .compare-wrap { margin-top: 8px; }
+  .compare { margin-top: 6px; display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: 10px; }
+  .compare > div { padding: 8px 12px; border-radius: 10px; background: #f5f7fa; overflow-wrap: anywhere; }
+  .tag-updated { background: #e6f0fb; color: #174a85; border: 1px solid #9cc0ea; }
 
   .field select, .task-controls select { min-height: 44px; padding: 8px 10px; border: 1px solid #9aa5b1; border-radius: 10px; background: #fff; font: inherit; color: inherit; width: 100%; }
   .field textarea.short { min-height: 72px; }
@@ -156,6 +167,69 @@
   body.has-bulk .wrap { padding-bottom: 200px; }
   body.has-bulk .toast { bottom: 128px; }
 
+  /* tabs (Tarefas / Horas / Reuniões): the active one is in the URL hash */
+  .tabs { margin-top: 28px; display: flex; flex-wrap: wrap; gap: 4px; border-bottom: 2px solid var(--line); }
+  .tab { min-height: 44px; padding: 8px 18px; border: 0; border-bottom: 3px solid transparent; margin-bottom: -2px; background: none; font-size: 1rem; font-weight: 650; color: var(--muted); border-radius: 10px 10px 0 0; }
+  .tab:hover { background: var(--accent-soft); color: var(--text); }
+  .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); background: var(--card); }
+  .tabpanel:focus { outline: none; }
+  .task-hours { margin-top: 8px; }
+
+  /* Horas tab (moved from horas.html; every id and class starts with h-) */
+  .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+  .h-weekbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+  .h-weekbar .h-week-name { font-size: 1.25rem; font-weight: 700; }
+  .h-weekbar .hint { margin-top: 2px; }
+  .h-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+  .lh-dialog { padding: 0; max-width: 32rem; }
+  .lh-body { padding: 22px 24px; }
+  .lh-body .item-id { margin-right: 6px; }
+  .lh-body form { margin-top: 12px; }
+  .lh-quick { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+  .lh-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 14px; }
+  .lh-body .error-text { min-height: 1.25em; margin: 0; }
+  .lh-cat-fixed { margin: 0; font-size: 0.9375rem; }
+  .lh-cat-fixed .link-btn { min-height: 0; padding: 0 2px; }
+  .lh-cats { border: 0; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 2px; }
+  .lh-cats legend { font-size: 0.875rem; font-weight: 600; color: var(--muted); padding: 0; margin-bottom: 4px; }
+  .lh-cats label { display: flex; align-items: center; gap: 8px; min-height: 36px; cursor: pointer; }
+  .lh-cats input { width: 18px; height: 18px; margin: 0; }
+  .lh-cats .lh-sugg { color: var(--muted); font-size: 0.8125rem; }
+  .lh-done { color: var(--text); font-weight: 600; }
+  .tag-cat { background: #eef2f7; color: var(--muted); }
+  .h-loading { margin-top: 24px; color: var(--muted); }
+  .h-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
+  .h-total-label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .h-total-value { font-size: 2.5rem; font-weight: 750; line-height: 1.1; font-variant-numeric: tabular-nums; }
+  .h-copy-box { width: 100%; }
+  .h-copy-box textarea { width: 100%; min-height: 200px; margin-top: 8px; padding: 10px; border: 1px solid #9aa5b1; border-radius: 10px; font: inherit; font-size: 0.9375rem; }
+  .h-section-title { margin: 36px 0 0; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: var(--muted); }
+  .h-group.card { margin-top: 12px; padding-top: 18px; padding-bottom: 18px; }
+  .h-group-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .h-group-head h3 { font-size: 1.125rem; font-weight: 700; }
+  .h-sum { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .h-sum.zero { color: var(--faint); font-weight: 600; }
+  .h-item + .h-item { margin-top: 18px; padding-top: 18px; border-top: 1px solid var(--line); }
+  .h-group-head + .h-item { margin-top: 12px; padding-top: 14px; border-top: 2px solid var(--line); }
+  .h-item-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+  .h-item-head h4 { margin: 0; font-size: 1rem; font-weight: 650; }
+  .h-tag { display: inline-block; font-size: 0.75rem; font-weight: 650; margin-left: 8px; padding: 1px 8px; border-radius: 999px; background: #eef1f5; color: var(--muted); vertical-align: 2px; }
+  .h-tag-pausada { background: #fff4d6; color: #6b4a00; }
+  .h-tag-concluida { background: #e3f1e7; color: #1d5a32; }
+  .h-periods { margin-top: 10px; }
+  .h-period { display: grid; grid-template-columns: 8.5rem 5rem 1fr auto; align-items: center; gap: 4px 14px; padding: 8px 0; border-top: 1px solid #edf0f4; }
+  .h-periods li:first-child .h-period { border-top: 0; }
+  .h-p-date { color: var(--muted); font-size: 0.9375rem; }
+  .h-p-hours { font-weight: 700; font-variant-numeric: tabular-nums; }
+  .h-p-note { font-size: 0.9375rem; overflow-wrap: anywhere; }
+  .h-p-note.empty { color: var(--faint); }
+  .h-p-actions { display: flex; gap: 6px; }
+  .h-none { margin-top: 8px; color: var(--faint); font-size: 0.9375rem; }
+  .h-add { margin-top: 10px; }
+  .h-form { margin-top: 10px; padding: 14px; border-radius: 12px; background: var(--accent-soft); display: grid; grid-template-columns: 10rem 8rem 1fr; gap: 12px; align-items: start; }
+  .h-form .h-hint { font-size: 0.8125rem; color: var(--muted); }
+  .h-form .actions { grid-column: 1 / -1; }
+
   @media (max-width: 640px) {
     .filters, .task-controls, .task { grid-template-columns: 1fr; }
     .wrap { padding: 24px 16px 56px; }
@@ -169,6 +243,15 @@
     body.has-bulk .wrap { padding-bottom: 320px; }
     body.has-bulk .toast { bottom: 260px; }
     .task-edit > summary { padding: 10px 0; }
+    .tab { flex: 1 1 auto; padding: 8px 10px; }
+    .h-total-value { font-size: 2.125rem; }
+    .h-period { grid-template-columns: 1fr auto; }
+    .h-p-hours { grid-column: 2; grid-row: 1; text-align: right; }
+    .h-p-note, .h-p-actions { grid-column: 1 / -1; }
+    .h-form { grid-template-columns: 1fr 1fr; }
+    .h-form .h-f-note { grid-column: 1 / -1; }
+    .h-nav { width: 100%; }
+    .h-nav .btn { flex: 1 1 auto; }
   }
 </style>
 </head>
@@ -210,6 +293,12 @@
         </div>
       </section>
 
+      <div class="tabs" role="tablist" aria-label="Seções da admin">
+        <button type="button" class="tab" role="tab" id="tab-tarefas" aria-controls="panel-tarefas" aria-selected="true">Tarefas</button>
+        <button type="button" class="tab" role="tab" id="tab-horas" aria-controls="panel-horas" aria-selected="false" tabindex="-1">Horas</button>
+        <button type="button" class="tab" role="tab" id="tab-reunioes" aria-controls="panel-reunioes" aria-selected="false" tabindex="-1">Reuniões</button>
+      </div>
+      <div class="tabpanel" role="tabpanel" id="panel-tarefas" aria-labelledby="tab-tarefas" tabindex="-1">
       <section class="card" aria-labelledby="tasks-title">
         <h2 id="tasks-title" tabindex="-1">Tarefas</h2>
         <p class="hint">Mude o status e o "Mostrar na Home" direto na linha. Cada mudança é salva na hora.</p>
@@ -218,6 +307,7 @@
           <div class="field"><label for="filter-origin">Origem</label><select id="filter-origin"><option value="">Todas</option><option value="gtm">GTM</option><option value="meeting">Reunião</option><option value="manual">Manual</option></select></div>
           <div class="field"><label for="filter-status">Status</label><select id="filter-status"></select></div>
           <div class="field"><label for="filter-section">Pilar</label><select id="filter-section"></select></div>
+          <div class="field"><label for="filter-category">Categoria</label><select id="filter-category"></select></div>
           <div class="field"><label for="filter-owner">Responsável</label><select id="filter-owner"></select></div>
           <div class="field"><label for="filter-sort">Ordenar por</label><select id="filter-sort"><option value="due">Prazo</option><option value="id">Código</option></select></div>
           <label class="check" for="filter-hide-frozen"><input type="checkbox" id="filter-hide-frozen"> Ocultar congeladas</label>
@@ -266,46 +356,6 @@
         </form>
       </section>
 
-      <section class="card" aria-labelledby="meeting-title">
-        <h2 id="meeting-title">Subir resumo de reunião</h2>
-        <p class="hint">Transforma o resumo de uma reunião em tarefas e sugestões para você revisar.</p>
-        <p class="warning" id="meeting-warning">Não suba trechos com senha, pagamento ou remuneração.</p>
-        <form class="stack" id="meeting-form" novalidate>
-          <div class="field">
-            <label for="meeting-text">Texto da reunião</label>
-            <textarea id="meeting-text" maxlength="60000" aria-describedby="meeting-warning meeting-error"></textarea>
-          </div>
-          <div class="row">
-            <div class="field">
-              <label for="meeting-file">Ou envie um arquivo .md ou .txt</label>
-              <input type="file" id="meeting-file" accept=".md,.txt,text/markdown,text/plain">
-            </div>
-            <div class="field">
-              <label for="meeting-date">Data da reunião</label>
-              <input type="date" id="meeting-date" required aria-describedby="meeting-error">
-            </div>
-          </div>
-          <p class="hint">O texto só é usado nesta análise e não é guardado. Ficam salvos apenas as tarefas e o trecho de cada uma.</p>
-          <div class="actions">
-            <button type="submit" class="btn" id="analyze-btn">Analisar</button>
-            <span class="error-text" id="meeting-error" role="alert"></span>
-          </div>
-        </form>
-      </section>
-
-      <section class="card" id="result" aria-labelledby="result-title" tabindex="-1" hidden>
-        <h2 id="result-title">Resultado da análise</h2>
-        <div id="result-body"></div>
-      </section>
-
-      <section class="card" aria-labelledby="suggestions-title">
-        <h2 id="suggestions-title">Alterações sugeridas</h2>
-        <p class="hint">Mudanças em tarefas encontradas nas reuniões. Aceitar ou recusar só registra sua decisão. A tarefa não muda sozinha.</p>
-        <ul id="suggestions"></ul>
-        <p class="empty" id="no-suggestions" hidden>Nenhuma alteração aguardando decisão.</p>
-        <p class="error-text" id="suggestions-error" role="alert"></p>
-      </section>
-
       <details class="card fold" id="forced-box">
         <summary>
           <h2 id="forced-title">Ajuste excepcional da cor</h2>
@@ -335,6 +385,85 @@
           </div>
         </form>
       </details>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" id="panel-horas" aria-labelledby="tab-horas" tabindex="-1" hidden>
+        <section class="card h-weekbar" aria-labelledby="h-week-name">
+          <div>
+            <h2 class="h-week-name" id="h-week-name">Registro de horas</h2>
+            <p class="hint" id="h-week-range"></p>
+          </div>
+          <div class="h-nav">
+            <button type="button" class="btn btn-quiet btn-small" id="h-prev-week" aria-label="Semana anterior">← Anterior</button>
+            <button type="button" class="btn btn-quiet btn-small" id="h-this-week">Esta semana</button>
+            <button type="button" class="btn btn-quiet btn-small" id="h-next-week" aria-label="Próxima semana">Próxima →</button>
+          </div>
+        </section>
+        <div class="notice" id="h-error" role="alert" hidden><p id="h-error-text"></p><button type="button" class="btn btn-quiet" id="h-retry">Tentar de novo</button></div>
+        <p class="h-loading" id="h-loading" hidden>Carregando…</p>
+        <div id="h-content" hidden>
+          <section class="card h-total" aria-labelledby="h-total-label">
+            <div>
+              <p class="h-total-label" id="h-total-label">Total da semana</p>
+              <p class="h-total-value" id="h-total-value"></p>
+            </div>
+            <button type="button" class="btn" id="h-copy-btn">Copiar resumo da semana</button>
+            <div class="h-copy-box" id="h-copy-box" hidden>
+              <p class="hint">Não deu para copiar sozinho. O texto já está selecionado: use Ctrl+C (ou Cmd+C).</p>
+              <label class="visually-hidden" for="h-copy-text">Resumo da semana em inglês</label>
+              <textarea id="h-copy-text" readonly></textarea>
+            </div>
+          </section>
+          <h2 class="h-section-title">Frentes do GTM</h2>
+          <div id="h-groups"></div>
+          <p class="h-none" id="h-no-tasks" hidden>Nenhuma frente ativa na aba pillars.</p>
+          <h2 class="h-section-title">Reuniões e extras</h2>
+          <div id="h-fixed"></div>
+        </div>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" id="panel-reunioes" aria-labelledby="tab-reunioes" tabindex="-1" hidden>
+      <section class="card" aria-labelledby="meeting-title">
+        <h2 id="meeting-title">Subir resumo de reunião</h2>
+        <p class="hint">Transforma o resumo de uma reunião em tarefas e sugestões para você revisar.</p>
+        <p class="warning" id="meeting-warning">Não suba trechos com senha, pagamento ou remuneração.</p>
+        <form class="stack" id="meeting-form" novalidate>
+          <div class="field">
+            <label for="meeting-text">Texto da reunião</label>
+            <textarea id="meeting-text" maxlength="60000" aria-describedby="meeting-warning meeting-error"></textarea>
+          </div>
+          <div class="row">
+            <div class="field">
+              <label for="meeting-file">Ou envie um arquivo .md ou .txt</label>
+              <input type="file" id="meeting-file" accept=".md,.txt,text/markdown,text/plain">
+            </div>
+            <div class="field">
+              <label for="meeting-date">Data da reunião</label>
+              <input type="date" id="meeting-date" required aria-describedby="meeting-error">
+            </div>
+          </div>
+          <p class="hint">O texto só é usado nesta análise e não é guardado. A análise não grava nada: você revisa as propostas e grava só as que escolher, com o trecho de cada uma.</p>
+          <div class="actions">
+            <button type="submit" class="btn" id="analyze-btn">Analisar</button>
+            <span class="error-text" id="meeting-error" role="alert"></span>
+          </div>
+        </form>
+      </section>
+
+      <section class="card" id="result" aria-labelledby="result-title" tabindex="-1" hidden>
+        <h2 id="result-title">Resultado da análise</h2>
+        <div id="result-body"></div>
+      </section>
+
+      <section class="card" aria-labelledby="suggestions-title">
+        <h2 id="suggestions-title">Alterações sugeridas</h2>
+        <p class="hint">Mudanças em tarefas encontradas nas reuniões. Aceitar acrescenta o texto abaixo (pode editar antes) às atualizações da tarefa, com a data da reunião no início e sem apagar o que já havia. Recusar só registra a decisão e não altera a tarefa. As atualizações aparecem em "Editar detalhes" da tarefa e não vão para a Home.</p>
+        <ul id="suggestions"></ul>
+        <p class="empty" id="no-suggestions" hidden>Nenhuma alteração aguardando decisão.</p>
+        <p class="error-text" id="suggestions-error" role="alert"></p>
+      </section>
+
+      </div>
 
       <dialog class="confirm" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-name delete-gtm delete-warning">
         <h2 id="delete-title">Excluir esta tarefa?</h2>
@@ -366,6 +495,44 @@
         </div>
       </dialog>
 
+      <dialog class="confirm lh-dialog" id="lh-dialog" aria-labelledby="lh-title" aria-describedby="lh-task">
+        <div class="lh-body">
+          <h2 id="lh-title">Registrar horas</h2>
+          <p class="item-title" id="lh-task"><span class="item-id" id="lh-task-id"></span><span id="lh-task-title"></span></p>
+          <form class="stack" id="lh-form" novalidate>
+            <div class="field">
+              <label for="lh-hours">Tempo</label>
+              <input type="text" id="lh-hours" inputmode="decimal" autocomplete="off" aria-describedby="lh-hours-hint lh-error">
+              <span class="hint" id="lh-hours-hint">Ex.: 1,5 ou 1:30</span>
+              <div class="lh-quick" role="group" aria-label="Atalhos de tempo">
+                <button type="button" class="btn btn-quiet btn-small" data-lh-hours="0,5">0,5 h</button>
+                <button type="button" class="btn btn-quiet btn-small" data-lh-hours="1">1 h</button>
+                <button type="button" class="btn btn-quiet btn-small" data-lh-hours="2">2 h</button>
+              </div>
+            </div>
+            <div class="field">
+              <label for="lh-date">Data</label>
+              <input type="date" id="lh-date" aria-describedby="lh-error">
+            </div>
+            <p class="lh-cat-fixed" id="lh-cat-fixed" hidden>Categoria: <strong id="lh-cat-name"></strong> · <button type="button" class="link-btn" id="lh-cat-change" aria-label="Trocar a categoria">trocar</button></p>
+            <fieldset class="lh-cats" id="lh-cats" aria-describedby="lh-error" hidden>
+              <legend>Categoria</legend>
+              <div id="lh-cat-options"></div>
+            </fieldset>
+            <label class="check" id="lh-save-wrap" hidden><input type="checkbox" id="lh-save" checked> Guardar na tarefa</label>
+            <div class="field">
+              <label for="lh-note">Nota</label>
+              <input type="text" id="lh-note" maxlength="500" autocomplete="off">
+            </div>
+            <p class="error-text" id="lh-error" role="alert"></p>
+            <div class="actions">
+              <button type="button" class="btn btn-quiet" id="lh-cancel">Cancelar</button>
+              <button type="submit" class="btn" id="lh-submit">Registrar</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+
       <div class="bulk-bar" id="bulk-bar" role="region" aria-label="Ações nas tarefas selecionadas" hidden>
         <div class="bulk-inner">
           <p class="bulk-count" id="bulk-count"></p>
@@ -377,6 +544,7 @@
               <option value="show">Mostrar na Home</option>
               <option value="owners">Definir responsáveis</option>
               <option value="due">Definir prazo</option>
+              <option value="category">Definir categoria</option>
               <option value="delete">Excluir (até 25 por vez)</option>
             </select>
           </div>
@@ -428,13 +596,23 @@
     invalid_status: 'Status inválido.',
     invalid_visibility: 'Opção de "Mostrar na Home" inválida.',
     duplicate_title: 'Já existe uma tarefa com este título.',
-    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte o workflow F.',
+    invalid_action: 'O servidor ainda não conhece esta ação. Reimporte os workflows D e F.',
     row_not_found: 'Não foi possível identificar a linha com certeza. Nada foi excluído.',
     task_gone: 'Esta tarefa não existe mais. A lista foi recarregada.',
     too_many: 'Selecione no máximo 100 tarefas por vez.',
     too_many_delete: 'Exclua no máximo 25 tarefas por vez. Cada linha é uma gravação no Google, que limita as gravações por minuto.',
     write_not_confirmed: 'A planilha não confirmou a gravação. Recarregue a página e confira.',
-    no_tasks: 'Nenhuma tarefa selecionada.'
+    no_tasks: 'Nenhuma tarefa selecionada.',
+    invalid_category: 'Categoria inválida.',
+    column_missing_categoria: 'Falta a coluna categoria na aba tasks (logo depois de meeting_updates). Crie a coluna e tente de novo.',
+    too_many_add: 'Adicione no máximo 25 tarefas por vez.',
+    invalid_key: 'Pedido inválido. Analise a reunião de novo.',
+    excerpt_too_long: 'O trecho passa de 500 caracteres.',
+    change_required: 'Escreva o texto que será acrescentado à tarefa.',
+    change_too_long: 'O texto passa de 400 caracteres.',
+    updates_too_long: 'As atualizações desta tarefa passam de 5.000 caracteres. Resuma a coluna meeting_updates na planilha antes de aceitar.',
+    column_missing: 'Falta a coluna meeting_updates na aba tasks. Crie a coluna e tente de novo.',
+    duplicate_id: 'Há mais de uma linha com este código na planilha. Corrija a planilha antes.'
   };
 
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
@@ -445,8 +623,9 @@
   var COLOR_NAMES = { Green: 'Verde', Yellow: 'Amarelo', Red: 'Vermelho', Gray: 'Cinza' };
   var PAGE_SIZE = 10;
   var BULK_MAX = 100, BULK_TIMEOUT = 60000;
+  var ADD_MAX = 25, ADD_TIMEOUT = 60000, CHANGE_MAX = 400;
 
-  var state = { key: '', suggestions: [], busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
+  var state = { tab: 'tarefas', key: '', suggestions: [], proposals: [], meeting: null, adding: false, addMsg: '', busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
     selected: {}, shownIds: [], pageIds: [], bulkIds: [], bulkBusy: false };
 
   function $(id) { return document.getElementById(id); }
@@ -459,7 +638,10 @@
   function clear(n) { while (n.firstChild) n.removeChild(n.firstChild); }
   function store(k, v) { try { if (v === null) window.localStorage.removeItem(k); else window.localStorage.setItem(k, v); } catch (e) { /* no storage */ } }
   function read(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
-  function messageFor(err) { return MSG[err.code] || MSG.server; }
+  function messageFor(err) {
+    if (err.code === 'column_missing' && err.field === 'categoria') return MSG.column_missing_categoria;
+    return MSG[err.code] || MSG.server;
+  }
   function todaySP() {
     try { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
     catch (e) { return new Date(Date.now() - 3 * 3600e3).toISOString().slice(0, 10); }
@@ -469,12 +651,15 @@
     return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
   }
 
-  function api(body, timeout, url) {
+  // header: X-Admin-Key (workflows D and F) or X-Timelog-Key (timelog). Both carry the same admin password.
+  function api(body, timeout, url, header) {
     var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
     var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeout || DEFAULT_TIMEOUT) : null;
+    var headers = { 'Content-Type': 'application/json' };
+    headers[header || 'X-Admin-Key'] = state.key;
     return fetch(url || API, {
       method: 'POST', cache: 'no-store', credentials: 'same-origin',
-      headers: { 'Content-Type': 'application/json', 'X-Admin-Key': state.key },
+      headers: headers,
       body: JSON.stringify(body), signal: ctrl ? ctrl.signal : undefined
     }).then(function (res) {
       if (timer) clearTimeout(timer);
@@ -488,6 +673,8 @@
         err.similarTo = data && data.similar_to ? String(data.similar_to) : '';
         err.results = data && Array.isArray(data.results) ? data.results : [];
         err.lost = data && Array.isArray(data.lost) ? data.lost : [];
+        err.key = data && data.key ? String(data.key) : '';
+        err.field = data && data.field ? String(data.field) : '';
         throw err;
       });
     }, function () {
@@ -510,7 +697,7 @@
 
   // ---------- login
   function signOut(msg) {
-    state.key = ''; state.suggestions = []; state.tasks = []; state.forced = null; state.panel = null;
+    state.key = ''; state.suggestions = []; state.proposals = []; state.meeting = null; state.addMsg = ''; state.tasks = []; state.forced = null; state.panel = null;
     state.rowLine = null; state.page = 1;
     closeDelete();
     closeBulkDelete();
@@ -525,12 +712,15 @@
     $('filter-search').value = '';
     $('filter-status').value = '';
     $('filter-origin').value = '';
+    $('filter-category').value = '';
     $('filter-hide-frozen').checked = false;
     $('pager').hidden = true;
     $('new-error').textContent = '';
     $('new-form').reset();
     store(KEY_STORE, null);
     resetMeeting();
+    closeLogHours(true);
+    resetHoras();
     $('result').hidden = true;
     clear($('result-body'));
     $('suggestions-error').textContent = '';
@@ -546,7 +736,7 @@
   function loadSuggestions() {
     $('suggestions-error').textContent = '';
     return api({ action: 'list_suggestions' }).then(function (data) {
-      state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      state.suggestions = mergeSuggestions(data.suggestions);
       renderSuggestions();
     }, function () {
       $('suggestions-error').textContent = MSG.suggestions_unavailable;
@@ -567,6 +757,7 @@
       $('login-btn').disabled = false;
       $('login-btn').textContent = 'Entrar';
       loadSuggestionsIfIn();
+      if (state.key && !$('app').hidden && state.tab === 'horas') startHoras();
     });
   }
 
@@ -614,65 +805,297 @@
     if (!text) { meetingError('empty_text', textBox); return; }
     if (text.length > MAX_TEXT) { meetingError('text_too_long', textBox); return; }
     if (!date || date > todaySP()) { meetingError('invalid_date', dateBox); return; }
+    if (pendingProposals().length && !window.confirm('Há propostas da análise anterior que não foram gravadas. Analisar de novo descarta essas propostas. Continuar?')) return;
     setBusy(true, 'Analisando… pode levar até 2 min');
     api({ action: 'analyze', meeting_date: date, text: text }, ANALYZE_TIMEOUT).then(function (data) {
       resetMeeting();
-      state.suggestions = Array.isArray(data.suggestions) ? data.suggestions : [];
+      state.suggestions = mergeSuggestions(data.suggestions);
+      setProposals(data, date);
       setBusy(false);
-      renderResult(data);
-      toast('Análise concluída.');
+      renderResult();
+      $('result').focus();
+      toast('Análise concluída. Nada foi gravado ainda.');
     }, function (err) {
       setBusy(false);
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
       if (err.code === 'invalid_date') { meetingError('invalid_date', dateBox); return; }
       if (err.code === 'empty_text' || err.code === 'text_too_long') { meetingError(err.code, textBox); return; }
-      // the text stays in the field; analysing again does not duplicate tasks
+      // the text stays in the field; the analysis never writes, so trying again is safe
       showError(messageFor(err));
     });
   }
 
   // ---------- rendering (always textContent: AI and sheet values are never treated as HTML)
-  function renderResult(data) {
-    var box = $('result-body');
+  // ---------- proposals: only in this page until "Adicionar selecionadas". The analysis writes nothing.
+  function pendingProposals() { return state.proposals.filter(function (p) { return !p.task_id; }); }
+  function checkedProposals() { return pendingProposals().filter(function (p) { return p.checked; }); }
+  function unsavedWork() {
+    return pendingProposals().length > 0 || state.suggestions.some(function (s) { return s.saved === false; });
+  }
+  function readProposal(p, key, checked, similar) {
+    return { key: key, title_pt_BR: String(p.title_pt_BR || ''), title_en_CA: String(p.title_en_CA || ''),
+      owners: Array.isArray(p.owners) ? p.owners.join(', ') : String(p.owners || ''), due_date: String(p.due_date || ''),
+      excerpt: String(p.excerpt || ''), checked: checked, similar: similar || null, origTitle: [String(p.title_pt_BR || ''), String(p.title_en_CA || '')],
+      task_id: '', already: false, error: '' };
+  }
+  function setProposals(data, date) {
+    var list = Array.isArray(data.proposals) ? data.proposals : [];
+    var covered = Array.isArray(data.covered) ? data.covered : [];
+    var discarded = Array.isArray(data.discarded) ? data.discarded : [];
+    var c = data.counts || {};
+    state.meeting = {
+      date: String(data.meeting_date || date || ''),
+      covered: covered.map(function (x, i) { return { item: x, key: String(x.key || ('c' + (i + 1))), added: false }; }),
+      discarded: discarded,
+      counts: {
+        new: typeof c.new === 'number' ? c.new : list.filter(function (p) { return !p.similar; }).length,
+        similar: typeof c.similar === 'number' ? c.similar : list.filter(function (p) { return p.similar; }).length,
+        covered: typeof c.covered === 'number' ? c.covered : covered.length,
+        discarded: typeof c.discarded === 'number' ? c.discarded : discarded.length
+      }
+    };
+    // Similar ones come unchecked from the server (checked: false): you decide.
+    state.proposals = list.map(function (p, i) {
+      return readProposal(p, String(p.key || ('p' + (i + 1))), p.checked !== false, p.similar && p.similar.task_id ? p.similar : null);
+    });
+    state.addMsg = '';
+  }
+  function statusWord(st) { return st ? statusLabel(st).toLowerCase() : 'status desconhecido'; }
+  // "Parecida com CNT-01 (concluída)" plus the two titles side by side
+  function similarBox(p) {
+    var x = p.similar, wrap = el('div', 'compare-wrap');
+    var tag = el('span', 'tag tag-similar', (p.fromCovered ? 'Coberta por ' : 'Parecida com ') + x.task_id + ' (' + statusWord(x.status) + ')');
+    wrap.appendChild(tag);
+    var cmp = el('div', 'compare');
+    var a = el('div'); a.appendChild(el('span', 'excerpt-label', 'Proposta'));
+    a.appendChild(el('p', null, p.origTitle[0] || '(sem título)'));
+    if (p.origTitle[1]) a.appendChild(el('p', 'item-meta', p.origTitle[1]));
+    var b = el('div'); b.appendChild(el('span', 'excerpt-label', 'Tarefa existente ' + x.task_id));
+    b.appendChild(el('p', null, x.title_pt_BR || x.title_en_CA || '(sem título)'));
+    if (x.title_en_CA && x.title_pt_BR) b.appendChild(el('p', 'item-meta', x.title_en_CA));
+    cmp.appendChild(a); cmp.appendChild(b);
+    wrap.appendChild(cmp);
+    return wrap;
+  }
+  var DISCARD_REASON = {
+    excerpt_not_in_text: 'o trecho citado pela IA não está no texto da reunião',
+    repeated_in_analysis: 'repetida nesta análise (mesmo título em português e em inglês)',
+    change_unknown_task: 'alteração para uma tarefa que não existe na aba',
+    change_already_listed: 'alteração igual a uma já listada para a mesma tarefa'
+  };
+  function addCovered(c) {
+    if (c.added || state.adding) return;
+    var x = c.item, t = x.task || {};
+    var p = readProposal(x, c.key, false, t.task_id && !t.missing ? t : null);
+    p.fromCovered = true;
+    state.proposals.push(p);
+    c.added = true;
+    renderResult();
+    var n = $('prop-title_pt_BR-' + p.key);
+    if (n) n.focus();
+  }
+  function proposalInput(p, name, labelText, type, max) {
+    var input = el('input');
+    input.type = type;
+    if (max) input.maxLength = max;
+    input.value = p[name];
+    input.disabled = state.adding;
+    input.addEventListener('input', function () { p[name] = input.value; });
+    return field('prop-' + name + '-' + p.key, labelText, input);
+  }
+  function proposalItem(p) {
+    var li = el('li', 'item proposal' + (p.checked || p.task_id ? '' : ' off'));
+    li.setAttribute('data-proposal', p.key);
+    if (p.task_id) {
+      li.appendChild(el('span', 'item-id', p.task_id));
+      var t = el('p', 'item-title', p.title_pt_BR);
+      t.appendChild(el('span', 'tag tag-new', p.already ? 'já estava gravada' : 'gravada em backlog'));
+      li.appendChild(t);
+      li.appendChild(el('p', 'item-meta', 'Responsáveis: ' + (p.owners || 'não informado') + ' · Prazo: ' + (fmtDate(p.due_date) || 'não informado')));
+      li.appendChild(el('blockquote', 'excerpt', p.excerpt));
+      return li;
+    }
+    var check = el('label', 'check');
+    var box = el('input');
+    box.type = 'checkbox'; box.className = 'prop-pick'; box.checked = p.checked; box.disabled = state.adding;
+    box.id = 'prop-pick-' + p.key;
+    box.addEventListener('change', function () {
+      p.checked = box.checked;
+      li.className = 'item proposal' + (p.checked ? '' : ' off');
+      renderAddBar();
+    });
+    check.htmlFor = box.id;
+    check.appendChild(box);
+    check.appendChild(document.createTextNode(' Adicionar esta tarefa'));
+    li.appendChild(check);
+    if (p.similar) li.appendChild(similarBox(p));
+    else if (p.fromCovered) li.appendChild(el('span', 'tag tag-similar', 'Vinda de "Já cobertas"'));
+    var grid = el('div', 'form-grid');
+    grid.appendChild(proposalInput(p, 'title_pt_BR', 'Título (português)', 'text', 200));
+    grid.appendChild(proposalInput(p, 'title_en_CA', 'Título (inglês)', 'text', 200));
+    grid.appendChild(proposalInput(p, 'owners', 'Responsáveis (separados por vírgula)', 'text', 200));
+    grid.appendChild(proposalInput(p, 'due_date', 'Prazo', 'date', 0));
+    li.appendChild(grid);
+    li.appendChild(el('p', 'excerpt-label', 'Trecho da reunião que originou a proposta'));
+    li.appendChild(el('blockquote', 'excerpt', p.excerpt));
+    if (p.error) li.appendChild(el('span', 'error-text', p.error));
+    return li;
+  }
+  function renderAddBar() {
+    var bar = $('proposal-count');
+    if (!bar) return;
+    var pend = pendingProposals().length, n = checkedProposals().length;
+    bar.textContent = n + ' de ' + pend + (pend === 1 ? ' proposta selecionada.' : ' propostas selecionadas.');
+    $('add-btn').disabled = state.adding || !n;
+    $('add-btn').textContent = state.adding ? 'Gravando…' : (n === 1 ? 'Adicionar a selecionada' : 'Adicionar selecionadas (' + n + ')');
+    $('mark-all').disabled = state.adding || n === pend;
+    $('mark-none').disabled = state.adding || !n;
+  }
+  function markAll(on) {
+    pendingProposals().forEach(function (p) { p.checked = on; });
+    renderResult();
+  }
+  function renderResult() {
+    var box = $('result-body'), m = state.meeting || { date: '', covered: [], discarded: [], counts: { new: 0, similar: 0, covered: 0, discarded: 0 } };
     clear(box);
-    var created = Array.isArray(data.created) ? data.created : [];
-    var skipped = Array.isArray(data.skipped_duplicates) ? data.skipped_duplicates : [];
-    box.appendChild(el('p', 'hint', created.length === 1 ? '1 tarefa nova gravada em backlog.' : created.length + ' tarefas novas gravadas em backlog.'));
-    if (created.length) {
+    var pend = pendingProposals();
+    var total = state.proposals.length;
+    box.appendChild(el('p', 'hint', 'Reunião de ' + (fmtDate(m.date) || 'data não informada') + '.'));
+    var tiles = el('div', 'tiles'); tiles.id = 'result-counts';
+    [['new', 'Propostas novas'], ['similar', 'Parecidas'], ['covered', 'Já cobertas'], ['discarded', 'Descartadas']].forEach(function (k) {
+      var tile = el('div', 'tile st-none');
+      tile.setAttribute('data-count', k[0]);
+      tile.appendChild(el('p', 'tile-label', k[1]));
+      tile.appendChild(el('p', 'tile-value', m.counts[k[0]]));
+      tiles.appendChild(tile);
+    });
+    box.appendChild(tiles);
+    if (m.counts.similar) box.appendChild(el('p', 'hint', 'As parecidas com tarefas existentes vêm desmarcadas: compare os títulos e marque só o que for realmente novo.'));
+    if (pend.length) {
+      box.appendChild(el('p', 'warning', 'Nada foi gravado ainda. Desmarque o que não quer, ajuste título, responsáveis e prazo e clique em "Adicionar selecionadas". Se fechar ou recarregar a página antes disso, estas propostas se perdem.'));
+      var sel = el('div', 'select-bar');
+      var all = el('button', 'link-btn', 'Marcar todas'); all.type = 'button'; all.id = 'mark-all';
+      all.addEventListener('click', function () { markAll(true); });
+      var none = el('button', 'link-btn', 'Desmarcar todas'); none.type = 'button'; none.id = 'mark-none';
+      none.addEventListener('click', function () { markAll(false); });
+      sel.appendChild(all); sel.appendChild(none);
+      box.appendChild(sel);
+      var count = el('p', 'select-note'); count.id = 'proposal-count'; count.setAttribute('aria-live', 'polite');
+      box.appendChild(count);
+    }
+    if (total) {
       var ul = el('ul');
-      created.forEach(function (x) {
-        var li = el('li', 'item');
-        li.appendChild(el('span', 'item-id', x.task_id));
-        var title = el('p', 'item-title', x.title);
-        title.appendChild(el('span', 'tag', 'novo'));
-        li.appendChild(title);
-        var meta = [];
-        meta.push('Responsáveis: ' + (x.owners && x.owners.length ? x.owners.join(', ') : 'não informado'));
-        meta.push('Prazo: ' + (fmtDate(x.due_date) || 'não informado'));
-        li.appendChild(el('p', 'item-meta', meta.join(' · ')));
-        li.appendChild(el('blockquote', 'excerpt', x.excerpt));
-        ul.appendChild(li);
-      });
+      state.proposals.forEach(function (p) { ul.appendChild(proposalItem(p)); });
       box.appendChild(ul);
     }
-    if (skipped.length) {
-      box.appendChild(el('h3', 'subhead', 'Não gravadas: já existem'));
-      var us = el('ul');
-      skipped.forEach(function (x) {
+    if (pend.length) {
+      var acts = el('div', 'actions');
+      var add = el('button', 'btn', 'Adicionar selecionadas'); add.type = 'button'; add.id = 'add-btn';
+      add.addEventListener('click', onAdd);
+      acts.appendChild(add);
+      var msg = el('span', 'error-text', state.addMsg); msg.id = 'add-error'; msg.setAttribute('role', 'alert');
+      acts.appendChild(msg);
+      box.appendChild(acts);
+    } else if (state.addMsg) {
+      box.appendChild(el('p', 'hint', state.addMsg));
+    }
+    if (m.covered.length) {
+      var hc = el('h3', 'subhead', 'Já cobertas por tarefas existentes'); hc.id = 'covered-title';
+      box.appendChild(hc);
+      box.appendChild(el('p', 'hint', 'A IA achou que estes itens da reunião já estão em tarefas da aba. Se discordar, use "Adicionar mesmo assim": vira uma proposta desmarcada, para editar.'));
+      var uc = el('ul'); uc.id = 'covered-list';
+      m.covered.forEach(function (c) {
+        var x = c.item, t = x.task || {};
         var li = el('li', 'item');
-        li.appendChild(el('p', 'item-title', x.title));
-        li.appendChild(el('p', 'item-meta', 'Parecida com ' + x.similar_to + ': ' + x.similar_title));
-        us.appendChild(li);
+        li.setAttribute('data-covered', c.key);
+        li.appendChild(el('span', 'item-id', (t.task_id || '?') + (t.missing ? ' (código não encontrado na aba)' : ' · ' + statusWord(t.status))));
+        li.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA || '(tarefa sem título)'));
+        if (x.title_pt_BR) li.appendChild(el('p', 'item-meta', 'Item da reunião: ' + x.title_pt_BR));
+        li.appendChild(el('blockquote', 'excerpt', x.excerpt));
+        var acts = el('div', 'actions');
+        var b = el('button', 'btn btn-quiet btn-small', c.added ? 'Adicionada às propostas' : 'Adicionar mesmo assim');
+        b.type = 'button'; b.disabled = c.added || state.adding;
+        b.setAttribute('aria-label', 'Adicionar mesmo assim: ' + (x.title_pt_BR || t.task_id));
+        b.addEventListener('click', function () { addCovered(c); });
+        acts.appendChild(b);
+        li.appendChild(acts);
+        uc.appendChild(li);
       });
-      box.appendChild(us);
+      box.appendChild(uc);
     }
-    if (data.discarded) {
-      box.appendChild(el('p', 'hint', data.discarded === 1
-        ? '1 item da IA foi descartado: citava tarefa inexistente, vinha incompleto ou o trecho não estava no texto.'
-        : data.discarded + ' itens da IA foram descartados: citavam tarefa inexistente, vinham incompletos ou o trecho não estava no texto.'));
+    if (m.discarded.length) {
+      var hd = el('h3', 'subhead', m.discarded.length === 1 ? '1 item descartado' : m.discarded.length + ' itens descartados');
+      box.appendChild(hd);
+      var ud = el('ul'); ud.id = 'discarded-list';
+      m.discarded.forEach(function (x) {
+        var li = el('li', 'item');
+        li.appendChild(el('p', 'item-title', x.title || '(sem título)'));
+        li.appendChild(el('p', 'item-meta', 'Motivo: ' + (DISCARD_REASON[x.reason] || x.reason) + (x.task_id ? ' (' + x.task_id + ')' : '')));
+        if (x.excerpt) li.appendChild(el('blockquote', 'excerpt', x.excerpt));
+        ud.appendChild(li);
+      });
+      box.appendChild(ud);
     }
+    renderAddBar();
     $('result').hidden = false;
-    $('result').focus();
+  }
+  function onAdd() {
+    if (state.adding) return;
+    hideError();
+    var list = checkedProposals();
+    state.addMsg = '';
+    pendingProposals().forEach(function (p) { p.error = ''; });
+    if (!list.length) { state.addMsg = 'Marque pelo menos uma proposta.'; renderResult(); return; }
+    if (list.length > ADD_MAX) { state.addMsg = MSG.too_many_add; renderResult(); return; }
+    var empty = list.filter(function (p) { return !p.title_pt_BR.trim(); })[0];
+    if (empty) {
+      empty.error = MSG.title_required;
+      renderResult();
+      $('prop-title_pt_BR-' + empty.key).focus();
+      return;
+    }
+    state.adding = true;
+    renderResult();
+    api({ action: 'add_tasks', meeting_date: state.meeting.date, tasks: list.map(function (p) {
+      return { key: p.key, title_pt_BR: p.title_pt_BR.trim(), title_en_CA: p.title_en_CA.trim(), owners: p.owners, due_date: p.due_date, excerpt: p.excerpt };
+    }) }, ADD_TIMEOUT).then(function (data) {
+      state.adding = false;
+      var saved = 0, failed = 0;
+      (Array.isArray(data.results) ? data.results : []).forEach(function (r) {
+        var p = state.proposals.filter(function (x) { return x.key === r.key; })[0];
+        if (!p) return;
+        if (r.ok && r.task_id) { p.task_id = String(r.task_id); p.already = !!r.already; saved++; return; }
+        failed++;
+        p.error = r.error === 'duplicate_title'
+          ? 'Já existe uma tarefa com este título' + (r.similar_to ? ' (' + r.similar_to + ')' : '') + '. Mude o título ou desmarque.'
+          : 'A planilha não confirmou esta tarefa. Clique de novo para tentar.';
+      });
+      state.addMsg = (saved === 1 ? '1 tarefa gravada em backlog.' : saved + ' tarefas gravadas em backlog.') +
+        (failed ? ' ' + failed + ' não ' + (failed === 1 ? 'foi gravada' : 'foram gravadas') + ': veja abaixo.' : '');
+      renderResult();
+      toast(state.addMsg);
+      if (saved) loadTasks(false);
+    }, function (err) {
+      state.adding = false;
+      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      var p = err.key ? state.proposals.filter(function (x) { return x.key === err.key; })[0] : null;
+      if (p) p.error = messageFor(err);
+      // 4xx = refused before any write. Otherwise part may be saved: clicking again never repeats a task already saved.
+      state.addMsg = err.status >= 400 && err.status < 500
+        ? messageFor(err) + ' Nada foi gravado.'
+        : 'Sem confirmação do servidor. Pode ter gravado parte. Clique de novo: tarefas já gravadas não se repetem.';
+      renderResult();
+    });
+  }
+  function mergeSuggestions(list) {
+    var fresh = Array.isArray(list) ? list.filter(function (s) { return s && s.suggestion_id; }) : [];
+    var ids = {};
+    fresh.forEach(function (s) { ids[s.suggestion_id] = true; });
+    var old = {};
+    state.suggestions.forEach(function (s) { old[s.suggestion_id] = s; });
+    // Keeps edited text, and suggestions of an earlier analysis in this page that were not decided yet.
+    fresh.forEach(function (s) { if (old[s.suggestion_id] && old[s.suggestion_id].draft !== undefined) s.draft = old[s.suggestion_id].draft; });
+    return fresh.concat(state.suggestions.filter(function (s) { return s.saved === false && !ids[s.suggestion_id]; }));
   }
   function renderSuggestions() {
     var list = $('suggestions');
@@ -680,10 +1103,22 @@
     $('no-suggestions').hidden = state.suggestions.length > 0;
     state.suggestions.forEach(function (s) {
       var li = el('li', 'item');
-      li.appendChild(el('span', 'item-id', s.task_id + (s.meeting_date ? ' · reunião de ' + fmtDate(s.meeting_date) : '')));
-      if (s.task_title) li.appendChild(el('p', 'item-meta', s.task_title));
-      li.appendChild(el('p', 'item-title', s.change_text));
+      var head = el('span', 'item-id', s.task_id + (s.meeting_date ? ' · reunião de ' + fmtDate(s.meeting_date) : ''));
+      if (s.saved === false) head.appendChild(el('span', 'tag tag-new', 'não gravada'));
+      li.appendChild(head);
+      if (s.task_title) li.appendChild(el('p', 'item-title', s.task_title));
+      var text = el('textarea', 'short');
+      text.maxLength = CHANGE_MAX;
+      text.value = s.draft !== undefined ? s.draft : s.change_text;
+      text.disabled = state.busy;
+      text.addEventListener('input', function () { s.draft = text.value; });
+      var f = field('change-' + s.suggestion_id, 'Texto a acrescentar à tarefa (pode editar)', text);
+      f.style.marginTop = '8px';
+      li.appendChild(f);
+      li.appendChild(el('p', 'excerpt-label', 'Trecho da reunião'));
       li.appendChild(el('blockquote', 'excerpt', s.excerpt));
+      if (s.saved === false) li.appendChild(el('p', 'hint', 'Ainda não gravada: se a página for fechada antes de aceitar ou recusar, esta sugestão se perde.'));
+      if (s.error) li.appendChild(el('span', 'error-text', s.error));
       var acts = el('div', 'actions');
       [['accepted', 'Aceitar', 'btn btn-small'], ['rejected', 'Recusar', 'btn btn-danger btn-small']].forEach(function (a) {
         var b = el('button', a[2], a[1]);
@@ -700,17 +1135,29 @@
   function decide(s, decision) {
     if (state.busy) return;
     hideError();
+    var text = String(s.draft !== undefined ? s.draft : s.change_text).replace(/\s+/g, ' ').trim();
+    s.error = '';
+    if (decision === 'accepted' && !text) { s.error = MSG.change_required; renderSuggestions(); $('change-' + s.suggestion_id).focus(); return; }
+    if (text.length > CHANGE_MAX) { s.error = MSG.change_too_long; renderSuggestions(); $('change-' + s.suggestion_id).focus(); return; }
     state.busy = true;
     renderSuggestions();
-    api({ action: 'decide', suggestion_id: s.suggestion_id, decision: decision }).then(function () {
+    api({ action: 'decide', suggestion_id: s.suggestion_id, decision: decision, change_text: text,
+      task_id: s.task_id, meeting_date: s.meeting_date, excerpt: s.excerpt }).then(function (data) {
       state.busy = false;
       state.suggestions = state.suggestions.filter(function (x) { return x.suggestion_id !== s.suggestion_id; });
       renderSuggestions();
-      toast(decision === 'accepted' ? 'Sugestão aceita. A tarefa não foi alterada: ajuste-a na lista.' : 'Sugestão recusada.');
+      var t = data.task && data.task.task_id ? data.task : null;
+      if (t) {
+        state.tasks = state.tasks.map(function (x) { return x.task_id === t.task_id ? Object.assign({}, x, { meeting_updates: String(t.meeting_updates || '') }) : x; });
+        var updated = state.tasks.filter(function (x) { return x.task_id === t.task_id; })[0];
+        if (updated) replaceRow(updated);
+      }
+      toast(decision === 'accepted' ? 'Sugestão aceita. Texto acrescentado à tarefa ' + s.task_id + '.' : 'Sugestão recusada. A tarefa não mudou.');
       $('suggestions-title').setAttribute('tabindex', '-1');
       $('suggestions-title').focus();
     }, function (err) {
       state.busy = false;
+      if (err.code !== 'unauthorized') s.error = messageFor(err);
       renderSuggestions();
       if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
       if (err.code === 'not_found' || err.code === 'already_decided') {
@@ -732,6 +1179,32 @@
     if (/^M\d{4}-/.test(id)) return 'MTG';
     var manual = /^MAN-([A-Z]+)-/.exec(id);    // manual tasks carry the pillar in the code: MAN-CMP-001
     return manual ? manual[1] : id.split('-')[0];
+  }
+  // Categories for the time log = the groups of the pillars tab + "Reuniões e extras". tasks.categoria holds the Portuguese name.
+  // front: where the hours go in the timelog (one general row per category, made by the timelog workflow; extras for the last one).
+  var CATEGORIES = [
+    { key: 'content', pt: 'Conteúdo', en: 'Content', front: 'CAT-CONTENT' },
+    { key: 'external_authority', pt: 'Autoridade externa', en: 'External authority', front: 'CAT-AUTHORITY' },
+    { key: 'lead_capture', pt: 'Captação de leads', en: 'Lead capture', front: 'CAT-LEADS' },
+    { key: 'community', pt: 'Comunidade', en: 'Community', front: 'CAT-COMMUNITY' },
+    { key: 'meetings_extras', pt: 'Reuniões e extras', en: 'Meetings and extras', front: 'T-EXTRA' }
+  ];
+  var SECTION_CATEGORY = { CNT: 'content', WLX: 'lead_capture', CMP: 'lead_capture', AUD: 'lead_capture', TOP: 'lead_capture', FND: 'lead_capture', STL: 'lead_capture' };
+  function catByKey(k) { return CATEGORIES.filter(function (c) { return c.key === k; })[0] || null; }
+  // "Conteúdo", "conteudo", "content" -> "content"; anything else -> ''
+  function catKey(v) {
+    var p = plainText(String(v || '')).replace(/[^a-z0-9]+/g, ' ').trim();
+    if (!p) return '';
+    var c = CATEGORIES.filter(function (x) { return plainText(x.pt) === p || x.en.toLowerCase() === p || x.key.replace(/_/g, ' ') === p; })[0];
+    return c ? c.key : '';
+  }
+  function suggestedCat(t) { return SECTION_CATEGORY[sectionOf(t.task_id)] || ''; }
+  // meeting_updates: one "[DD/MM] text" per accepted suggestion. null = never updated.
+  function lastMeetingUpdate(t) {
+    var lines = String(t.meeting_updates || '').trim().split('\n').filter(function (l) { return l.trim(); });
+    if (!lines.length) return null;
+    var m = /^\[(\d{2}\/\d{2})\]/.exec(lines[lines.length - 1].trim());
+    return m ? m[1] : '';
   }
   function ownersOf(t) { return t.owners.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
   // Origin: "manual" = created here; starts with "reunião" (any case or accent) = meeting; empty or anything else = GTM.
@@ -784,6 +1257,7 @@
     fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto']].concat(STATUS));
     fillSelect($('filter-owner'), 'Todos', Object.keys(owners).sort().map(function (o) { return [o, o]; }));
     fillSelect($('filter-section'), 'Todos', SECTIONS);
+    fillSelect($('filter-category'), 'Todas', [['none', 'Sem categoria']].concat(CATEGORIES.map(function (c) { return [c.key, c.pt]; })));
   }
   function byId(a, b) { return a.task_id.localeCompare(b.task_id, 'pt-BR', { numeric: true }); }
   function byDue(a, b) {
@@ -793,7 +1267,7 @@
     return a.due_date < b.due_date ? -1 : 1;
   }
   function visibleTasks() {
-    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value, orig = $('filter-origin').value;
+    var st = $('filter-status').value, ow = $('filter-owner').value, se = $('filter-section').value, orig = $('filter-origin').value, cat = $('filter-category').value;
     var q = plainText($('filter-search').value).trim();
     var hideFrozen = $('filter-hide-frozen').checked;
     var found = state.tasks.filter(function (t) {
@@ -802,7 +1276,8 @@
       if (ow && ownersOf(t).indexOf(ow) < 0) return false;
       if (se && sectionOf(t.task_id) !== se) return false;
       if (orig && originKind(t) !== orig) return false;
-      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.origin].join(' ')).indexOf(q) >= 0;
+      if (cat && (catKey(t.categoria) || 'none') !== cat) return false;
+      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.meeting_updates, t.origin].join(' ')).indexOf(q) >= 0;
     });
     return found.sort($('filter-sort').value === 'id' ? byId : byDue);
   }
@@ -855,8 +1330,9 @@
     $('select-all').disabled = all;
     $('select-all').textContent = all ? 'Todas as ' + shown.length + ' do filtro atual estão selecionadas' : 'Selecionar todas as ' + shown.length + ' do filtro atual';
     [].forEach.call(document.querySelectorAll('#tasks .pick'), function (c) { c.checked = isSelected(c.getAttribute('data-id')); });
-    $('bulk-bar').hidden = n === 0;
-    document.body.classList.toggle('has-bulk', n > 0);
+    var bar = n > 0 && state.tab === 'tarefas';   // the bulk bar belongs to the Tarefas tab only
+    $('bulk-bar').hidden = !bar;
+    document.body.classList.toggle('has-bulk', bar);
     $('bulk-count').textContent = n === 1 ? '1 selecionada' : n + ' selecionadas';
   }
   function onSelectPage() {
@@ -891,15 +1367,15 @@
   }
   function renderBulkValue() {
     var a = $('bulk-action').value, slot = $('bulk-value-slot');
-    var labels = { status: 'Novo status', show: 'Mostrar na Home', owners: 'Responsáveis (separados por vírgula)', due: 'Novo prazo' };
+    var labels = { status: 'Novo status', show: 'Mostrar na Home', owners: 'Responsáveis (separados por vírgula)', due: 'Novo prazo', category: 'Categoria' };
     clear(slot);
     $('bulk-value-box').hidden = !labels[a];
     if (!labels[a]) return;
     $('bulk-value-label').textContent = labels[a];
     var c;
-    if (a === 'status' || a === 'show') {
+    if (a === 'status' || a === 'show' || a === 'category') {
       c = el('select');
-      (a === 'status' ? STATUS : [['yes', 'Sim'], ['no', 'Não']]).forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; c.appendChild(o); });
+      (a === 'status' ? STATUS : a === 'category' ? CATEGORIES.map(function (x) { return [x.pt, x.pt]; }) : [['yes', 'Sim'], ['no', 'Não']]).forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; c.appendChild(o); });
     } else {
       c = el('input');
       c.type = a === 'due' ? 'date' : 'text';
@@ -931,6 +1407,7 @@
     if (action === 'show') changes.show_to_scott = v;
     if (action === 'owners') { if (!v.trim()) { bulkMsg('Escreva os responsáveis.'); $('bulk-value').focus(); return; } changes.owners = v; }
     if (action === 'due') { if (!v) { bulkMsg('Escolha o prazo.'); $('bulk-value').focus(); return; } changes.due_date = v; }
+    if (action === 'category') changes.categoria = v;
     hideError();
     setBulkBusy(true);
     api({ action: 'bulk_update', task_ids: ids, changes: changes }, BULK_TIMEOUT, ADMIN_API).then(function (data) {
@@ -1089,6 +1566,10 @@
     head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
     head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
     if (t.is_new === 'yes') head.appendChild(el('span', 'tag tag-new', 'novo'));
+    var rowCat = catByKey(catKey(t.categoria));
+    if (rowCat) head.appendChild(el('span', 'tag tag-cat', rowCat.pt));
+    var lastUpdate = lastMeetingUpdate(t);
+    if (lastUpdate !== null) head.appendChild(el('span', 'tag tag-updated', 'atualizada em reunião' + (lastUpdate ? ' ' + lastUpdate : '')));
     main.appendChild(head);
     main.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA));
     var meta = el('p', 'item-meta');
@@ -1097,6 +1578,11 @@
     meta.appendChild(el('span', null, ' · Responsáveis: ' + (t.owners || 'não informado')));
     main.appendChild(meta);
     if (t.change_note) main.appendChild(el('p', 'item-meta', 'Nota: ' + t.change_note));
+    var hoursBtn = el('button', 'btn btn-quiet btn-small task-hours', 'Registrar horas');
+    hoursBtn.type = 'button';
+    hoursBtn.setAttribute('aria-label', 'Registrar horas: ' + t.task_id);
+    hoursBtn.addEventListener('click', function () { logHoursFor(t, hoursBtn); });
+    main.appendChild(hoursBtn);
     li.appendChild(main);
 
     var controls = el('div', 'task-controls');
@@ -1119,8 +1605,21 @@
     form.appendChild(field('owners-' + t.task_id, 'Responsáveis (separados por vírgula)', owners));
     var due = el('input'); due.type = 'date'; due.value = t.due_date;
     form.appendChild(field('due-' + t.task_id, 'Prazo', due));
+    var catSel = optionSelect('cat-' + t.task_id, [['', 'Sem categoria']].concat(CATEGORIES.map(function (c) { return [c.pt, c.pt]; })), '', false);
+    var curCat = catByKey(catKey(t.categoria));
+    catSel.value = curCat ? curCat.pt : '';
+    var catField = el('div', 'field');
+    var catLabel = el('label', null, 'Categoria (para o registro de horas)'); catLabel.htmlFor = catSel.id;
+    catField.appendChild(catLabel); catField.appendChild(catSel);
+    form.appendChild(catField);
     var note = el('textarea', 'short'); note.maxLength = 500; note.value = t.change_note;
     form.appendChild(field('note-' + t.task_id, 'Nota de mudança (aparece na Home se a tarefa estiver visível)', note));
+    if (String(t.meeting_updates || '').trim()) {
+      var upd = el('div', 'field');
+      upd.appendChild(el('span', 'excerpt-label', 'Atualizações das reuniões (só na admin, não vão para a Home)'));
+      upd.appendChild(el('p', 'updates', String(t.meeting_updates).trim()));
+      form.appendChild(upd);
+    }
     var save = el('button', 'btn btn-small', 'Salvar');
     save.type = 'submit'; save.disabled = saving;
     var acts = el('div', 'actions'); acts.appendChild(save);
@@ -1128,11 +1627,18 @@
     del.type = 'button'; del.disabled = saving;
     del.setAttribute('aria-label', 'Excluir ' + t.task_id);
     del.addEventListener('click', function () { askDelete(t); });
+    var hoursBtn2 = el('button', 'btn btn-quiet btn-small', 'Registrar horas');
+    hoursBtn2.type = 'button';
+    hoursBtn2.setAttribute('aria-label', 'Registrar horas: ' + t.task_id);
+    hoursBtn2.addEventListener('click', function () { logHoursFor(t, hoursBtn2); });
+    acts.appendChild(hoursBtn2);
     acts.appendChild(del);
     form.appendChild(acts);
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
-      saveTask(t, { owners: owners.value, due_date: due.value, change_note: note.value }, 'owners-' + t.task_id);
+      var changes = { owners: owners.value, due_date: due.value, change_note: note.value };
+      if (catSel.value !== (curCat ? curCat.pt : '')) changes.categoria = catSel.value;   // only when changed: works before the column exists
+      saveTask(t, changes, 'owners-' + t.task_id);
     });
     det.appendChild(form);
     li.appendChild(det);
@@ -1328,9 +1834,608 @@
     });
   }
 
+  // ---------- tabs: Tarefas / Horas / Reuniões. The active one is the URL hash, so it survives a reload.
+  var TABS = ['tarefas', 'horas', 'reunioes'];
+  function tabFromHash() {
+    var h = String(window.location.hash || '').replace(/^#/, '').split('?')[0].toLowerCase();
+    return TABS.indexOf(h) >= 0 ? h : 'tarefas';
+  }
+  // /horas?week=… redirects to /admin#horas. If the query ended up after the hash (#horas?week=…), move it back.
+  function normalizeUrl() {
+    try {
+      var u = new URL(window.location.href);
+      var parts = u.hash.split('?');
+      if (parts.length < 2) return;
+      var q = new URLSearchParams(parts.slice(1).join('?'));
+      if (q.get('week') && !u.searchParams.get('week')) u.searchParams.set('week', q.get('week'));
+      u.hash = parts[0];
+      window.history.replaceState(null, '', u.toString());
+    } catch (e) { /* ignore */ }
+  }
+  function showTab(name, focusPanel) {
+    state.tab = name;
+    TABS.forEach(function (t) {
+      var on = t === name;
+      $('tab-' + t).setAttribute('aria-selected', on ? 'true' : 'false');
+      $('tab-' + t).tabIndex = on ? 0 : -1;
+      $('panel-' + t).hidden = !on;
+    });
+    renderSelectionUi();
+    if (name === 'horas' && state.key && !$('app').hidden) {
+      if (horas.stale && horas.started) { horas.stale = false; hLoadWeek(); }   // hours were logged from a task since the last load
+      else startHoras();
+    }
+    if (focusPanel) $('panel-' + name).focus();
+  }
+  function goTab(name) {
+    showTab(name, false);
+    if (window.location.hash !== '#' + name) window.location.hash = name;   // adds a history entry; hashchange is harmless
+  }
+  function onTabKey(ev) {
+    var i = TABS.indexOf(state.tab), next = null;
+    if (ev.key === 'ArrowRight') next = TABS[(i + 1) % TABS.length];
+    else if (ev.key === 'ArrowLeft') next = TABS[(i + TABS.length - 1) % TABS.length];
+    else if (ev.key === 'Home') next = TABS[0];
+    else if (ev.key === 'End') next = TABS[TABS.length - 1];
+    if (!next) return;
+    ev.preventDefault();
+    goTab(next);
+    $('tab-' + next).focus();
+  }
+
+  // ---------- Horas (workflow timelog). Same password as the admin: the timelog checks it in X-Timelog-Key
+  // against TIMELOG_SECRET, which holds the same value as ADMIN_SECRET. Data is asked only when the tab opens.
+  var HORAS_API = 'api/timelog';
+  var H_FIXED = ['T-MEET', 'T-EXTRA'];
+  var MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var HMSG = {
+    unauthorized: 'O registro de horas não aceitou a senha da admin. No n8n, TIMELOG_SECRET precisa ter o mesmo valor de ADMIN_SECRET.',
+    not_configured: 'O registro de horas ainda não está configurado (segredo no n8n).',
+    network: 'Não foi possível falar com o registro de horas. Confira a conexão e tente de novo.',
+    write_not_confirmed: 'A planilha não confirmou a gravação, então nada foi dado como salvo. Tente de novo: a nova tentativa não duplica.',
+    server: 'O registro de horas respondeu com erro. Tente de novo em instantes.',
+    invalid_hours: 'Horas inválidas. Use 1,5 ou 1h30 ou 90min (mais que 0 e até 24 h).',
+    invalid_date: 'Escolha uma data desta semana.',
+    not_found: 'Este período não existe mais. A lista foi recarregada.',
+    invalid_task: 'Esta frente não existe mais na planilha. A lista foi recarregada.',
+    task_closed: 'Esta frente está pausada ou concluída: não aceita novos períodos. A lista foi recarregada.'
+  };
+  var horas = { week: '', tasks: [], entries: [], form: null, loaded: false, started: false, reqSeq: 0, focusAfter: null, stale: false };
+
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function toUTC(ds) { var a = ds.split('-'); return Date.UTC(+a[0], +a[1] - 1, +a[2]); }
+  function addDays(ds, n) { return new Date(toUTC(ds) + n * 864e5).toISOString().slice(0, 10); }
+  function isoWeek(ds) {
+    var d = new Date(toUTC(ds));
+    d.setUTCDate(d.getUTCDate() - ((d.getUTCDay() + 6) % 7) + 3);
+    var y = d.getUTCFullYear();
+    return y + '-W' + pad2(1 + Math.floor((d - Date.UTC(y, 0, 1)) / 864e5 / 7));
+  }
+  function weekStart(week) {
+    var m = /^(\d{4})-W(\d{2})$/.exec(String(week || ''));
+    if (!m) return '';
+    var jan4 = Date.UTC(+m[1], 0, 4);
+    var ds = new Date(jan4 - ((new Date(jan4).getUTCDay() + 6) % 7) * 864e5 + (+m[2] - 1) * 7 * 864e5).toISOString().slice(0, 10);
+    return (+m[2] >= 1 && isoWeek(ds) === week) ? ds : '';
+  }
+  function shiftWeek(week, n) { return isoWeek(addDays(weekStart(week), 7 * n)); }
+  function fmtDay(ds, withWeekday) {
+    try {
+      var o = { timeZone: 'UTC', day: 'numeric', month: 'short' };
+      if (withWeekday) o.weekday = 'short';
+      return new Intl.DateTimeFormat('pt-BR', o).format(new Date(toUTC(ds)));
+    } catch (e) { return ds; }
+  }
+  // "1,5" | "1.5" | "2" | "1h30" | "1:30" | "90min" -> decimal hours with 2 places
+  function parseHours(v) {
+    var s = String(v || '').trim().toLowerCase().replace(/\s+/g, ''), m, h = NaN;
+    if ((m = /^(\d+(?:[.,]\d+)?)(?:h|hr|hrs|hora|horas|hour|hours)?$/.exec(s))) h = parseFloat(m[1].replace(',', '.'));
+    else if ((m = /^(\d+)(?:h|:)(\d{1,2})(?:m|min)?$/.exec(s))) h = +m[2] < 60 ? +m[1] + (+m[2]) / 60 : NaN;
+    else if ((m = /^(\d+(?:[.,]\d+)?)(?:m|min|mins|minuto|minutos|minute|minutes)$/.exec(s))) h = parseFloat(m[1].replace(',', '.')) / 60;
+    if (!isFinite(h)) return NaN;
+    h = Math.round(h * 100) / 100;
+    return (h > 0 && h <= 24) ? h : NaN;
+  }
+  function round2(x) { return Math.round(x * 100) / 100; }
+  function fmtNum(h, lang) { try { return new Intl.NumberFormat(lang || 'pt-BR', { maximumFractionDigits: 2 }).format(h); } catch (e) { return String(h); } }
+  function fmtHours(h, lang) { return fmtNum(round2(h), lang) + ' h'; }
+  function hTaskName(task, lang) { return lang === 'en-CA' ? (task.name_en || task.name_pt) : (task.name_pt || task.name_en); }
+  function hFixed(task) { return task.fixed || H_FIXED.indexOf(task.task_id) >= 0; }
+  function hOpen(task) { return hFixed(task) || task.status === 'ativa'; }
+  // category of a timelog row: sent by the workflow; worked out from the group if the workflow is older
+  function hCatOf(task) { return task.category || (hFixed(task) ? 'meetings_extras' : (catKey(task.group) || 'other')); }
+  // With the general row per category, new periods go there; a workstream shows only when it has periods this week.
+  function hHasGeneral() { return horas.tasks.some(function (x) { return x.general; }); }
+  function hShown(task) { return !hHasGeneral() || task.general || entriesOf(task.task_id).length > 0; }
+  function hGroups() {
+    var list = [], byKey = {};
+    horas.tasks.slice().sort(function (a, b) { return (b.general ? 1 : 0) - (a.general ? 1 : 0); }).forEach(function (task) {
+      if (hFixed(task) || !hShown(task)) return;
+      var k = task.group || '';
+      if (!byKey[k]) { byKey[k] = { key: k, pt: task.group_pt || task.group || 'Fora da aba pillars', tasks: [] }; list.push(byKey[k]); }
+      byKey[k].tasks.push(task);
+    });
+    return list;
+  }
+  function hFixedTasks() {
+    return H_FIXED.map(function (id) { return horas.tasks.filter(function (x) { return x.task_id === id; })[0]; }).filter(Boolean);
+  }
+  function entriesOf(id) { return horas.entries.filter(function (e) { return e.task_id === id; }); }
+  function sumOf(list) { return round2(list.reduce(function (a, e) { return a + (+e.hours || 0); }, 0)); }
+  function sumTasks(tasks) { return round2(tasks.reduce(function (a, x) { return a + sumOf(entriesOf(x.task_id)); }, 0)); }
+  function slugId(s) { return String(s || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'x'; }
+  function newPeriodId() {
+    var a = new Uint8Array(9), s = '';
+    try { window.crypto.getRandomValues(a); } catch (e) { for (var i = 0; i < a.length; i++) a[i] = Math.floor(Math.random() * 256); }
+    for (var j = 0; j < a.length; j++) s += ('0' + a[j].toString(16)).slice(-2);
+    return 'TL-' + Date.now().toString(36) + '-' + s;
+  }
+  function hApi(body) { return api(body, DEFAULT_TIMEOUT, HORAS_API, 'X-Timelog-Key'); }
+  function hMessage(err) { return HMSG[err.code] || HMSG.server; }
+  function hShowError(msg) { $('h-error-text').textContent = msg; $('h-error').hidden = false; }
+  function hHideError() { $('h-error').hidden = true; }
+
+  function startHoras() {
+    if (horas.started) return;
+    horas.started = true;
+    hLoadWeek();
+  }
+  function resetHoras() {
+    horas.tasks = []; horas.entries = []; horas.form = null; horas.loaded = false; horas.started = false; horas.stale = false;
+    horas.reqSeq++;
+    $('h-content').hidden = true; $('h-loading').hidden = true; hHideError();
+  }
+  function hLoadWeek() {
+    var seq = ++horas.reqSeq;
+    hHideError();
+    horas.form = null;
+    $('h-loading').hidden = false; $('h-content').hidden = true;
+    hRenderWeekBar();
+    return hApi({ action: 'list', week: horas.week }).then(function (data) {
+      if (seq !== horas.reqSeq) return;
+      horas.tasks = Array.isArray(data.tasks) ? data.tasks : [];
+      horas.entries = Array.isArray(data.entries) ? data.entries : [];
+      horas.loaded = true;
+      $('h-loading').hidden = true;
+      $('h-content').hidden = false;
+      hRender();
+    }, function (err) {
+      if (seq !== horas.reqSeq) return;
+      $('h-loading').hidden = true;
+      horas.loaded = false;
+      hShowError(hMessage(err));     // a timelog error never signs out of the admin
+    });
+  }
+  function hGoWeek(week) {
+    horas.week = week;
+    try {
+      var u = new URL(window.location.href);
+      if (week === isoWeek(todaySP())) u.searchParams.delete('week'); else u.searchParams.set('week', week);
+      window.history.replaceState(null, '', u.toString());
+    } catch (e) { /* ignore */ }
+    hLoadWeek();
+  }
+  function hRenderWeekBar() {
+    var m = /^(\d{4})-W(\d{2})$/.exec(horas.week);
+    var a = weekStart(horas.week), b = addDays(a, 6);
+    $('h-week-name').textContent = 'Semana ' + (+m[2]) + ' de ' + m[1];
+    $('h-week-range').textContent = fmtDay(a) + ' – ' + fmtDay(b) + ' ' + b.slice(0, 4);
+    $('h-this-week').disabled = horas.week === isoWeek(todaySP());
+  }
+  function hRender() {
+    hRenderWeekBar();
+    if (!horas.loaded) return;
+    $('h-total-value').textContent = fmtHours(sumOf(horas.entries));
+    var g = $('h-groups'); clear(g);
+    var list = hGroups();
+    list.forEach(function (group) { g.appendChild(hGroupCard(group)); });
+    $('h-no-tasks').hidden = list.length > 0;
+    var f = $('h-fixed'); clear(f);
+    hFixedTasks().forEach(function (task) { f.appendChild(hGroupCard({ key: task.task_id, pt: hTaskName(task), tasks: [task], fixed: true })); });
+    if (horas.focusAfter) {
+      var n = $(horas.focusAfter);
+      horas.focusAfter = null;
+      if (n) n.focus();
+    }
+  }
+  function hSum(h, label) {
+    var s = el('span', 'h-sum' + (h ? '' : ' zero'), fmtHours(h));
+    s.setAttribute('aria-label', label + ': ' + fmtHours(h));
+    return s;
+  }
+  function hGroupCard(group) {
+    var card = el('section', 'card h-group');
+    var head = el('div', 'h-group-head');
+    var h3 = el('h3', null, group.pt);
+    h3.id = 'h-g-' + (group.fixed ? group.tasks[0].task_id : slugId(group.key));
+    card.setAttribute('aria-labelledby', h3.id);
+    head.appendChild(h3);
+    head.appendChild(hSum(sumTasks(group.tasks), 'Total de ' + group.pt));
+    card.appendChild(head);
+    group.tasks.forEach(function (task) { card.appendChild(hTaskBlock(task, !!group.fixed)); });
+    return card;
+  }
+  function hTaskBlock(task, single) {
+    var box = el('div', 'h-item');
+    var name = hTaskName(task);
+    if (!single) {
+      var head = el('div', 'h-item-head');
+      var h4 = el('h4', null, name);
+      if (!hOpen(task)) h4.appendChild(el('span', 'h-tag h-tag-' + task.status, task.status === 'pausada' ? 'pausada' : 'concluída'));
+      head.appendChild(h4);
+      head.appendChild(hSum(sumOf(entriesOf(task.task_id)), 'Total de ' + name));
+      box.appendChild(head);
+    }
+    var list = entriesOf(task.task_id), form = horas.form;
+    if (list.length) {
+      var ul = el('ul', 'h-periods');
+      list.forEach(function (e) {
+        var li = el('li');
+        li.appendChild(form && form.mode === 'edit' && form.entryId === e.id ? hPeriodForm(task, e) : hPeriodRow(task, e));
+        ul.appendChild(li);
+      });
+      box.appendChild(ul);
+    }
+    if (form && form.mode === 'add' && form.taskId === task.task_id) {
+      box.appendChild(hPeriodForm(task, null));
+    } else if (hOpen(task) && (task.general || hFixed(task) || !hHasGeneral())) {
+      var add = el('button', 'btn btn-quiet btn-small h-add', '+ adicionar período');
+      add.type = 'button';
+      add.id = 'h-add-' + task.task_id;
+      add.setAttribute('aria-label', 'Adicionar período em ' + name);
+      add.disabled = !!(form && form.busy);
+      add.addEventListener('click', function () { hOpenAdd(task); });
+      box.appendChild(add);
+    }
+    return box;
+  }
+  function hPeriodRow(task, e) {
+    var row = el('div', 'h-period');
+    row.appendChild(el('span', 'h-p-date', fmtDay(e.date, true)));
+    row.appendChild(el('span', 'h-p-hours', fmtHours(e.hours)));
+    row.appendChild(el('span', 'h-p-note' + (e.note ? '' : ' empty'), e.note || 'sem nota'));
+    var acts = el('span', 'h-p-actions');
+    var what = 'período de ' + fmtHours(e.hours) + ' em ' + fmtDay(e.date);
+    var busy = !!(horas.form && horas.form.busy);
+    var edit = el('button', 'btn btn-quiet btn-small', 'Editar');
+    edit.type = 'button'; edit.id = 'h-edit-' + e.id; edit.disabled = busy;
+    edit.setAttribute('aria-label', 'Editar: ' + what);
+    edit.addEventListener('click', function () { hOpenEdit(task, e); });
+    var rm = el('button', 'btn btn-danger btn-small', 'Remover');
+    rm.type = 'button'; rm.id = 'h-rm-' + e.id; rm.disabled = busy;
+    rm.setAttribute('aria-label', 'Remover: ' + what);
+    rm.addEventListener('click', function () { hRemove(task, e); });
+    acts.appendChild(edit); acts.appendChild(rm);
+    row.appendChild(acts);
+    return row;
+  }
+  function hField(id, labelText, input, hint) {
+    var f = field(id, labelText, input);
+    if (hint) {
+      var h = el('span', 'h-hint', hint); h.id = id + '-hint';
+      f.appendChild(h);
+      input.setAttribute('aria-describedby', h.id + ' h-form-error');
+    }
+    return f;
+  }
+  function hPeriodForm(task, e) {
+    var s = horas.form, ws = weekStart(horas.week);
+    var form = el('form', 'h-form');
+    form.noValidate = true;
+    form.setAttribute('aria-label', e ? 'Editar período' : 'Adicionar período em ' + hTaskName(task));
+    var d = el('input'); d.type = 'date'; d.min = ws; d.max = addDays(ws, 6); d.value = s.date; d.required = true;
+    d.addEventListener('input', function () { s.date = d.value; });
+    var h = el('input'); h.type = 'text'; h.inputMode = 'decimal'; h.autocomplete = 'off'; h.value = s.hours; h.required = true;
+    h.addEventListener('input', function () { s.hours = h.value; });
+    var n = el('input'); n.type = 'text'; n.maxLength = 500; n.value = s.note; n.autocomplete = 'off';
+    n.addEventListener('input', function () { s.note = n.value; });
+    if (s.error === 'invalid_hours') h.setAttribute('aria-invalid', 'true');
+    if (s.error === 'invalid_date') d.setAttribute('aria-invalid', 'true');
+    form.appendChild(hField('h-form-date', 'Data', d));
+    form.appendChild(hField('h-form-hours', 'Horas', h, 'Ex.: 1,5 · 1h30 · 90min'));
+    var fn = hField('h-form-note', 'Nota (opcional)', n);
+    fn.className += ' h-f-note';
+    form.appendChild(fn);
+    var acts = el('div', 'actions');
+    var save = el('button', 'btn btn-small', s.busy ? 'Salvando…' : 'Salvar');
+    save.type = 'submit'; save.disabled = s.busy;
+    var cancel = el('button', 'btn btn-quiet btn-small', 'Cancelar');
+    cancel.type = 'button'; cancel.disabled = s.busy;
+    cancel.addEventListener('click', hCloseForm);
+    var err = el('span', 'error-text', s.error ? HMSG[s.error] : '');
+    err.id = 'h-form-error';
+    err.setAttribute('role', 'alert');
+    acts.appendChild(save); acts.appendChild(cancel); acts.appendChild(err);
+    form.appendChild(acts);
+    form.addEventListener('submit', function (ev) { ev.preventDefault(); hSubmit(task, e); });
+    form.addEventListener('keydown', function (ev) { if (ev.key === 'Escape' && !s.busy) { ev.preventDefault(); hCloseForm(); } });
+    return form;
+  }
+  function hDefaultDate() {
+    var today = todaySP();
+    return isoWeek(today) === horas.week ? today : weekStart(horas.week);
+  }
+  function hOpenAdd(task) {
+    horas.form = { mode: 'add', taskId: task.task_id, newId: newPeriodId(), date: hDefaultDate(), hours: '', note: '', error: '', busy: false };
+    horas.focusAfter = 'h-form-hours';
+    hRender();
+  }
+  function hOpenEdit(task, e) {
+    horas.form = { mode: 'edit', taskId: task.task_id, entryId: e.id, date: e.date, hours: fmtNum(e.hours).replace(/\s/g, ''), note: e.note || '', error: '', busy: false };
+    horas.focusAfter = 'h-form-hours';
+    hRender();
+  }
+  function hCloseForm() {
+    var f = horas.form;
+    horas.form = null;
+    horas.focusAfter = f ? (f.mode === 'edit' ? 'h-edit-' + f.entryId : 'h-add-' + f.taskId) : null;
+    hRender();
+  }
+  function hSubmit(task, e) {
+    var s = horas.form;
+    if (!s || s.busy) return;
+    var ws = weekStart(horas.week), hours = parseHours(s.hours);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(s.date) || s.date < ws || s.date > addDays(ws, 6)) { s.error = 'invalid_date'; horas.focusAfter = 'h-form-date'; hRender(); return; }
+    if (!isFinite(hours)) { s.error = 'invalid_hours'; horas.focusAfter = 'h-form-hours'; hRender(); return; }
+    s.error = ''; s.busy = true;
+    hRender();
+    var body = s.mode === 'add'
+      ? { action: 'add', id: s.newId, task_id: task.task_id, date: s.date, hours: hours, note: s.note.trim() }
+      : { action: 'edit', id: s.entryId, date: s.date, hours: hours, note: s.note.trim() };
+    hApi(body).then(function (data) {
+      var entry = data.entry;
+      if (s.mode === 'add') {
+        if (!horas.entries.some(function (x) { return x.id === entry.id; })) horas.entries.push(entry);
+      } else {
+        horas.entries = horas.entries.map(function (x) { return x.id === entry.id ? entry : x; });
+      }
+      horas.entries = horas.entries.filter(function (x) { return x.week === horas.week; });
+      horas.entries.sort(function (a, b) { return (a.date + a.created_at).localeCompare(b.date + b.created_at); });
+      horas.form = null;
+      horas.focusAfter = s.mode === 'edit' ? 'h-edit-' + entry.id : 'h-add-' + task.task_id;
+      hRender();
+      toast('Período salvo.');
+    }, function (err) { hWriteError(err, s); });
+  }
+  function hRemove(task, e) {
+    if (horas.form && horas.form.busy) return;
+    if (!window.confirm('Remover o período de ' + fmtHours(e.hours) + ' em ' + fmtDay(e.date) + '?')) return;
+    horas.form = { mode: 'remove', taskId: task.task_id, entryId: e.id, busy: true };
+    hRender();
+    hApi({ action: 'remove', id: e.id }).then(function () {
+      horas.entries = horas.entries.filter(function (x) { return x.id !== e.id; });
+      horas.form = null;
+      horas.focusAfter = 'h-add-' + task.task_id;
+      hRender();
+      toast('Período removido.');
+    }, function (err) { hWriteError(err, null); });
+  }
+  function hWriteError(err, s) {
+    if (err.code === 'not_found' || err.code === 'invalid_task' || err.code === 'task_closed') {
+      var msg = HMSG[err.code];
+      hLoadWeek().then(function () { toast(msg); });
+      return;
+    }
+    if (s && (err.code === 'invalid_hours' || err.code === 'invalid_date')) { s.busy = false; s.error = err.code; hRender(); return; }
+    // network or server error: the form stays open with the same id, so trying again never duplicates
+    if (s) { s.busy = false; s.error = ''; } else { horas.form = null; }
+    hRender();
+    hShowError(hMessage(err));
+  }
+  // English summary for the email to Scott (the Horas screen itself is only in Portuguese)
+  function hSummaryText() {
+    var EN = 'en-CA', ws = weekStart(horas.week), we = addDays(ws, 6);
+    function day(ds) { return MONTHS_EN[+ds.slice(5, 7) - 1] + ' ' + (+ds.slice(8, 10)); }
+    var range = ws.slice(0, 4) === we.slice(0, 4)
+      ? (ws.slice(5, 7) === we.slice(5, 7) ? day(ws) + '–' + (+we.slice(8, 10)) : day(ws) + ' – ' + day(we)) + ', ' + we.slice(0, 4)
+      : day(ws) + ', ' + ws.slice(0, 4) + ' – ' + day(we) + ', ' + we.slice(0, 4);
+    var m = /^(\d{4})-W(\d{2})$/.exec(horas.week);
+    // only categories and totals: no workstreams, task titles or notes
+    var lines = ['Time log – week ' + (+m[2]) + ' (' + range + ')', '', 'Hours by category:'];
+    var byCat = {};
+    horas.tasks.forEach(function (task) { var k = hCatOf(task); byCat[k] = round2((byCat[k] || 0) + sumOf(entriesOf(task.task_id))); });
+    CATEGORIES.forEach(function (c) { lines.push('- ' + c.en + ': ' + fmtHours(byCat[c.key] || 0, EN)); });
+    if (byCat.other) lines.push('- Other: ' + fmtHours(byCat.other, EN));
+    lines.push('');
+    lines.push('Total: ' + fmtHours(sumOf(horas.entries), EN));
+    return lines.join('\n');
+  }
+  function hCopy() {
+    var text = hSummaryText(), box = $('h-copy-box'), ta = $('h-copy-text');
+    function fallback() { ta.value = text; box.hidden = false; ta.focus(); ta.select(); }
+    box.hidden = true;
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast('Resumo copiado. É só colar no e-mail.'); }, fallback);
+    else fallback();
+  }
+  // ---------- "Registrar horas" on a task: a modal over the list. Tab, filters, page and scroll stay as they were.
+  // Hours go by category: the timelog "add" action (same server checks as the Horas tab) on the category's general row.
+  // The task's category comes from tasks.categoria; if missing, the pillar suggests one and "Guardar na tarefa"
+  // writes it with update_task right after the hours. If that second write fails, the hours stay saved and the modal says so.
+  var LHMSG = {
+    hours: 'Tempo inválido. Use 1,5 ou 1:30 (mais que 0 e até 24 h).',
+    date: 'Escolha uma data válida, até hoje.',
+    category: 'Escolha a categoria.',
+    no_front: 'Esta categoria ainda não existe no registro de horas. Reimporte o workflow de horas (timelog) no n8n.'
+  };
+  var lh = { task: null, opener: null, id: '', busy: false, cat: '', choosing: false, hoursDone: null, scroll: 0, downOutside: false };
+
+  function lhError(msg) { $('lh-error').textContent = msg || ''; $('lh-error').className = 'error-text'; }
+  function lhInfo(msg) { $('lh-error').textContent = msg; $('lh-error').className = 'error-text lh-done'; }
+  function lhInvalid(id) {
+    ['lh-hours', 'lh-date'].forEach(function (x) {
+      if (x === id) $(x).setAttribute('aria-invalid', 'true'); else $(x).removeAttribute('aria-invalid');
+    });
+  }
+  function lhFail(id, msg) { lhInvalid(id); lhError(msg); if ($(id)) $(id).focus(); }
+  function lhTaskCat() { return lh.task ? catKey(lh.task.categoria) : ''; }
+  function lhRadios() { return Array.prototype.slice.call(document.querySelectorAll('#lh-cat-options input[name="lh-cat"]')); }
+  function lhRenderCats() {
+    var saved = lhTaskCat(), sugg = lh.task ? suggestedCat(lh.task) : '';
+    $('lh-cat-fixed').hidden = lh.choosing;
+    $('lh-cats').hidden = !lh.choosing;
+    $('lh-cat-name').textContent = saved ? catByKey(saved).pt : '';
+    var box = $('lh-cat-options');
+    clear(box);
+    CATEGORIES.forEach(function (c) {
+      var lab = el('label'), r = el('input');
+      r.type = 'radio'; r.name = 'lh-cat'; r.value = c.key; r.id = 'lh-cat-' + c.key;
+      r.checked = lh.cat === c.key;
+      r.addEventListener('change', function () { if (r.checked) { lh.cat = c.key; lhRenderSave(); lhError(''); } });
+      lab.appendChild(r);
+      lab.appendChild(document.createTextNode(c.pt));
+      if (c.key === sugg && !saved) lab.appendChild(el('span', 'lh-sugg', '(sugerida pelo pilar)'));
+      box.appendChild(lab);
+    });
+    lhRenderSave();
+  }
+  // "Guardar na tarefa" only when the choice would change the task
+  function lhRenderSave() { $('lh-save-wrap').hidden = !lh.choosing || !lh.cat || lh.cat === lhTaskCat(); }
+  function lhSetBusy(on) {
+    lh.busy = on;
+    var done = !!lh.hoursDone;
+    $('lh-submit').disabled = on;
+    $('lh-submit').textContent = on ? (done ? 'Guardando…' : 'Registrando…') : (done ? 'Tentar guardar de novo' : 'Registrar');
+    $('lh-cancel').disabled = on;
+    $('lh-cancel').textContent = done ? 'Fechar' : 'Cancelar';
+    ['lh-hours', 'lh-date', 'lh-note', 'lh-save', 'lh-cat-change'].forEach(function (id) { $(id).disabled = on || done; });
+    Array.prototype.forEach.call(document.querySelectorAll('#lh-dialog [data-lh-hours]'), function (b) { b.disabled = on || done; });
+    lhRadios().forEach(function (r) { r.disabled = on || done; });
+  }
+  function logHoursFor(t, opener) {
+    if (lh.task) return;
+    var title = t.title_pt_BR || t.title_en_CA || '';
+    lh.task = t; lh.opener = opener || null; lh.id = newPeriodId(); lh.hoursDone = null;
+    lh.scroll = window.pageYOffset || 0;
+    var saved = catKey(t.categoria);
+    lh.cat = saved || suggestedCat(t);
+    lh.choosing = !saved;
+    $('lh-task-id').textContent = t.task_id;
+    $('lh-task-title').textContent = title;
+    $('lh-hours').value = '';
+    $('lh-date').max = todaySP(); $('lh-date').value = todaySP();
+    $('lh-note').value = (t.task_id + ' · ' + title).slice(0, 500);
+    $('lh-save').checked = true;
+    lhError(''); lhInvalid(null);
+    lhRenderCats();
+    lhSetBusy(false);
+    var d = $('lh-dialog');
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    $('lh-hours').focus();
+  }
+  function closeLogHours(signingOut) {
+    if (!lh.task || (lh.busy && !signingOut)) return;
+    var d = $('lh-dialog'), opener = lh.opener, task = lh.task, done = lh.hoursDone;
+    lh.task = null; lh.opener = null; lh.hoursDone = null;
+    if (signingOut) lhSetBusy(false);
+    if (d.open) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }
+    if (signingOut) return;
+    if (done) toast(done.text);
+    // focus back on the button that opened it (or the same button if the row was redrawn), without moving the page
+    var target = opener && document.body.contains(opener) ? opener : document.querySelector('[data-task="' + task.task_id + '"] .task-hours');
+    if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
+    if ((window.pageYOffset || 0) !== lh.scroll) window.scrollTo(0, lh.scroll);
+  }
+  function lhValidDate(ds) {
+    return /^\d{4}-\d{2}-\d{2}$/.test(ds) && new Date(toUTC(ds)).toISOString().slice(0, 10) === ds && ds <= todaySP();
+  }
+  // second step: category into the task (F update_task, with its own re-read of the sheet)
+  function lhSaveCategory() {
+    var t = lh.task, cat = catByKey(lh.hoursDone.cat);
+    lhSetBusy(true);
+    return api({ action: 'update_task', task_id: t.task_id, changes: { categoria: cat.pt } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      if (!lh.task) return;
+      state.tasks = state.tasks.map(function (x) { return x.task_id === data.task.task_id ? data.task : x; });
+      lh.task = data.task;
+      lh.hoursDone.text += ' Categoria guardada na tarefa.';
+      lhSetBusy(false);
+      replaceRow(data.task);          // same row, same page and filters
+      closeLogHours(false);
+    }, function (err) {
+      if (!lh.task) return;
+      lhSetBusy(false);
+      lhInfo(lh.hoursDone.text + ' Mas a categoria não foi guardada na tarefa: ' + messageFor(err));
+      $('lh-submit').focus();
+    });
+  }
+  function lhSubmit(ev) {
+    if (ev) ev.preventDefault();
+    if (!lh.task || lh.busy) return;
+    if (lh.hoursDone) { lhSaveCategory(); return; }
+    var hours = parseHours($('lh-hours').value), date = $('lh-date').value, cat = catByKey(lh.cat);
+    if (!isFinite(hours)) { lhFail('lh-hours', LHMSG.hours); return; }
+    if (!lhValidDate(date)) { lhFail('lh-date', LHMSG.date); return; }
+    if (!cat) { lhInvalid(null); lhError(LHMSG.category); var r = lhRadios()[0]; if (r) r.focus(); return; }
+    var save = lh.choosing && $('lh-save').checked && cat.key !== lhTaskCat();
+    lhInvalid(null); lhError(''); lhSetBusy(true);
+    hApi({ action: 'add', id: lh.id, task_id: cat.front, date: date, hours: hours, note: $('lh-note').value.trim() }).then(function (data) {
+      if (!lh.task) return;           // signed out meanwhile
+      if (horas.started) horas.stale = true;     // the Horas tab reloads the next time it opens
+      var got = data && data.entry && isFinite(+data.entry.hours) ? +data.entry.hours : hours;
+      lh.hoursDone = { cat: cat.key, text: fmtHours(got) + ' registradas em ' + cat.pt + '.' };
+      if (save) { lhSaveCategory(); return; }
+      lhSetBusy(false);
+      closeLogHours(false);
+    }, function (err) {
+      if (!lh.task) return;
+      lhSetBusy(false);
+      if (err.code === 'invalid_task' && /^CAT-/.test(cat.front)) { lhError(LHMSG.no_front); return; }
+      if (err.code === 'invalid_task' || err.code === 'task_closed') { lhError(HMSG[err.code].replace(' A lista foi recarregada.', '')); return; }
+      if (err.code === 'invalid_hours') { lhFail('lh-hours', LHMSG.hours); return; }
+      if (err.code === 'invalid_date') { lhFail('lh-date', LHMSG.date); return; }
+      lhError(hMessage(err));     // network or server error: the modal keeps the same id, so trying again never duplicates
+    });
+  }
+  function lhFocusables() {
+    return Array.prototype.filter.call($('lh-dialog').querySelectorAll('button, input, select, textarea'), function (n) {
+      return !n.disabled && !n.closest('[hidden]');
+    });
+  }
+  function initLogHours() {
+    var d = $('lh-dialog');
+    $('lh-form').addEventListener('submit', lhSubmit);
+    $('lh-cancel').addEventListener('click', function () { closeLogHours(false); });
+    $('lh-cat-change').addEventListener('click', function () {
+      lh.choosing = true;
+      lhRenderCats();
+      var r = lhRadios().filter(function (x) { return x.checked; })[0] || lhRadios()[0];
+      if (r) r.focus();
+    });
+    Array.prototype.forEach.call(d.querySelectorAll('[data-lh-hours]'), function (b) {
+      b.addEventListener('click', function () { $('lh-hours').value = b.getAttribute('data-lh-hours'); lhInvalid(null); lhError(''); });
+    });
+    d.addEventListener('cancel', function (ev) { ev.preventDefault(); closeLogHours(false); });     // Esc (native dialog)
+    d.addEventListener('keydown', function (ev) {
+      var tag = ev.target && ev.target.tagName, type = ev.target && ev.target.type;
+      if (ev.key === 'Escape') { ev.preventDefault(); closeLogHours(false); return; }
+      if (ev.key === 'Enter' && (tag === 'SELECT' || (tag === 'INPUT' && type !== 'checkbox'))) { ev.preventDefault(); lhSubmit(); return; }
+      if (ev.key !== 'Tab') return;
+      var f = lhFocusables(); if (!f.length) return;
+      var first = f[0], last = f[f.length - 1], a = document.activeElement;
+      if (ev.shiftKey && (a === first || !d.contains(a))) { ev.preventDefault(); last.focus(); }
+      else if (!ev.shiftKey && (a === last || !d.contains(a))) { ev.preventDefault(); first.focus(); }
+    });
+    // click on the backdrop (outside the box) closes; a drag that started inside does not
+    d.addEventListener('mousedown', function (ev) { lh.downOutside = ev.target === d; });
+    d.addEventListener('click', function (ev) { if (ev.target === d && lh.downOutside) closeLogHours(false); lh.downOutside = false; });
+    document.addEventListener('focusin', function (ev) {
+      if (lh.task && !d.contains(ev.target)) { var f = lhFocusables(); if (f.length) f[0].focus(); }
+    });
+  }
+  function initHoras() {
+    var w = String(new URLSearchParams(window.location.search).get('week') || '');
+    horas.week = weekStart(w) ? w : isoWeek(todaySP());
+    hRenderWeekBar();
+    $('h-prev-week').addEventListener('click', function () { hGoWeek(shiftWeek(horas.week, -1)); });
+    $('h-next-week').addEventListener('click', function () { hGoWeek(shiftWeek(horas.week, 1)); });
+    $('h-this-week').addEventListener('click', function () { hGoWeek(isoWeek(todaySP())); });
+    $('h-retry').addEventListener('click', function () { horas.started = true; hLoadWeek(); });
+    $('h-copy-btn').addEventListener('click', hCopy);
+    initLogHours();
+  }
+
   // ---------- start
   function init() {
-    ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
+    ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-category', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
     $('filter-search').addEventListener('input', filtersChanged);
     $('toggle-all').addEventListener('click', function () {
       $('filter-status').value = $('filter-status').value === 'open' ? '' : 'open';
@@ -1365,9 +2470,23 @@
     $('logout').addEventListener('click', function () { signOut(''); });
     $('meeting-form').addEventListener('submit', onAnalyze);
     $('meeting-file').addEventListener('change', onFile);
+    window.addEventListener('beforeunload', function (ev) {   // proposals and new suggestions exist only in this page
+      if (!state.key || !unsavedWork()) return;
+      ev.preventDefault();
+      ev.returnValue = '';
+    });
+    normalizeUrl();
+    initHoras();
+    TABS.forEach(function (t) {
+      $('tab-' + t).addEventListener('click', function () { goTab(t); });
+      $('tab-' + t).addEventListener('keydown', onTabKey);
+    });
+    window.addEventListener('hashchange', function () { showTab(tabFromHash(), false); });
+    showTab(tabFromHash(), false);
     state.key = read(KEY_STORE) || '';
     if (!state.key) { $('login').hidden = false; return; }
     enterApp();
+    showTab(state.tab, false);     // the Horas data is asked here only if the page opened on #horas
     loadTasks(false).then(loadSuggestionsIfIn);
   }
   init();
