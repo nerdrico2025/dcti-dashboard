@@ -1,6 +1,6 @@
 {
   "schema_version": "1.0",
-  "sample": true,
+  "sample": false,
   "default_language": "en-CA",
   "labels": {
     "page.title": {
@@ -280,57 +280,186 @@
     }
   ],
   "snapshot": {
-    "snapshot_date": "2026-11-02",
-    "week_start": "2026-10-26",
-    "executing_text_en_CA": "Published 1 article and 1 LinkedIn post (sample titles).\nDelivered the monthly community report.\n1 article draft is waiting in review.",
-    "executing_text_pt_BR": "Publicados 1 artigo e 1 post no LinkedIn (títulos de exemplo).\nRelatório mensal da comunidade entregue.\n1 rascunho de artigo aguarda revisão.",
-    "how_its_going_status": "Yellow",
-    "how_its_going_text_en_CA": "Yellow: Sintera® ISRA product page views are at 75% of target and AI Transformation page views at 60%.\nAutomation coverage changed: 1 automated, 2 manual, 5 not yet.",
-    "how_its_going_text_pt_BR": "Amarelo: as visualizações da página do Sintera® ISRA estão em 75% da meta e as de Transformação com IA em 60%.\nA cobertura de automação mudou: 1 automatizado, 2 manuais, 5 ainda não.",
-    "what_to_change_text_en_CA": "Review the AI Transformation product page, the line furthest below target.\nConnect a data source for the stages that still have no data.\nFinish the review of the article draft that has waited 4 days.",
-    "what_to_change_text_pt_BR": "Revisar a página do produto Transformação com IA, a linha mais abaixo da meta.\nConectar uma fonte de dados para as etapas que ainda não têm dados.\nConcluir a revisão do rascunho de artigo que aguarda há 4 dias.",
-    "needs_from_team_en_CA": "Review the article draft that has been waiting for 4 days.",
-    "needs_from_team_pt_BR": "Revisar o rascunho de artigo que aguarda há 4 dias.",
-    "report_url": ""
+    "snapshot_date": "2026-11-12",
+    "week_start": "2026-11-02",
+    "executing_text_en_CA": "No activities were logged this week.\nIn progress: content agent structure and flow (Red, Blue, Yellow).\nIn progress: automated weekly GTM dashboard.",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow).\nEm andamento: painel semanal automatizado do GTM.",
+    "how_its_going_status": "Green",
+    "how_its_going_text_en_CA": "Green: all 19 tasks in the cycle are done, with none late or blocked.\nNo funnel data is connected yet, so no product line has a status.",
+    "how_its_going_text_pt_BR": "Verde: as 19 tarefas do ciclo foram concluídas, nenhuma atrasada ou bloqueada.\nNenhum dado de funil está conectado ainda, então nenhuma linha de produto tem status.",
+    "what_to_change_text_en_CA": "Connect data sources for Site visits, Demo/Trial request and Sale (revenue), which show in the main table.\nSet up tracking for the pillars marked Not yet: 7 of 8.",
+    "what_to_change_text_pt_BR": "Conectar fontes de dados para Visitas ao site, Pedido de demo/teste e Venda (receita), que aparecem na tabela principal.\nConfigurar o acompanhamento dos pilares marcados como Ainda não: 7 de 8.",
+    "needs_from_team_en_CA": "",
+    "needs_from_team_pt_BR": "",
+    "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-02"
   },
   "kpi": {
-    "week_start": "2026-10-26",
-    "week_end": "2026-11-01",
+    "week_start": "2026-11-02",
+    "week_end": "2026-11-08",
     "currency": "EUR",
     "status_rules": {
       "green_min_pct": 100,
       "yellow_min_pct": 70,
       "review_alert_days": 3
     },
-    "how_its_going_status": "Yellow",
+    "how_its_going_status": "Green",
+    "tasks": {
+      "base_date": "2026-11-12",
+      "cycle_end": "2026-11-08",
+      "cycle": {
+        "done": 19,
+        "total": 19,
+        "pct": 100
+      },
+      "gtm_original": {
+        "done": 3,
+        "expected": 3,
+        "total": 3,
+        "done_pct": 100,
+        "expected_pct": 100,
+        "diff_points": 0
+      },
+      "meeting_tasks": {
+        "added": 44,
+        "done": 16
+      },
+      "late_count": 0,
+      "blocked_count": 0,
+      "late_gates": [],
+      "funnel_pct": null,
+      "executing": {
+        "this_week": [
+          "REU-1006-09",
+          "REU-1006-10",
+          "REU-1014-02",
+          "REU-1020-07",
+          "REU-1103-02"
+        ],
+        "next_week": [
+          "M1110-02",
+          "M1110-03",
+          "M1110-05"
+        ]
+      },
+      "to_change": [],
+      "team_needs": [
+        {
+          "person": "Mauricio",
+          "tasks": [
+            {
+              "task_id": "REU-1006-10",
+              "due_date": ""
+            },
+            {
+              "task_id": "REU-1014-02",
+              "due_date": ""
+            }
+          ]
+        },
+        {
+          "person": "Scott",
+          "tasks": [
+            {
+              "task_id": "REU-1006-09",
+              "due_date": ""
+            },
+            {
+              "task_id": "REU-1006-10",
+              "due_date": ""
+            }
+          ]
+        }
+      ],
+      "items": {
+        "REU-1006-09": {
+          "title_en_CA": "Scott: ask 10–20 people in his network for their LinkedIn contacts file",
+          "title_pt_BR": "Scott: pedir o arquivo de contatos do LinkedIn a 10 a 20 pessoas da rede dele",
+          "due_date": "",
+          "status": "doing",
+          "change_note": ""
+        },
+        "REU-1006-10": {
+          "title_en_CA": "Scott and Mauricio: define the LLM-driven newsletter and the LinkedIn group",
+          "title_pt_BR": "Scott e Mauricio: definir a newsletter automática por LLM e o grupo no LinkedIn",
+          "due_date": "",
+          "status": "doing",
+          "change_note": ""
+        },
+        "REU-1014-02": {
+          "title_en_CA": "Agree with Mauricio on a content (blog) section on the website, same domain",
+          "title_pt_BR": "Combinar com o Mauricio a seção de conteúdo (blog) no site, no mesmo domínio",
+          "due_date": "",
+          "status": "doing",
+          "change_note": ""
+        },
+        "REU-1020-07": {
+          "title_en_CA": "Build the automated weekly GTM dashboard",
+          "title_pt_BR": "Construir o painel semanal automatizado do GTM",
+          "due_date": "",
+          "status": "doing",
+          "change_note": ""
+        },
+        "REU-1103-02": {
+          "title_en_CA": "Content agent structure and flow (Red, Blue, Yellow) to present to Scott and Panorea",
+          "title_pt_BR": "Estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow) para apresentar ao Scott e à Panorea",
+          "due_date": "",
+          "status": "doing",
+          "change_note": ""
+        },
+        "M1110-02": {
+          "title_en_CA": "Send Scott one LinkedIn post per week for review",
+          "title_pt_BR": "Enviar ao Scott um post de LinkedIn por semana para revisão",
+          "due_date": "2026-11-13",
+          "status": "next",
+          "change_note": ""
+        },
+        "M1110-03": {
+          "title_en_CA": "Prepare one strategic blog article for Google",
+          "title_pt_BR": "Preparar um artigo estratégico para o blog, voltado ao Google",
+          "due_date": "",
+          "status": "next",
+          "change_note": ""
+        },
+        "M1110-05": {
+          "title_en_CA": "Watch the 5 thought leadership videos and assess what can be reused",
+          "title_pt_BR": "Assistir aos 5 vídeos de liderança de pensamento e avaliar o que dá para aproveitar",
+          "due_date": "",
+          "status": "next",
+          "change_note": ""
+        }
+      },
+      "auto_color": "Green",
+      "forced_color": null,
+      "forced_reason": null
+    },
     "funnel": [
       {
         "product": "ISRA",
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": 118,
-        "target_per_week": 100,
-        "pct_of_plan": 118,
-        "status": "Green",
-        "previous_week_value": 102,
-        "change_abs": 16,
-        "change_pct": 15.7,
+        "value": null,
+        "target_per_week": null,
+        "pct_of_plan": null,
+        "status": "Gray",
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
-            "value": 102
+            "value": null
           },
           {
             "week_start": "2026-10-12",
-            "value": 95
+            "value": null
           },
           {
             "week_start": "2026-10-05",
-            "value": 88
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -340,28 +469,28 @@
         "stage": "White paper download",
         "unit": "count",
         "provisional": false,
-        "value": 3,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 2,
-        "change_abs": 1,
-        "change_pct": 50,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 2
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 1
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -371,28 +500,28 @@
         "stage": "Newsletter signup",
         "unit": "count",
         "provisional": false,
-        "value": 5,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 5,
-        "change_abs": 0,
-        "change_pct": 0,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 5
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 3
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -402,28 +531,28 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": 42,
-        "target_per_week": 56,
-        "pct_of_plan": 75,
-        "status": "Yellow",
-        "previous_week_value": 47,
-        "change_abs": -5,
-        "change_pct": -10.6,
+        "value": null,
+        "target_per_week": null,
+        "pct_of_plan": null,
+        "status": "Gray",
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 47
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 39
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -433,28 +562,28 @@
         "stage": "Demo/Trial request",
         "unit": "count",
         "provisional": false,
-        "value": 2,
-        "target_per_week": 2,
-        "pct_of_plan": 100,
-        "status": "Green",
-        "previous_week_value": 1,
-        "change_abs": 1,
-        "change_pct": 100,
+        "value": null,
+        "target_per_week": null,
+        "pct_of_plan": null,
+        "status": "Gray",
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 1
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 0
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -473,6 +602,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
             "value": null
           },
@@ -482,10 +615,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -495,28 +624,28 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": 76,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 81,
-        "change_abs": -5,
-        "change_pct": -6.2,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 81
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 70
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -526,17 +655,21 @@
         "stage": "White paper download",
         "unit": "count",
         "provisional": false,
-        "value": 2,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 2,
-        "change_abs": 0,
-        "change_pct": 0,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
-            "value": 2
+            "value": null
           },
           {
             "week_start": "2026-10-12",
@@ -544,10 +677,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -557,17 +686,21 @@
         "stage": "Newsletter signup",
         "unit": "count",
         "provisional": false,
-        "value": 3,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 1,
-        "change_abs": 2,
-        "change_pct": 200,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
-            "value": 1
+            "value": null
           },
           {
             "week_start": "2026-10-12",
@@ -575,10 +708,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -588,28 +717,28 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": 28,
-        "target_per_week": 25,
-        "pct_of_plan": 112,
-        "status": "Green",
-        "previous_week_value": 24,
-        "change_abs": 4,
-        "change_pct": 16.7,
+        "value": null,
+        "target_per_week": null,
+        "pct_of_plan": null,
+        "status": "Gray",
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 24
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 22
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -619,17 +748,21 @@
         "stage": "Demo/Trial request",
         "unit": "count",
         "provisional": false,
-        "value": 1,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 1,
+        "previous_week_value": null,
+        "change_abs": null,
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
-            "value": 0
+            "value": null
           },
           {
             "week_start": "2026-10-12",
@@ -637,10 +770,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -650,17 +779,21 @@
         "stage": "Sale (revenue)",
         "unit": "EUR",
         "provisional": false,
-        "value": 490,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 490,
+        "previous_week_value": null,
+        "change_abs": null,
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
-            "value": 0
+            "value": null
           },
           {
             "week_start": "2026-10-12",
@@ -668,10 +801,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -681,28 +810,28 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": 34,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 39,
-        "change_abs": -5,
-        "change_pct": -12.8,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 39
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 31
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -721,6 +850,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
             "value": null
           },
@@ -730,10 +863,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -752,6 +881,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
             "value": null
           },
@@ -761,10 +894,6 @@
           },
           {
             "week_start": "2026-10-05",
-            "value": null
-          },
-          {
-            "week_start": "2026-09-28",
             "value": null
           }
         ]
@@ -774,28 +903,28 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": 12,
-        "target_per_week": 20,
-        "pct_of_plan": 60,
-        "status": "Red",
-        "previous_week_value": 9,
-        "change_abs": 3,
-        "change_pct": 33.3,
+        "value": null,
+        "target_per_week": null,
+        "pct_of_plan": null,
+        "status": "Gray",
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 9
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 10
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -805,28 +934,28 @@
         "stage": "Demo/Trial request",
         "unit": "count",
         "provisional": true,
-        "value": 0,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 1,
-        "change_abs": -1,
-        "change_pct": -100,
+        "previous_week_value": null,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
           {
-            "week_start": "2026-10-19",
-            "value": 1
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": 0
-          },
-          {
-            "week_start": "2026-10-05",
+            "week_start": "2026-10-26",
             "value": null
           },
           {
-            "week_start": "2026-09-28",
+            "week_start": "2026-10-19",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-12",
+            "value": null
+          },
+          {
+            "week_start": "2026-10-05",
             "value": null
           }
         ]
@@ -845,6 +974,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-10-26",
+            "value": null
+          },
+          {
             "week_start": "2026-10-19",
             "value": null
           },
@@ -855,92 +988,36 @@
           {
             "week_start": "2026-10-05",
             "value": null
-          },
-          {
-            "week_start": "2026-09-28",
-            "value": null
           }
         ]
       }
     ],
-    "activities_executed": [
-      {
-        "pillar_item": "Website articles",
-        "activity_type": "Article",
-        "title": "Sample article A",
-        "final_status": "Published",
-        "url": ""
-      },
-      {
-        "pillar_item": "LinkedIn (posts and articles)",
-        "activity_type": "LinkedIn post",
-        "title": "Sample post A",
-        "final_status": "Published",
-        "url": ""
-      },
-      {
-        "pillar_item": "Monthly community report (internal, feeds content ideas)",
-        "activity_type": "Report",
-        "title": "Sample monthly report",
-        "final_status": "Done",
-        "url": ""
-      },
-      {
-        "pillar_item": "Website articles",
-        "activity_type": "Article",
-        "title": "Sample article B",
-        "final_status": "In review",
-        "url": ""
-      }
-    ],
+    "activities_executed": [],
     "in_review": {
-      "count": 1,
-      "max_days_waiting": 4,
-      "items": [
-        {
-          "pillar_item": "Website articles",
-          "title": "Sample article B",
-          "in_review_since": "2026-10-29",
-          "days_waiting": 4
-        }
-      ]
+      "count": 0,
+      "max_days_waiting": 0,
+      "items": []
     },
     "automation_coverage": {
       "automated": 1,
-      "manual": 2,
-      "not_yet": 5,
+      "manual": 0,
+      "not_yet": 7,
       "total": 8,
       "previous_week": {
         "automated": 1,
-        "manual": 1,
-        "not_yet": 6
+        "manual": 0,
+        "not_yet": 7
       },
-      "changed_vs_previous_week": true
+      "changed_vs_previous_week": false
     },
     "pillars_with_value": [
-      {
-        "group": "Content",
-        "item": "LinkedIn (posts and articles)",
-        "kpi_name": "posts published",
-        "kpi_value": 1,
-        "tracking": "Manual",
-        "last_update": "2026-11-02"
-      },
-      {
-        "group": "Content",
-        "item": "Website articles",
-        "kpi_name": "articles published",
-        "kpi_value": 1,
-        "tracking": "Manual",
-        "last_update": "2026-11-02"
-      },
       {
         "group": "Community",
         "item": "Monthly community report (internal, feeds content ideas)",
         "kpi_name": "report delivered",
-        "kpi_value": 1,
+        "kpi_value": 0,
         "tracking": "Automated",
-        "last_update": "2026-11-02"
+        "last_update": "2026-11-09"
       }
     ],
     "pillars_all": [
@@ -948,16 +1025,16 @@
         "group": "Content",
         "item": "LinkedIn (posts and articles)",
         "kpi_name": "posts published",
-        "kpi_value": 1,
-        "tracking": "Manual",
+        "kpi_value": null,
+        "tracking": "Not yet",
         "unit": "count"
       },
       {
         "group": "Content",
         "item": "Website articles",
         "kpi_name": "articles published",
-        "kpi_value": 1,
-        "tracking": "Manual",
+        "kpi_value": null,
+        "tracking": "Not yet",
         "unit": "count"
       },
       {
@@ -1004,25 +1081,31 @@
         "group": "Community",
         "item": "Monthly community report (internal, feeds content ideas)",
         "kpi_name": "report delivered",
-        "kpi_value": 1,
+        "kpi_value": 0,
         "tracking": "Automated",
         "unit": "count"
       }
     ],
     "stages_without_data": [
+      "ISRA / Site visits",
+      "ISRA / White paper download",
+      "ISRA / Newsletter signup",
+      "ISRA / Product page view",
+      "ISRA / Demo/Trial request",
       "ISRA / Sale (revenue)",
+      "STL Course / Site visits",
+      "STL Course / White paper download",
+      "STL Course / Newsletter signup",
+      "STL Course / Product page view",
+      "STL Course / Demo/Trial request",
+      "STL Course / Sale (revenue)",
+      "AI Transformation / Site visits",
       "AI Transformation / White paper download",
       "AI Transformation / Newsletter signup",
+      "AI Transformation / Product page view",
+      "AI Transformation / Demo/Trial request",
       "AI Transformation / Sale (revenue)"
     ],
-    "collection": {
-      "stages_without_source": [
-        "ISRA / Sale (revenue)",
-        "AI Transformation / White paper download",
-        "AI Transformation / Newsletter signup",
-        "AI Transformation / Sale (revenue)"
-      ],
-      "failures": []
-    }
+    "collection": null
   }
 }
