@@ -742,7 +742,7 @@
     // Weeks with kpi.tasks use the task lists; older weeks keep the AI texts.
     var tasks = isObj(kpi.tasks) ? kpi.tasks : null;
     $('box-executing-title').textContent = L('box.executing');
-    boxLines($('box-executing'), tasks ? executingLines(tasks) : aiText(snap, 'executing_text'));
+    boxLines($('box-executing'), tasks ? executingLines(tasks, kpi) : aiText(snap, 'executing_text'));
     $('box-how-title').textContent = L('box.how_its_going');
     var hs = $('box-how-status');
     clear(hs);
@@ -783,10 +783,33 @@
   }
   function arr(x) { return Array.isArray(x) ? x : []; }
   function oneLine(s) { return str(s).replace(/\s+/g, ' ').trim(); }
-  function executingLines(t) {
+  // Titles like "Scott: ask…" or "Scott e Mauricio: define…" start with the people already named elsewhere.
+  // Only names listed in team_needs count, so a label such as "Blog: …" stays as written.
+  function teamNames(t) {
+    var names = {};
+    arr(t.team_needs).filter(isObj).forEach(function (p) { var n = str(p.person).trim(); if (n) names[n.toLowerCase()] = true; });
+    return names;
+  }
+  function bareTitle(t, id) {
+    var title = oneLine(taskTitle(t, id));
+    var m = title.match(/^([^:]{1,80}):\s+(\S[\s\S]*)$/);
+    if (!m) return title;
+    var names = teamNames(t);
+    var parts = m[1].split(/\s*(?:,|&|\be\b|\band\b)\s*/i).filter(Boolean);
+    var allPeople = parts.length && parts.every(function (p) { return names[p.trim().toLowerCase()]; });
+    if (!allPeople) return title;
+    return m[2].charAt(0).toLocaleUpperCase() + m[2].slice(1);
+  }
+  function executingLines(t, kpi) {
     var ex = isObj(t.executing) ? t.executing : {};
-    var out = arr(ex.this_week).map(function (id) { return uiText('label.tasks_this_week') + ': ' + oneLine(taskTitle(t, id)); })
-      .concat(arr(ex.next_week).map(function (id) { return uiText('label.tasks_next_week') + ': ' + oneLine(taskTitle(t, id)); }));
+    var ws = str(kpi && kpi.week_start), we = str(kpi && kpi.week_end);
+    // "This week:" only when the due date falls in the reported week; tasks without one get no prefix.
+    var out = arr(ex.this_week).map(function (id) {
+      var due = str(taskItem(t, id).due_date);
+      var inWeek = !!due && !!ws && !!we && due >= ws && due <= we;
+      return (inWeek ? uiText('label.tasks_this_week') + ': ' : '') + bareTitle(t, id);
+    })
+      .concat(arr(ex.next_week).map(function (id) { return uiText('label.tasks_next_week') + ': ' + bareTitle(t, id); }));
     return (out.length ? out : [uiText('label.tasks_none')]).join('\n');
   }
   function toChangeLines(t) {
@@ -801,9 +824,10 @@
   }
   function needsLines(t) {
     return arr(t.team_needs).filter(isObj).map(function (p) {
+      // Grouped under the person's name once; no "(no due date)" when there is none.
       return str(p.person) + ': ' + arr(p.tasks).filter(isObj).map(function (x) {
-        var when = x.due_date ? fill(uiText('label.task_due'), { date: shortDate(x.due_date) }) : uiText('label.task_no_due');
-        return oneLine(taskTitle(t, x.task_id)) + ' (' + when + ')';
+        var when = x.due_date ? ' (' + fill(uiText('label.task_due'), { date: shortDate(x.due_date) }) + ')' : '';
+        return bareTitle(t, x.task_id) + when;
       }).join('; ');
     });
   }
