@@ -1,5 +1,11 @@
 {
   "cleanUrls": true,
+  "redirects": [
+    { "source": "/horas", "has": [{ "type": "query", "key": "week", "value": "(?<week>\\d{4}-W\\d{2})" }], "destination": "/admin?week=:week#horas", "permanent": false },
+    { "source": "/horas", "destination": "/admin#horas", "permanent": false },
+    { "source": "/horas.html", "has": [{ "type": "query", "key": "week", "value": "(?<week>\\d{4}-W\\d{2})" }], "destination": "/admin?week=:week#horas", "permanent": false },
+    { "source": "/horas.html", "destination": "/admin#horas", "permanent": false }
+  ],
   "rewrites": [
     { "source": "/api/timelog", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog" },
     { "source": "/api/timelog-public", "destination": "https://n8n.nerdrico.com.br/webhook/dcti-timelog?public=1" },
