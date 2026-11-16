@@ -2,8 +2,15 @@
   "schema_version": "1.0",
   "weeks": [
     {
+      "week_start": "2026-11-09",
+      "snapshot_date": "2026-11-16",
+      "file": "2026-11-09.json",
+      "how_its_going_status": "Green",
+      "sample": false
+    },
+    {
       "week_start": "2026-11-02",
-      "snapshot_date": "2026-11-12",
+      "snapshot_date": "2026-11-13",
       "file": "2026-11-02.json",
       "how_its_going_status": "Green",
       "sample": false

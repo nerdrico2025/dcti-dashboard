@@ -280,15 +280,15 @@
     }
   ],
   "snapshot": {
-    "snapshot_date": "2026-11-12",
+    "snapshot_date": "2026-11-13",
     "week_start": "2026-11-02",
-    "executing_text_en_CA": "No activities were logged this week.\nIn progress: content agent structure and flow (Red, Blue, Yellow).\nIn progress: automated weekly GTM dashboard.",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow).\nEm andamento: painel semanal automatizado do GTM.",
+    "executing_text_en_CA": "No activities were logged this week.\nIn progress: content agent structure and flow (Red, Blue, Yellow) to present to Scott and Panorea.\nIn progress: Scott and Mauricio defining the LLM-driven newsletter and the LinkedIn group.",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow) para apresentar ao Scott e à Panorea.\nEm andamento: Scott e Mauricio definindo a newsletter automática por LLM e o grupo no LinkedIn.",
     "how_its_going_status": "Green",
-    "how_its_going_text_en_CA": "Green: all 19 tasks in the cycle are done, with none late or blocked.\nNo funnel data is connected yet, so no product line has a status.",
-    "how_its_going_text_pt_BR": "Verde: as 19 tarefas do ciclo foram concluídas, nenhuma atrasada ou bloqueada.\nNenhum dado de funil está conectado ainda, então nenhuma linha de produto tem status.",
-    "what_to_change_text_en_CA": "Connect data sources for Site visits, Demo/Trial request and Sale (revenue), which show in the main table.\nSet up tracking for the pillars marked Not yet: 7 of 8.",
-    "what_to_change_text_pt_BR": "Conectar fontes de dados para Visitas ao site, Pedido de demo/teste e Venda (receita), que aparecem na tabela principal.\nConfigurar o acompanhamento dos pilares marcados como Ainda não: 7 de 8.",
+    "how_its_going_text_en_CA": "Green: 19 of 19 cycle tasks are done (100%), with none late and none blocked.\nNo weekly targets are set for the funnel lines, so they show Gray.",
+    "how_its_going_text_pt_BR": "Verde: 19 de 19 tarefas do ciclo concluídas (100%), nenhuma atrasada e nenhuma bloqueada.\nNão há metas semanais definidas para as linhas do funil, por isso aparecem em cinza.",
+    "what_to_change_text_en_CA": "Connect data sources for white paper downloads, newsletter signups and sales, which have no data yet.\nSet weekly targets for the funnel lines, so their status can be measured.",
+    "what_to_change_text_pt_BR": "Conectar fontes de dados para downloads de white paper, inscrições na newsletter e vendas, que ainda não têm dados.\nDefinir metas semanais para as linhas do funil, para que o status possa ser medido.",
     "needs_from_team_en_CA": "",
     "needs_from_team_pt_BR": "",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-02"
@@ -304,7 +304,7 @@
     },
     "how_its_going_status": "Green",
     "tasks": {
-      "base_date": "2026-11-12",
+      "base_date": "2026-11-13",
       "cycle_end": "2026-11-08",
       "cycle": {
         "done": 19,
@@ -320,8 +320,8 @@
         "diff_points": 0
       },
       "meeting_tasks": {
-        "added": 44,
-        "done": 16
+        "added": 43,
+        "done": 17
       },
       "late_count": 0,
       "blocked_count": 0,
@@ -331,12 +331,10 @@
         "this_week": [
           "REU-1006-09",
           "REU-1006-10",
-          "REU-1014-02",
           "REU-1020-07",
           "REU-1103-02"
         ],
         "next_week": [
-          "M1110-02",
           "M1110-03",
           "M1110-05"
         ]
@@ -348,10 +346,6 @@
           "tasks": [
             {
               "task_id": "REU-1006-10",
-              "due_date": ""
-            },
-            {
-              "task_id": "REU-1014-02",
               "due_date": ""
             }
           ]
@@ -385,13 +379,6 @@
           "status": "doing",
           "change_note": ""
         },
-        "REU-1014-02": {
-          "title_en_CA": "Agree with Mauricio on a content (blog) section on the website, same domain",
-          "title_pt_BR": "Combinar com o Mauricio a seção de conteúdo (blog) no site, no mesmo domínio",
-          "due_date": "",
-          "status": "doing",
-          "change_note": ""
-        },
         "REU-1020-07": {
           "title_en_CA": "Build the automated weekly GTM dashboard",
           "title_pt_BR": "Construir o painel semanal automatizado do GTM",
@@ -404,13 +391,6 @@
           "title_pt_BR": "Estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow) para apresentar ao Scott e à Panorea",
           "due_date": "",
           "status": "doing",
-          "change_note": ""
-        },
-        "M1110-02": {
-          "title_en_CA": "Send Scott one LinkedIn post per week for review",
-          "title_pt_BR": "Enviar ao Scott um post de LinkedIn por semana para revisão",
-          "due_date": "2026-11-13",
-          "status": "next",
           "change_note": ""
         },
         "M1110-03": {
@@ -438,17 +418,17 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 1,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 1,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -531,17 +511,17 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 2,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 2,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -562,17 +542,17 @@
         "stage": "Demo/Trial request",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 0,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 0,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -624,17 +604,17 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 0,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 0,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -717,17 +697,17 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 0,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 0,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -810,17 +790,17 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 0,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 0,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -903,17 +883,17 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": null,
+        "value": 0,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": null,
-        "change_abs": null,
+        "previous_week_value": 0,
+        "change_abs": 0,
         "change_pct": null,
         "history": [
           {
             "week_start": "2026-10-26",
-            "value": null
+            "value": 0
           },
           {
             "week_start": "2026-10-19",
@@ -1087,22 +1067,15 @@
       }
     ],
     "stages_without_data": [
-      "ISRA / Site visits",
       "ISRA / White paper download",
       "ISRA / Newsletter signup",
-      "ISRA / Product page view",
-      "ISRA / Demo/Trial request",
       "ISRA / Sale (revenue)",
-      "STL Course / Site visits",
       "STL Course / White paper download",
       "STL Course / Newsletter signup",
-      "STL Course / Product page view",
       "STL Course / Demo/Trial request",
       "STL Course / Sale (revenue)",
-      "AI Transformation / Site visits",
       "AI Transformation / White paper download",
       "AI Transformation / Newsletter signup",
-      "AI Transformation / Product page view",
       "AI Transformation / Demo/Trial request",
       "AI Transformation / Sale (revenue)"
     ],
