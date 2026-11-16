@@ -246,6 +246,22 @@
   .hours-table .zero { color: var(--faint); }
   .hours-note { margin-top: 8px; font-size: 0.875rem; color: var(--muted); }
 
+  /* ---------- hours worked in the last work cycle (main screen; read-only aggregate from /api/timelog-public) */
+  .cycle-card { display: grid; grid-template-columns: minmax(11rem, 15rem) minmax(0, 1fr); gap: 20px 48px; align-items: start; }
+  .cycle-k { font-size: 0.9375rem; font-weight: 650; }
+  .cycle-range { font-size: 0.875rem; color: var(--muted); margin-top: 2px; }
+  .cycle-value { font-size: 2.625rem; font-weight: 750; line-height: 1.1; letter-spacing: -0.01em; font-variant-numeric: tabular-nums; margin-top: 14px; }
+  .cycle-total-label { font-size: 0.8125rem; color: var(--muted); margin-top: 2px; }
+  .cycle-msg { color: var(--faint); font-style: italic; }
+  .cycle-list { list-style: none; margin: 0; padding: 0; }
+  .cycle-list li { display: grid; grid-template-columns: minmax(8rem, 15rem) minmax(0, 1fr) 4.5rem; align-items: center; gap: 4px 16px; padding: 7px 0; }
+  .cycle-list li + li { border-top: 1px solid #e6ebf1; }
+  .cycle-name { font-weight: 600; font-size: 0.95rem; }
+  .cycle-bar { height: 8px; border-radius: 4px; background: #eef1f4; overflow: hidden; }
+  .cycle-bar span { display: block; height: 100%; border-radius: 4px; background: var(--accent); }
+  .cycle-h { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .cycle-list li.zero .cycle-name, .cycle-list li.zero .cycle-h { color: var(--faint); font-weight: 500; }
+
   /* ---------- process health (details) */
   .health { display: flex; flex-wrap: wrap; gap: 12px 40px; margin-top: 40px; }
   .health h2 { width: 100%; }
@@ -265,6 +281,11 @@
     .wrap { padding: 28px 20px 56px; }
     .strategy-grid { grid-template-columns: 1fr; gap: 24px; }
     .boxes, .products { grid-template-columns: 1fr; }
+    .cycle-card { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 480px) {
+    .cycle-list li { grid-template-columns: minmax(0, 1fr) auto; }
+    .cycle-bar { grid-column: 1 / -1; grid-row: 2; }
   }
   @media (max-width: 600px) {
     .wrap { padding: 24px 16px 48px; }
@@ -297,7 +318,7 @@
     .products { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     .status-large { font-size: 13pt !important; }
     .needs { align-items: center !important; }
-    .controls, .details, .more, .more-btn, .timelog-link, noscript { display: none !important; }
+    .controls, .details, .more, .more-btn, .timelog-link, .hours-worked, noscript { display: none !important; }
     .wrap { max-width: none; padding: 0; }
     .card, .table-scroll { box-shadow: none; border: 1px solid #c9d1da; border-radius: 8px; padding: 3mm 4.5mm; }
     .site-header h1 { font-size: 17pt; margin-top: 0.5mm; }
@@ -420,6 +441,23 @@
         <div class="products" id="main-funnel"></div>
       </section>
 
+      <!-- hours worked: aggregate only (total and per group), never printed (the A4 page is full) -->
+      <section class="hours-worked" aria-labelledby="cycle-title">
+        <h2 class="section-title" id="cycle-title"></h2>
+        <div class="card cycle-card">
+          <div>
+            <p class="cycle-k" id="cycle-k"></p>
+            <p class="cycle-range" id="cycle-range"></p>
+            <p class="cycle-value" id="cycle-value"></p>
+            <p class="cycle-total-label" id="cycle-total-label"></p>
+          </div>
+          <div>
+            <p class="cycle-msg" id="cycle-msg" role="status"></p>
+            <ul class="cycle-list" id="cycle-list" hidden></ul>
+          </div>
+        </div>
+      </section>
+
       <!-- details: collapsed by default, never printed -->
       <details class="details" id="details">
         <summary id="details-summary"></summary>
@@ -506,6 +544,10 @@
     'label.hours_loading':     { 'en-CA': 'Loading…', 'pt-BR': 'Carregando…' },
     'label.hours_unavailable': { 'en-CA': 'Unavailable right now.', 'pt-BR': 'Indisponível no momento.' },
     'label.hours_none':        { 'en-CA': 'No hours logged yet.', 'pt-BR': 'Nenhuma hora registrada ainda.' },
+    'label.hours_worked':      { 'en-CA': 'Hours worked', 'pt-BR': 'Horas trabalhadas' },
+    'label.hours_last_cycle':  { 'en-CA': 'Last work cycle', 'pt-BR': 'Último ciclo de trabalho' },
+    'label.hours_total':       { 'en-CA': 'Total', 'pt-BR': 'Total' },
+    'label.hours_cycle_none':  { 'en-CA': 'No hours logged for this cycle.', 'pt-BR': 'Nenhuma hora registrada neste ciclo.' },
     'label.hours_note':        { 'en-CA': 'Read-only. "To date" = all hours since the log started.', 'pt-BR': 'Somente leitura. "Acumulado" = todas as horas desde o início do registro.' },
     'label.tasks_this_week':   { 'en-CA': 'This week', 'pt-BR': 'Esta semana' },
     'label.tasks_next_week':   { 'en-CA': 'Next week', 'pt-BR': 'Próxima semana' },
@@ -762,6 +804,7 @@
     else needsBox.textContent = needs.join(' · ');
 
     renderMainFunnel(kpi);
+    renderCycle();
     $('details-summary').textContent = uiText('label.see_details');
     $('timelog-link').textContent = uiText('label.time_log');
     if ($('details').open) loadHours(); else renderHours();
@@ -1148,6 +1191,94 @@
     $('hours-f-week').textContent = fmtHoursValue(d.total_week_hours);
     $('hours-f-total').textContent = fmtHoursValue(d.total_hours);
     table.hidden = false;
+  }
+
+  // ---------- hours worked in the last closed work cycle (Monday to Sunday) = the week of the snapshot shown.
+  // Same public read-only route as the details table; only totals per group come back (no notes, codes, titles or periods).
+  var cycle = { week: null, ws: null, data: null, loading: false, failed: false, seq: 0 };
+  function cycleWeekStart() {
+    var d = state.data || {};
+    var ws = str((isObj(d.snapshot) && d.snapshot.week_start) || (isObj(d.kpi) && d.kpi.week_start)).trim();
+    if (WEEK_RE.test(ws)) return ws;
+    var mon = hoursWeekStart();   // no snapshot week: the week before the current one
+    return new Date(Date.UTC(+mon.slice(0, 4), +mon.slice(5, 7) - 1, +mon.slice(8, 10)) - 7 * 864e5).toISOString().slice(0, 10);
+  }
+  // "Nov 9 – Nov 15, 2026" / "9 de nov. – 15 de nov. 2026"
+  function cycleRange(ws) {
+    var a = new Date(Date.UTC(+ws.slice(0, 4), +ws.slice(5, 7) - 1, +ws.slice(8, 10)));
+    var b = new Date(a.getTime() + 6 * 864e5);
+    var en = state.lang !== 'pt-BR', ya = a.getUTCFullYear(), yb = b.getUTCFullYear();
+    function day(x) {
+      try { return new Intl.DateTimeFormat(en ? 'en-US' : 'pt-BR', { timeZone: 'UTC', day: 'numeric', month: 'short' }).format(x); }
+      catch (e) { return x.toISOString().slice(0, 10); }
+    }
+    if (ya !== yb) return en ? day(a) + ', ' + ya + ' – ' + day(b) + ', ' + yb : day(a) + ' ' + ya + ' – ' + day(b) + ' ' + yb;
+    return en ? day(a) + ' – ' + day(b) + ', ' + yb : day(a) + ' – ' + day(b) + ' ' + yb;
+  }
+  function loadCycle(ws) {
+    var seq = ++cycle.seq;
+    cycle.ws = ws; cycle.week = isoWeekOf(ws); cycle.data = null; cycle.failed = false; cycle.loading = true;
+    var ctrl = typeof AbortController === 'function' ? new AbortController() : null;
+    var timer = ctrl ? window.setTimeout(function () { ctrl.abort(); }, 15000) : null;
+    fetch('api/timelog-public', {
+      method: 'POST', cache: 'no-store', credentials: 'same-origin',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'public_totals', week: cycle.week }),
+      signal: ctrl ? ctrl.signal : undefined
+    }).then(function (res) {
+      return res.json().then(function (d) {
+        if (!res.ok || !isObj(d) || d.ok !== true || !Array.isArray(d.rows)) throw new Error('hours');
+        return d;
+      });
+    }).then(function (d) {
+      if (timer) window.clearTimeout(timer);
+      if (seq !== cycle.seq) return;
+      cycle.loading = false; cycle.data = d;
+      renderCycle();
+    }).catch(function () {
+      if (timer) window.clearTimeout(timer);
+      if (seq !== cycle.seq) return;
+      cycle.loading = false; cycle.failed = true;
+      renderCycle();
+    });
+  }
+  function renderCycle() {
+    var ws = cycleWeekStart();
+    if (ws !== cycle.ws) loadCycle(ws);
+    $('cycle-title').textContent = uiText('label.hours_worked');
+    $('cycle-k').textContent = uiText('label.hours_last_cycle');
+    $('cycle-range').textContent = cycleRange(ws);
+    $('cycle-total-label').textContent = uiText('label.hours_total');
+    var d = cycle.data, msg = $('cycle-msg'), list = $('cycle-list');
+    // groups = the same rows as the admin Horas tab; older timelog workflows send only the categories (rows)
+    var pt = state.lang === 'pt-BR';
+    var items = !d ? [] : (Array.isArray(d.groups) ? d.groups : d.rows).filter(isObj).map(function (g) {
+      return { name: str(pt ? g.name_pt : g.name_en) || uiText('label.hours_other'), h: isNum(g.week_hours) ? g.week_hours : 0 };
+    });
+    var total = d && isNum(d.total_week_hours) ? d.total_week_hours : 0;
+    $('cycle-value').textContent = d ? fmtHoursValue(total) : DASH;
+    clear(list);
+    if (!d || total <= 0) {
+      list.hidden = true;
+      msg.hidden = false;
+      msg.textContent = cycle.loading ? uiText('label.hours_loading') : cycle.failed ? uiText('label.hours_unavailable') : uiText('label.hours_cycle_none');
+      return;
+    }
+    msg.hidden = true;
+    var max = items.reduce(function (m, x) { return x.h > m ? x.h : m; }, 0);
+    items.forEach(function (x) {
+      var li = el('li', x.h > 0 ? null : 'zero');
+      li.appendChild(el('span', 'cycle-name', x.name));
+      var bar = el('span', 'cycle-bar');
+      bar.setAttribute('aria-hidden', 'true');
+      var fillBar = el('span');
+      fillBar.style.width = (max > 0 ? Math.round(x.h / max * 1000) / 10 : 0) + '%';
+      bar.appendChild(fillBar);
+      li.appendChild(bar);
+      li.appendChild(el('span', 'cycle-h', fmtHoursValue(x.h)));
+      list.appendChild(li);
+    });
+    list.hidden = false;
   }
 
   function renderHealth(kpi) {
