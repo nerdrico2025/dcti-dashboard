@@ -30,6 +30,15 @@
   .site-header { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 16px 32px; }
   .brand { font-size: 0.8125rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); }
   .site-header h1 { font-size: 1.875rem; font-weight: 750; letter-spacing: -0.01em; margin-top: 6px; }
+  .header-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+  /* language: same control as the Home (index.html) */
+  .lang-group { display: inline-flex; padding: 4px; gap: 4px; background: #fff; border-radius: 12px; box-shadow: var(--shadow); }
+  .lang-group button {
+    font: inherit; font-size: 0.9375rem; font-weight: 650; min-height: 40px; min-width: 64px; padding: 6px 14px;
+    background: transparent; color: var(--text); border: 0; border-radius: 9px; cursor: pointer;
+  }
+  .lang-group button:hover { background: var(--accent-soft); }
+  .lang-group button[aria-pressed="true"] { background: var(--accent); color: #fff; }
   .link-btn { background: none; border: 0; padding: 8px 4px; min-height: 40px; color: var(--accent); font-size: 0.9375rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
 
   .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: 24px 26px; margin-top: 28px; }
@@ -262,7 +271,14 @@
       <div class="brand">DCTI-Institute</div>
       <h1>Admin</h1>
     </div>
-    <button type="button" class="link-btn" id="logout" hidden>Sair</button>
+    <div class="header-tools">
+      <span class="visually-hidden" id="lang-label" data-i18n="lang.selector_label">Idioma</span>
+      <div class="lang-group" role="group" aria-labelledby="lang-label">
+        <button type="button" data-lang="pt-BR" aria-pressed="false" lang="pt-BR">PT-BR</button>
+        <button type="button" data-lang="en-CA" aria-pressed="false" lang="en-CA">EN-CA</button>
+      </div>
+      <button type="button" class="link-btn" id="logout" data-i18n="logout" hidden>Sair</button>
+    </div>
   </header>
 
   <main>
@@ -270,33 +286,33 @@
     <div class="notice" id="error" role="alert" hidden><p id="error-text"></p></div>
 
     <section class="card login" id="login" aria-labelledby="login-title" hidden>
-      <h2 id="login-title">Digite a senha</h2>
-      <p class="hint">A senha fica salva só neste navegador. Use "Sair" para apagá-la.</p>
+      <h2 id="login-title" data-i18n="login.title">Digite a senha</h2>
+      <p class="hint" data-i18n="login.hint">A senha fica salva só neste navegador. Use "Sair" para apagá-la.</p>
       <form class="stack" id="login-form" novalidate>
         <div class="field">
-          <label for="password">Senha</label>
+          <label for="password" data-i18n="login.password">Senha</label>
           <input type="password" id="password" autocomplete="current-password" required aria-describedby="login-error">
         </div>
         <p class="error-text" id="login-error"></p>
-        <div><button type="submit" class="btn" id="login-btn">Entrar</button></div>
+        <div><button type="submit" class="btn" id="login-btn" data-i18n="login.enter">Entrar</button></div>
       </form>
     </section>
 
     <div id="app" hidden>
       <section class="card" aria-labelledby="summary-title">
-        <h2 id="summary-title">Resumo</h2>
-        <p class="hint">Visão rápida das tarefas e da situação do painel.</p>
+        <h2 id="summary-title" data-i18n="summary.title">Resumo</h2>
+        <p class="hint" data-i18n="summary.hint">Visão rápida das tarefas e da situação do painel.</p>
         <div class="tiles" id="summary"></div>
         <div class="publish">
-          <button type="button" class="btn" id="publish-btn">Atualizar painel agora</button>
-          <p class="hint">Recalcula o painel agora, sem esperar a segunda-feira. Não envia nada ao Scott.</p>
+          <button type="button" class="btn" id="publish-btn" data-i18n="publish.btn">Atualizar painel agora</button>
+          <p class="hint" data-i18n="publish.hint">Recalcula o painel agora, sem esperar a segunda-feira. Não envia nada ao Scott.</p>
         </div>
       </section>
 
-      <div class="tabs" role="tablist" aria-label="Seções da admin">
-        <button type="button" class="tab" role="tab" id="tab-tarefas" aria-controls="panel-tarefas" aria-selected="true">Tarefas</button>
-        <button type="button" class="tab" role="tab" id="tab-horas" aria-controls="panel-horas" aria-selected="false" tabindex="-1">Horas</button>
-        <button type="button" class="tab" role="tab" id="tab-reunioes" aria-controls="panel-reunioes" aria-selected="false" tabindex="-1">Reuniões</button>
+      <div class="tabs" role="tablist" aria-label="Seções da admin" data-i18n-aria="tabs.label">
+        <button type="button" class="tab" role="tab" id="tab-tarefas" aria-controls="panel-tarefas" aria-selected="true" data-i18n="tab.tarefas">Tarefas</button>
+        <button type="button" class="tab" role="tab" id="tab-horas" aria-controls="panel-horas" aria-selected="false" tabindex="-1" data-i18n="tab.horas">Horas</button>
+        <button type="button" class="tab" role="tab" id="tab-reunioes" aria-controls="panel-reunioes" aria-selected="false" tabindex="-1" data-i18n="tab.reunioes">Reuniões</button>
       </div>
       <div class="tabpanel" role="tabpanel" id="panel-tarefas" aria-labelledby="tab-tarefas" tabindex="-1">
       <section class="card" aria-labelledby="tasks-title">
@@ -390,34 +406,34 @@
       <div class="tabpanel" role="tabpanel" id="panel-horas" aria-labelledby="tab-horas" tabindex="-1" hidden>
         <section class="card h-weekbar" aria-labelledby="h-week-name">
           <div>
-            <h2 class="h-week-name" id="h-week-name">Registro de horas</h2>
+            <h2 class="h-week-name" id="h-week-name" data-i18n="h.time_log">Registro de horas</h2>
             <p class="hint" id="h-week-range"></p>
           </div>
           <div class="h-nav">
-            <button type="button" class="btn btn-quiet btn-small" id="h-prev-week" aria-label="Semana anterior">← Anterior</button>
-            <button type="button" class="btn btn-quiet btn-small" id="h-this-week">Esta semana</button>
-            <button type="button" class="btn btn-quiet btn-small" id="h-next-week" aria-label="Próxima semana">Próxima →</button>
+            <button type="button" class="btn btn-quiet btn-small" id="h-prev-week" aria-label="Semana anterior" data-i18n-aria="h.prev_week_aria" data-i18n="h.prev">← Anterior</button>
+            <button type="button" class="btn btn-quiet btn-small" id="h-this-week" data-i18n="h.this_week">Esta semana</button>
+            <button type="button" class="btn btn-quiet btn-small" id="h-next-week" aria-label="Próxima semana" data-i18n-aria="h.next_week_aria" data-i18n="h.next">Próxima →</button>
           </div>
         </section>
-        <div class="notice" id="h-error" role="alert" hidden><p id="h-error-text"></p><button type="button" class="btn btn-quiet" id="h-retry">Tentar de novo</button></div>
-        <p class="h-loading" id="h-loading" hidden>Carregando…</p>
+        <div class="notice" id="h-error" role="alert" hidden><p id="h-error-text"></p><button type="button" class="btn btn-quiet" id="h-retry" data-i18n="h.retry">Tentar de novo</button></div>
+        <p class="h-loading" id="h-loading" data-i18n="h.loading" hidden>Carregando…</p>
         <div id="h-content" hidden>
           <section class="card h-total" aria-labelledby="h-total-label">
             <div>
-              <p class="h-total-label" id="h-total-label">Total da semana</p>
+              <p class="h-total-label" id="h-total-label" data-i18n="h.week_total">Total da semana</p>
               <p class="h-total-value" id="h-total-value"></p>
             </div>
-            <button type="button" class="btn" id="h-copy-btn">Copiar resumo da semana</button>
+            <button type="button" class="btn" id="h-copy-btn" data-i18n="h.copy">Copiar resumo da semana</button>
             <div class="h-copy-box" id="h-copy-box" hidden>
-              <p class="hint">Não deu para copiar sozinho. O texto já está selecionado: use Ctrl+C (ou Cmd+C).</p>
-              <label class="visually-hidden" for="h-copy-text">Resumo da semana em inglês</label>
+              <p class="hint" data-i18n="h.copy_fallback">Não deu para copiar sozinho. O texto já está selecionado: use Ctrl+C (ou Cmd+C).</p>
+              <label class="visually-hidden" for="h-copy-text" data-i18n="h.copy_label">Resumo da semana em inglês</label>
               <textarea id="h-copy-text" readonly></textarea>
             </div>
           </section>
-          <h2 class="h-section-title">Frentes do GTM</h2>
+          <h2 class="h-section-title" data-i18n="h.workstreams">Frentes do GTM</h2>
           <div id="h-groups"></div>
-          <p class="h-none" id="h-no-tasks" hidden>Nenhuma frente ativa na aba pillars.</p>
-          <h2 class="h-section-title">Reuniões e extras</h2>
+          <p class="h-none" id="h-no-tasks" data-i18n="h.no_tasks" hidden>Nenhuma frente ativa na aba pillars.</p>
+          <h2 class="h-section-title" data-i18n="h.meetings_extras">Reuniões e extras</h2>
           <div id="h-fixed"></div>
         </div>
       </div>
@@ -615,6 +631,116 @@
     duplicate_id: 'Há mais de uma linha com este código na planilha. Corrija a planilha antes.'
   };
 
+  // ---------- language: same mechanism as the Home (index.html): ?lang=, then localStorage dcti_lang, then en-CA.
+  // Only the header, the Summary, the tab names and the Horas tab follow it; Tarefas and Reuniões stay in Portuguese.
+  var LANGS = ['en-CA', 'pt-BR'];
+  var UI = {
+    'lang.selector_label': { 'pt-BR': 'Idioma', 'en-CA': 'Language' },
+    'lang.pt_BR': { 'pt-BR': 'Português (Brasil)', 'en-CA': 'Portuguese (Brazil)' },
+    'lang.en_CA': { 'pt-BR': 'Inglês (Canadá)', 'en-CA': 'English (Canada)' },
+    'logout': { 'pt-BR': 'Sair', 'en-CA': 'Sign out' },
+    'login.title': { 'pt-BR': 'Digite a senha', 'en-CA': 'Enter the password' },
+    'login.hint': { 'pt-BR': 'A senha fica salva só neste navegador. Use "Sair" para apagá-la.', 'en-CA': 'The password is saved only in this browser. Use "Sign out" to erase it.' },
+    'login.password': { 'pt-BR': 'Senha', 'en-CA': 'Password' },
+    'login.enter': { 'pt-BR': 'Entrar', 'en-CA': 'Sign in' },
+    'login.checking': { 'pt-BR': 'Conferindo…', 'en-CA': 'Checking…' },
+    'login.empty': { 'pt-BR': 'Digite a senha.', 'en-CA': 'Enter the password.' },
+    'summary.title': { 'pt-BR': 'Resumo', 'en-CA': 'Summary' },
+    'summary.hint': { 'pt-BR': 'Visão rápida das tarefas e da situação do painel.', 'en-CA': 'Quick overview of tasks and dashboard status.' },
+    'summary.active': { 'pt-BR': 'Tarefas ativas', 'en-CA': 'Active tasks' },
+    'summary.of_total': { 'pt-BR': 'de {n} no total', 'en-CA': 'of {n} total' },
+    'summary.outside': { 'pt-BR': 'fora do total ativo', 'en-CA': 'outside active total' },
+    'summary.origin': { 'pt-BR': 'Origem: {o}', 'en-CA': 'Source: {o}' },
+    'summary.done_one': { 'pt-BR': '1 concluída', 'en-CA': '1 done' },
+    'summary.done_many': { 'pt-BR': '{n} concluídas', 'en-CA': '{n} done' },
+    'summary.auto_color': { 'pt-BR': 'Cor automática', 'en-CA': 'Auto color' },
+    'summary.forced': { 'pt-BR': 'Forçada na semana: {c}', 'en-CA': 'Forced this week: {c}' },
+    'summary.no_data': { 'pt-BR': 'Sem dados', 'en-CA': 'No data' },
+    'summary.updated': { 'pt-BR': 'Última atualização', 'en-CA': 'Last update' },
+    'summary.week_of': { 'pt-BR': 'semana de {d}', 'en-CA': 'week of {d}' },
+    'publish.btn': { 'pt-BR': 'Atualizar painel agora', 'en-CA': 'Refresh dashboard now' },
+    'publish.hint': { 'pt-BR': 'Recalcula o painel agora, sem esperar a segunda-feira. Não envia nada ao Scott.', 'en-CA': 'Recalculates the dashboard now, without waiting for Monday. Does not send anything to Scott.' },
+    'publish.confirm': { 'pt-BR': 'Atualizar o painel agora? Isto grava uma linha nova na planilha e chama a IA.', 'en-CA': 'Refresh the dashboard now? This writes a new row to the spreadsheet and calls the AI.' },
+    'publish.started': { 'pt-BR': 'Atualização iniciada. O resultado chega em alguns minutos, por e-mail.', 'en-CA': 'Refresh started. The result arrives by email in a few minutes.' },
+    'tabs.label': { 'pt-BR': 'Seções da admin', 'en-CA': 'Admin sections' },
+    'tab.tarefas': { 'pt-BR': 'Tarefas', 'en-CA': 'Tasks' },
+    'tab.horas': { 'pt-BR': 'Horas', 'en-CA': 'Hours' },
+    'tab.reunioes': { 'pt-BR': 'Reuniões', 'en-CA': 'Meetings' },
+    'h.time_log': { 'pt-BR': 'Registro de horas', 'en-CA': 'Time log' },
+    'h.week_name': { 'pt-BR': 'Semana {w} de {y}', 'en-CA': 'Week {w} of {y}' },
+    'h.prev': { 'pt-BR': '← Anterior', 'en-CA': '← Previous' },
+    'h.prev_week_aria': { 'pt-BR': 'Semana anterior', 'en-CA': 'Previous week' },
+    'h.this_week': { 'pt-BR': 'Esta semana', 'en-CA': 'This week' },
+    'h.next': { 'pt-BR': 'Próxima →', 'en-CA': 'Next →' },
+    'h.next_week_aria': { 'pt-BR': 'Próxima semana', 'en-CA': 'Next week' },
+    'h.retry': { 'pt-BR': 'Tentar de novo', 'en-CA': 'Try again' },
+    'h.loading': { 'pt-BR': 'Carregando…', 'en-CA': 'Loading…' },
+    'h.week_total': { 'pt-BR': 'Total da semana', 'en-CA': 'Week total' },
+    'h.copy': { 'pt-BR': 'Copiar resumo da semana', 'en-CA': 'Copy week summary' },
+    'h.copy_fallback': { 'pt-BR': 'Não deu para copiar sozinho. O texto já está selecionado: use Ctrl+C (ou Cmd+C).', 'en-CA': 'Could not copy automatically. The text is already selected: press Ctrl+C (or Cmd+C).' },
+    'h.copy_label': { 'pt-BR': 'Resumo da semana em inglês', 'en-CA': 'Week summary in English' },
+    'h.copied': { 'pt-BR': 'Resumo copiado. É só colar no e-mail.', 'en-CA': 'Summary copied. Just paste it into the email.' },
+    'h.workstreams': { 'pt-BR': 'Frentes do GTM', 'en-CA': 'GTM workstreams' },
+    'h.no_tasks': { 'pt-BR': 'Nenhuma frente ativa na aba pillars.', 'en-CA': 'No active workstream in the pillars tab.' },
+    'h.meetings_extras': { 'pt-BR': 'Reuniões e extras', 'en-CA': 'Meetings and extras' },
+    'h.outside_pillars': { 'pt-BR': 'Fora da aba pillars', 'en-CA': 'Outside the pillars tab' },
+    'h.total_of': { 'pt-BR': 'Total de {x}', 'en-CA': 'Total for {x}' },
+    'h.paused': { 'pt-BR': 'pausada', 'en-CA': 'paused' },
+    'h.closed': { 'pt-BR': 'concluída', 'en-CA': 'done' },
+    'h.add': { 'pt-BR': '+ adicionar período', 'en-CA': '+ add time entry' },
+    'h.add_aria': { 'pt-BR': 'Adicionar período em {x}', 'en-CA': 'Add time entry to {x}' },
+    'h.no_note': { 'pt-BR': 'sem nota', 'en-CA': 'no note' },
+    'h.entry_desc': { 'pt-BR': 'período de {h} em {d}', 'en-CA': '{h} entry on {d}' },
+    'h.edit': { 'pt-BR': 'Editar', 'en-CA': 'Edit' },
+    'h.remove': { 'pt-BR': 'Remover', 'en-CA': 'Remove' },
+    'h.edit_form': { 'pt-BR': 'Editar período', 'en-CA': 'Edit time entry' },
+    'h.date': { 'pt-BR': 'Data', 'en-CA': 'Date' },
+    'h.hours': { 'pt-BR': 'Horas', 'en-CA': 'Hours' },
+    'h.hours_hint': { 'pt-BR': 'Ex.: 1,5 · 1h30 · 90min', 'en-CA': 'E.g. 1.5 · 1h30 · 90min' },
+    'h.note_opt': { 'pt-BR': 'Nota (opcional)', 'en-CA': 'Note (optional)' },
+    'h.save': { 'pt-BR': 'Salvar', 'en-CA': 'Save' },
+    'h.saving': { 'pt-BR': 'Salvando…', 'en-CA': 'Saving…' },
+    'h.cancel': { 'pt-BR': 'Cancelar', 'en-CA': 'Cancel' },
+    'h.saved': { 'pt-BR': 'Período salvo.', 'en-CA': 'Time entry saved.' },
+    'h.removed': { 'pt-BR': 'Período removido.', 'en-CA': 'Time entry removed.' },
+    'h.remove_confirm': { 'pt-BR': 'Remover o período de {h} em {d}?', 'en-CA': 'Remove the {h} entry on {d}?' }
+  };
+  var STATUS_EN = { backlog: 'Backlog', next: 'Next', doing: 'In progress', blocked: 'Blocked', done: 'Done', frozen: 'Frozen', dropped: 'Discarded' };
+  var ORIGIN_EN = { gtm: 'GTM', meeting: 'Meeting', manual: 'Manual' };
+  var COLOR_EN = { Green: 'Green', Yellow: 'Yellow', Red: 'Red', Gray: 'Gray' };
+  // Errors that can show outside the Tarefas and Reuniões tabs (login, Summary, publish)
+  var MSG_EN = {
+    unauthorized: 'Wrong password.',
+    not_configured: 'The server is not configured yet (secret in n8n).',
+    network: 'Could not reach the server. Check the connection and try again.',
+    server: 'The server returned an error. Try again in a moment.',
+    b_not_configured: 'The workflow B ID has not been filled in workflow F yet.'
+  };
+  var HMSG_EN = {
+    unauthorized: 'The time log did not accept the admin password. In n8n, TIMELOG_SECRET must hold the same value as ADMIN_SECRET.',
+    not_configured: 'The time log is not configured yet (secret in n8n).',
+    network: 'Could not reach the time log. Check the connection and try again.',
+    write_not_confirmed: 'The spreadsheet did not confirm the write, so nothing was marked as saved. Try again: retrying does not create a duplicate.',
+    server: 'The time log returned an error. Try again in a moment.',
+    invalid_hours: 'Invalid hours. Use 1.5 or 1h30 or 90min (more than 0 and up to 24 h).',
+    invalid_date: 'Choose a date in this week.',
+    not_found: 'This time entry no longer exists. The list was reloaded.',
+    invalid_task: 'This workstream no longer exists in the spreadsheet. The list was reloaded.',
+    task_closed: 'This workstream is paused or done: it does not accept new time entries. The list was reloaded.'
+  };
+  function normLang(x) {
+    var v = String(x || '').trim().toLowerCase();
+    if (v === 'pt-br' || v === 'pt' || v === 'pt_br') return 'pt-BR';
+    if (v === 'en-ca' || v === 'en' || v === 'en_ca') return 'en-CA';
+    return null;
+  }
+  function isEN() { return state.lang === 'en-CA'; }
+  function intlLang() { return isEN() ? 'en-US' : 'pt-BR'; }   // en-US gives "Fri, Nov 13" and 11/16/2026
+  function T(key, vars) {
+    var row = UI[key], v = row ? (row[state.lang] || row['pt-BR']) : key;
+    return v.replace(/\{(\w+)\}/g, function (m, k) { return vars && vars[k] !== undefined ? String(vars[k]) : m; });
+  }
+
   var ADMIN_API = 'api/admin';        // tasks, forced colour and publish (workflow F)
   var STATUS = [['backlog', 'Backlog'], ['next', 'Próxima'], ['doing', 'Em andamento'], ['blocked', 'Bloqueada'], ['done', 'Concluída'], ['frozen', 'Congelada'], ['dropped', 'Descartada']];
   var GATES = ['M1', 'M2', 'S1', 'M3'];
@@ -625,7 +751,7 @@
   var BULK_MAX = 100, BULK_TIMEOUT = 60000;
   var ADD_MAX = 25, ADD_TIMEOUT = 60000, CHANGE_MAX = 400;
 
-  var state = { tab: 'tarefas', key: '', suggestions: [], proposals: [], meeting: null, adding: false, addMsg: '', busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
+  var state = { lang: 'en-CA', tab: 'tarefas', key: '', suggestions: [], proposals: [], meeting: null, adding: false, addMsg: '', busy: false, tasks: [], forced: null, panel: null, savingTask: '', rowLine: null, page: 1,
     selected: {}, shownIds: [], pageIds: [], bulkIds: [], bulkBusy: false };
 
   function $(id) { return document.getElementById(id); }
@@ -640,7 +766,8 @@
   function read(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
   function messageFor(err) {
     if (err.code === 'column_missing' && err.field === 'categoria') return MSG.column_missing_categoria;
-    return MSG[err.code] || MSG.server;
+    if (isEN() && MSG_EN[err.code]) return MSG_EN[err.code];
+    return MSG[err.code] || (isEN() ? MSG_EN.server : MSG.server);
   }
   function todaySP() {
     try { return new Intl.DateTimeFormat('en-CA', { timeZone: TZ, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
@@ -649,6 +776,12 @@
   function fmtDate(ds) {
     var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ds || '');
     return m ? m[3] + '/' + m[2] + '/' + m[1] : '';
+  }
+  // Summary only: 16/11/2026 in Portuguese, 11/16/2026 in English (the Tarefas tab keeps fmtDate)
+  function fmtDateL(ds) {
+    var m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(ds || '');
+    if (!m) return '';
+    return isEN() ? m[2] + '/' + m[3] + '/' + m[1] : m[3] + '/' + m[2] + '/' + m[1];
   }
 
   // header: X-Admin-Key (workflows D and F) or X-Timelog-Key (timelog). Both carry the same admin password.
@@ -748,14 +881,14 @@
   function onLogin(ev) {
     ev.preventDefault();
     var v = $('password').value.trim();
-    if (!v) { $('login-error').textContent = 'Digite a senha.'; $('password').setAttribute('aria-invalid', 'true'); return; }
+    if (!v) { $('login-error').textContent = T('login.empty'); $('password').setAttribute('aria-invalid', 'true'); return; }
     state.key = v;
     $('login-btn').disabled = true;
-    $('login-btn').textContent = 'Conferindo…';
+    $('login-btn').textContent = T('login.checking');
     $('login-error').textContent = '';
     loadTasks(true).then(function () {
       $('login-btn').disabled = false;
-      $('login-btn').textContent = 'Entrar';
+      $('login-btn').textContent = T('login.enter');
       loadSuggestionsIfIn();
       if (state.key && !$('app').hidden && state.tab === 'horas') startHoras();
     });
@@ -1245,8 +1378,9 @@
       renderTasks();
       renderForced();
       renderSummary();
+      if (horas.loaded && !horas.form) hRender();   // English task titles in the notes need the task list
     }, function (err) {
-      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'unauthorized') { signOut(messageFor(err)); return; }
       if (fromLogin) { $('login-error').textContent = messageFor(err); state.key = read(KEY_STORE) || ''; return; }
       showError(messageFor(err));
     });
@@ -1512,21 +1646,22 @@
     clear(box);
     state.tasks.forEach(function (t) { count[t.status] = (count[t.status] || 0) + 1; });
     var active = state.tasks.filter(function (t) { return t.status !== 'frozen' && t.status !== 'dropped'; }).length;
-    box.appendChild(tile('st-none', 'Tarefas ativas', active, 'de ' + state.tasks.length + ' no total'));
+    box.appendChild(tile('st-none', T('summary.active'), active, T('summary.of_total', { n: state.tasks.length })));
     STATUS.forEach(function (s) {
-      box.appendChild(tile('st-' + s[0], s[1], count[s[0]] || 0, (s[0] === 'frozen' || s[0] === 'dropped') ? 'fora do total ativo' : ''));
+      box.appendChild(tile('st-' + s[0], isEN() ? STATUS_EN[s[0]] : s[1], count[s[0]] || 0, (s[0] === 'frozen' || s[0] === 'dropped') ? T('summary.outside') : ''));
     });
     // by origin, from the current task list (not from the last weekly report)
     ORIGINS.forEach(function (o) {
       var mine = state.tasks.filter(function (t) { return originKind(t) === o[0]; });
       var done = mine.filter(function (t) { return t.status === 'done'; }).length;
-      box.appendChild(tile('st-none', 'Origem: ' + o[1], mine.length, done === 1 ? '1 concluída' : done + ' concluídas'));
+      box.appendChild(tile('st-none', T('summary.origin', { o: isEN() ? ORIGIN_EN[o[0]] : o[1] }), mine.length, done === 1 ? T('summary.done_one') : T('summary.done_many', { n: done })));
     });
     var p = state.panel || {};
+    var colors = isEN() ? COLOR_EN : COLOR_NAMES;
     var auto = COLOR_NAMES[p.auto_color] ? p.auto_color : '';
-    var forced = state.forced && COLOR_NAMES[state.forced.color] ? 'Forçada na semana: ' + COLOR_NAMES[state.forced.color] : '';
-    box.appendChild(tile(auto ? 'color-' + auto : 'st-none', 'Cor automática', auto ? COLOR_NAMES[auto] : 'Sem dados', forced, true));
-    box.appendChild(tile('st-none', 'Última atualização', fmtDate(p.updated_on) || 'Sem dados', p.week_start ? 'semana de ' + fmtDate(p.week_start) : '', true));
+    var forced = state.forced && COLOR_NAMES[state.forced.color] ? T('summary.forced', { c: colors[state.forced.color] }) : '';
+    box.appendChild(tile(auto ? 'color-' + auto : 'st-none', T('summary.auto_color'), auto ? colors[auto] : T('summary.no_data'), forced, true));
+    box.appendChild(tile('st-none', T('summary.updated'), fmtDateL(p.updated_on) || T('summary.no_data'), p.week_start ? T('summary.week_of', { d: fmtDateL(p.week_start) }) : '', true));
   }
   function labelled(labelText, control) {
     var d = el('div');
@@ -1821,15 +1956,15 @@
     });
   }
   function onPublish() {
-    if (!window.confirm('Atualizar o painel agora? Isto grava uma linha nova na planilha e chama a IA.')) return;
+    if (!window.confirm(T('publish.confirm'))) return;
     hideError();
     $('publish-btn').disabled = true;
     api({ action: 'publish' }, DEFAULT_TIMEOUT, ADMIN_API).then(function () {
-      toast('Atualização iniciada. O resultado chega em alguns minutos, por e-mail.');
+      toast(T('publish.started'));
       setTimeout(function () { $('publish-btn').disabled = false; }, 60000);
     }, function (err) {
       $('publish-btn').disabled = false;
-      if (err.code === 'unauthorized') { signOut(MSG.unauthorized); return; }
+      if (err.code === 'unauthorized') { signOut(messageFor(err)); return; }
       showError(messageFor(err));
     });
   }
@@ -1923,7 +2058,7 @@
     try {
       var o = { timeZone: 'UTC', day: 'numeric', month: 'short' };
       if (withWeekday) o.weekday = 'short';
-      return new Intl.DateTimeFormat('pt-BR', o).format(new Date(toUTC(ds)));
+      return new Intl.DateTimeFormat(intlLang(), o).format(new Date(toUTC(ds)));
     } catch (e) { return ds; }
   }
   // "1,5" | "1.5" | "2" | "1h30" | "1:30" | "90min" -> decimal hours with 2 places
@@ -1937,9 +2072,9 @@
     return (h > 0 && h <= 24) ? h : NaN;
   }
   function round2(x) { return Math.round(x * 100) / 100; }
-  function fmtNum(h, lang) { try { return new Intl.NumberFormat(lang || 'pt-BR', { maximumFractionDigits: 2 }).format(h); } catch (e) { return String(h); } }
+  function fmtNum(h, lang) { try { return new Intl.NumberFormat(lang || intlLang(), { maximumFractionDigits: 2 }).format(h); } catch (e) { return String(h); } }
   function fmtHours(h, lang) { return fmtNum(round2(h), lang) + ' h'; }
-  function hTaskName(task, lang) { return lang === 'en-CA' ? (task.name_en || task.name_pt) : (task.name_pt || task.name_en); }
+  function hTaskName(task, lang) { return (lang || state.lang) === 'en-CA' ? (task.name_en || task.name_pt) : (task.name_pt || task.name_en); }
   function hFixed(task) { return task.fixed || H_FIXED.indexOf(task.task_id) >= 0; }
   function hOpen(task) { return hFixed(task) || task.status === 'ativa'; }
   // category of a timelog row: sent by the workflow; worked out from the group if the workflow is older
@@ -1952,7 +2087,7 @@
     horas.tasks.slice().sort(function (a, b) { return (b.general ? 1 : 0) - (a.general ? 1 : 0); }).forEach(function (task) {
       if (hFixed(task) || !hShown(task)) return;
       var k = task.group || '';
-      if (!byKey[k]) { byKey[k] = { key: k, pt: task.group_pt || task.group || 'Fora da aba pillars', tasks: [] }; list.push(byKey[k]); }
+      if (!byKey[k]) { byKey[k] = { key: k, pt: task.group_pt || task.group || UI['h.outside_pillars']['pt-BR'], en: task.group_en || task.group || UI['h.outside_pillars']['en-CA'], tasks: [] }; list.push(byKey[k]); }
       byKey[k].tasks.push(task);
     });
     return list;
@@ -1971,7 +2106,18 @@
     return 'TL-' + Date.now().toString(36) + '-' + s;
   }
   function hApi(body) { return api(body, DEFAULT_TIMEOUT, HORAS_API, 'X-Timelog-Key'); }
-  function hMessage(err) { return HMSG[err.code] || HMSG.server; }
+  function hMsg(code) { var d = isEN() ? HMSG_EN : HMSG; return d[code] || d.server; }
+  function hMessage(err) { return hMsg(err.code); }
+  // Notes written by "Registrar horas" are "<code> · <Portuguese title>". In English, show the task's title_en_CA
+  // (the same field the Home uses) when the note is exactly that. Anything typed by hand stays as written.
+  function hNoteText(note) {
+    if (!note || !isEN()) return note;
+    var m = /^(\S+) · ([\s\S]+)$/.exec(note);
+    if (!m) return note;
+    var t = state.tasks.filter(function (x) { return x.task_id === m[1]; })[0];
+    var en = t ? String(t.title_en_CA || '').trim() : '';
+    return en && String(t.title_pt_BR || '').trim() === m[2].trim() ? m[1] + ' · ' + en : note;
+  }
   function hShowError(msg) { $('h-error-text').textContent = msg; $('h-error').hidden = false; }
   function hHideError() { $('h-error').hidden = true; }
 
@@ -2018,8 +2164,8 @@
   function hRenderWeekBar() {
     var m = /^(\d{4})-W(\d{2})$/.exec(horas.week);
     var a = weekStart(horas.week), b = addDays(a, 6);
-    $('h-week-name').textContent = 'Semana ' + (+m[2]) + ' de ' + m[1];
-    $('h-week-range').textContent = fmtDay(a) + ' – ' + fmtDay(b) + ' ' + b.slice(0, 4);
+    $('h-week-name').textContent = T('h.week_name', { w: +m[2], y: m[1] });
+    $('h-week-range').textContent = isEN() ? fmtDay(a) + ' – ' + fmtDay(b) + ', ' + b.slice(0, 4) : fmtDay(a) + ' – ' + fmtDay(b) + ' ' + b.slice(0, 4);
     $('h-this-week').disabled = horas.week === isoWeek(todaySP());
   }
   function hRender() {
@@ -2031,7 +2177,7 @@
     list.forEach(function (group) { g.appendChild(hGroupCard(group)); });
     $('h-no-tasks').hidden = list.length > 0;
     var f = $('h-fixed'); clear(f);
-    hFixedTasks().forEach(function (task) { f.appendChild(hGroupCard({ key: task.task_id, pt: hTaskName(task), tasks: [task], fixed: true })); });
+    hFixedTasks().forEach(function (task) { f.appendChild(hGroupCard({ key: task.task_id, pt: hTaskName(task, 'pt-BR'), en: hTaskName(task, 'en-CA'), tasks: [task], fixed: true })); });
     if (horas.focusAfter) {
       var n = $(horas.focusAfter);
       horas.focusAfter = null;
@@ -2046,11 +2192,12 @@
   function hGroupCard(group) {
     var card = el('section', 'card h-group');
     var head = el('div', 'h-group-head');
-    var h3 = el('h3', null, group.pt);
+    var gname = isEN() ? group.en : group.pt;
+    var h3 = el('h3', null, gname);
     h3.id = 'h-g-' + (group.fixed ? group.tasks[0].task_id : slugId(group.key));
     card.setAttribute('aria-labelledby', h3.id);
     head.appendChild(h3);
-    head.appendChild(hSum(sumTasks(group.tasks), 'Total de ' + group.pt));
+    head.appendChild(hSum(sumTasks(group.tasks), T('h.total_of', { x: gname })));
     card.appendChild(head);
     group.tasks.forEach(function (task) { card.appendChild(hTaskBlock(task, !!group.fixed)); });
     return card;
@@ -2061,9 +2208,9 @@
     if (!single) {
       var head = el('div', 'h-item-head');
       var h4 = el('h4', null, name);
-      if (!hOpen(task)) h4.appendChild(el('span', 'h-tag h-tag-' + task.status, task.status === 'pausada' ? 'pausada' : 'concluída'));
+      if (!hOpen(task)) h4.appendChild(el('span', 'h-tag h-tag-' + task.status, task.status === 'pausada' ? T('h.paused') : T('h.closed')));
       head.appendChild(h4);
-      head.appendChild(hSum(sumOf(entriesOf(task.task_id)), 'Total de ' + name));
+      head.appendChild(hSum(sumOf(entriesOf(task.task_id)), T('h.total_of', { x: name })));
       box.appendChild(head);
     }
     var list = entriesOf(task.task_id), form = horas.form;
@@ -2079,10 +2226,10 @@
     if (form && form.mode === 'add' && form.taskId === task.task_id) {
       box.appendChild(hPeriodForm(task, null));
     } else if (hOpen(task) && (task.general || hFixed(task) || !hHasGeneral())) {
-      var add = el('button', 'btn btn-quiet btn-small h-add', '+ adicionar período');
+      var add = el('button', 'btn btn-quiet btn-small h-add', T('h.add'));
       add.type = 'button';
       add.id = 'h-add-' + task.task_id;
-      add.setAttribute('aria-label', 'Adicionar período em ' + name);
+      add.setAttribute('aria-label', T('h.add_aria', { x: name }));
       add.disabled = !!(form && form.busy);
       add.addEventListener('click', function () { hOpenAdd(task); });
       box.appendChild(add);
@@ -2093,17 +2240,17 @@
     var row = el('div', 'h-period');
     row.appendChild(el('span', 'h-p-date', fmtDay(e.date, true)));
     row.appendChild(el('span', 'h-p-hours', fmtHours(e.hours)));
-    row.appendChild(el('span', 'h-p-note' + (e.note ? '' : ' empty'), e.note || 'sem nota'));
+    row.appendChild(el('span', 'h-p-note' + (e.note ? '' : ' empty'), e.note ? hNoteText(e.note) : T('h.no_note')));
     var acts = el('span', 'h-p-actions');
-    var what = 'período de ' + fmtHours(e.hours) + ' em ' + fmtDay(e.date);
+    var what = T('h.entry_desc', { h: fmtHours(e.hours), d: fmtDay(e.date) });
     var busy = !!(horas.form && horas.form.busy);
-    var edit = el('button', 'btn btn-quiet btn-small', 'Editar');
+    var edit = el('button', 'btn btn-quiet btn-small', T('h.edit'));
     edit.type = 'button'; edit.id = 'h-edit-' + e.id; edit.disabled = busy;
-    edit.setAttribute('aria-label', 'Editar: ' + what);
+    edit.setAttribute('aria-label', T('h.edit') + ': ' + what);
     edit.addEventListener('click', function () { hOpenEdit(task, e); });
-    var rm = el('button', 'btn btn-danger btn-small', 'Remover');
+    var rm = el('button', 'btn btn-danger btn-small', T('h.remove'));
     rm.type = 'button'; rm.id = 'h-rm-' + e.id; rm.disabled = busy;
-    rm.setAttribute('aria-label', 'Remover: ' + what);
+    rm.setAttribute('aria-label', T('h.remove') + ': ' + what);
     rm.addEventListener('click', function () { hRemove(task, e); });
     acts.appendChild(edit); acts.appendChild(rm);
     row.appendChild(acts);
@@ -2122,7 +2269,7 @@
     var s = horas.form, ws = weekStart(horas.week);
     var form = el('form', 'h-form');
     form.noValidate = true;
-    form.setAttribute('aria-label', e ? 'Editar período' : 'Adicionar período em ' + hTaskName(task));
+    form.setAttribute('aria-label', e ? T('h.edit_form') : T('h.add_aria', { x: hTaskName(task) }));
     var d = el('input'); d.type = 'date'; d.min = ws; d.max = addDays(ws, 6); d.value = s.date; d.required = true;
     d.addEventListener('input', function () { s.date = d.value; });
     var h = el('input'); h.type = 'text'; h.inputMode = 'decimal'; h.autocomplete = 'off'; h.value = s.hours; h.required = true;
@@ -2131,18 +2278,18 @@
     n.addEventListener('input', function () { s.note = n.value; });
     if (s.error === 'invalid_hours') h.setAttribute('aria-invalid', 'true');
     if (s.error === 'invalid_date') d.setAttribute('aria-invalid', 'true');
-    form.appendChild(hField('h-form-date', 'Data', d));
-    form.appendChild(hField('h-form-hours', 'Horas', h, 'Ex.: 1,5 · 1h30 · 90min'));
-    var fn = hField('h-form-note', 'Nota (opcional)', n);
+    form.appendChild(hField('h-form-date', T('h.date'), d));
+    form.appendChild(hField('h-form-hours', T('h.hours'), h, T('h.hours_hint')));
+    var fn = hField('h-form-note', T('h.note_opt'), n);
     fn.className += ' h-f-note';
     form.appendChild(fn);
     var acts = el('div', 'actions');
-    var save = el('button', 'btn btn-small', s.busy ? 'Salvando…' : 'Salvar');
+    var save = el('button', 'btn btn-small', s.busy ? T('h.saving') : T('h.save'));
     save.type = 'submit'; save.disabled = s.busy;
-    var cancel = el('button', 'btn btn-quiet btn-small', 'Cancelar');
+    var cancel = el('button', 'btn btn-quiet btn-small', T('h.cancel'));
     cancel.type = 'button'; cancel.disabled = s.busy;
     cancel.addEventListener('click', hCloseForm);
-    var err = el('span', 'error-text', s.error ? HMSG[s.error] : '');
+    var err = el('span', 'error-text', s.error ? hMsg(s.error) : '');
     err.id = 'h-form-error';
     err.setAttribute('role', 'alert');
     acts.appendChild(save); acts.appendChild(cancel); acts.appendChild(err);
@@ -2194,12 +2341,12 @@
       horas.form = null;
       horas.focusAfter = s.mode === 'edit' ? 'h-edit-' + entry.id : 'h-add-' + task.task_id;
       hRender();
-      toast('Período salvo.');
+      toast(T('h.saved'));
     }, function (err) { hWriteError(err, s); });
   }
   function hRemove(task, e) {
     if (horas.form && horas.form.busy) return;
-    if (!window.confirm('Remover o período de ' + fmtHours(e.hours) + ' em ' + fmtDay(e.date) + '?')) return;
+    if (!window.confirm(T('h.remove_confirm', { h: fmtHours(e.hours), d: fmtDay(e.date) }))) return;
     horas.form = { mode: 'remove', taskId: task.task_id, entryId: e.id, busy: true };
     hRender();
     hApi({ action: 'remove', id: e.id }).then(function () {
@@ -2207,12 +2354,12 @@
       horas.form = null;
       horas.focusAfter = 'h-add-' + task.task_id;
       hRender();
-      toast('Período removido.');
+      toast(T('h.removed'));
     }, function (err) { hWriteError(err, null); });
   }
   function hWriteError(err, s) {
     if (err.code === 'not_found' || err.code === 'invalid_task' || err.code === 'task_closed') {
-      var msg = HMSG[err.code];
+      var msg = hMsg(err.code);
       hLoadWeek().then(function () { toast(msg); });
       return;
     }
@@ -2222,7 +2369,7 @@
     hRender();
     hShowError(hMessage(err));
   }
-  // English summary for the email to Scott (the Horas screen itself is only in Portuguese)
+  // English summary for the email to Scott, in either language (the screen follows the language selector)
   function hSummaryText() {
     var EN = 'en-CA', ws = weekStart(horas.week), we = addDays(ws, 6);
     function day(ds) { return MONTHS_EN[+ds.slice(5, 7) - 1] + ' ' + (+ds.slice(8, 10)); }
@@ -2244,7 +2391,7 @@
     var text = hSummaryText(), box = $('h-copy-box'), ta = $('h-copy-text');
     function fallback() { ta.value = text; box.hidden = false; ta.focus(); ta.select(); }
     box.hidden = true;
-    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast('Resumo copiado. É só colar no e-mail.'); }, fallback);
+    if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(text).then(function () { toast(T('h.copied')); }, fallback);
     else fallback();
   }
   // ---------- "Registrar horas" on a task: a modal over the list. Tab, filters, page and scroll stay as they were.
@@ -2371,7 +2518,7 @@
       if (!lh.task) return;           // signed out meanwhile
       if (horas.started) horas.stale = true;     // the Horas tab reloads the next time it opens
       var got = data && data.entry && isFinite(+data.entry.hours) ? +data.entry.hours : hours;
-      lh.hoursDone = { cat: cat.key, text: fmtHours(got) + ' registradas em ' + cat.pt + '.' };
+      lh.hoursDone = { cat: cat.key, text: fmtHours(got, 'pt-BR') + ' registradas em ' + cat.pt + '.' };
       if (save) { lhSaveCategory(); return; }
       lhSetBusy(false);
       closeLogHours(false);
@@ -2382,7 +2529,7 @@
       if (err.code === 'invalid_task' || err.code === 'task_closed') { lhError(HMSG[err.code].replace(' A lista foi recarregada.', '')); return; }
       if (err.code === 'invalid_hours') { lhFail('lh-hours', LHMSG.hours); return; }
       if (err.code === 'invalid_date') { lhFail('lh-date', LHMSG.date); return; }
-      lhError(hMessage(err));     // network or server error: the modal keeps the same id, so trying again never duplicates
+      lhError(HMSG[err.code] || HMSG.server);     // network or server error: the modal keeps the same id, so trying again never duplicates
     });
   }
   function lhFocusables() {
@@ -2433,6 +2580,42 @@
     initLogHours();
   }
 
+  // ---------- language selector (same buttons, storage key and URL param as the Home)
+  function applyLang() {
+    document.documentElement.lang = state.lang;
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n]'), function (n) { n.textContent = T(n.getAttribute('data-i18n')); });
+    Array.prototype.forEach.call(document.querySelectorAll('[data-i18n-aria]'), function (n) { n.setAttribute('aria-label', T(n.getAttribute('data-i18n-aria'))); });
+    Array.prototype.forEach.call(document.querySelectorAll('.lang-group button'), function (b) {
+      var code = b.getAttribute('data-lang');
+      b.setAttribute('aria-pressed', code === state.lang ? 'true' : 'false');
+      b.setAttribute('aria-label', T('lang.' + code.replace('-', '_')));
+      b.title = T('lang.' + code.replace('-', '_'));
+    });
+    if ($('login-btn').disabled) $('login-btn').textContent = T('login.checking');
+    if (state.tasks.length || state.panel) renderSummary();
+    hRenderWeekBar();
+    if (horas.loaded) hRender();
+  }
+  function initLang() {
+    var fromUrl = null;
+    try { fromUrl = new URLSearchParams(window.location.search).get('lang'); } catch (e) { /* ignore */ }
+    state.lang = normLang(fromUrl) || normLang(read('dcti_lang')) || 'en-CA';
+    Array.prototype.forEach.call(document.querySelectorAll('.lang-group button'), function (b) {
+      b.addEventListener('click', function () {
+        var lg = normLang(b.getAttribute('data-lang'));
+        if (!lg || LANGS.indexOf(lg) < 0) return;
+        state.lang = lg;
+        store('dcti_lang', lg);
+        try {
+          var u = new URL(window.location.href);
+          if (u.searchParams.has('lang')) { u.searchParams.set('lang', lg); window.history.replaceState(null, '', u.toString()); }
+        } catch (e) { /* ignore */ }
+        applyLang();
+      });
+    });
+    applyLang();
+  }
+
   // ---------- start
   function init() {
     ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-category', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
@@ -2477,6 +2660,7 @@
     });
     normalizeUrl();
     initHoras();
+    initLang();
     TABS.forEach(function (t) {
       $('tab-' + t).addEventListener('click', function () { goTab(t); });
       $('tab-' + t).addEventListener('keydown', onTabKey);
