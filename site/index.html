@@ -134,20 +134,35 @@
   .how-bar-track { margin-top: 4px; height: 8px; border-radius: 999px; background: #e6ebf1; overflow: hidden; }
   .how-bar-fill { display: block; height: 100%; background: var(--tone-how); }
   .how-diff { margin-top: 10px; font-weight: 650; }
-  .needs-person { display: block; }
   .more { margin-top: 16px; }
   .more > summary { display: inline-block; font-size: 0.875rem; font-weight: 650; color: var(--accent); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; padding: 4px 0; }
   .more > .lines { margin-top: 12px; }
 
-  /* needs from the team: one strip */
-  .needs {
-    margin-top: 32px; display: flex; align-items: center; gap: 14px; padding: 16px 24px;
-    background: var(--accent-soft); color: var(--text); border-radius: 14px;
-  }
-  .needs .i { color: var(--accent); }
-  .needs-body { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; min-width: 0; }
-  .needs h2 { font-size: 1rem; font-weight: 700; white-space: nowrap; }
-  .needs h2::after { content: ":"; }
+  /* needs from the team: one card, one section per person */
+  .needs { --tone: var(--accent); --tone-soft: var(--accent-soft); margin-top: 32px; }
+  .needs-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+  .needs-head h2 { font-size: 1.25rem; font-weight: 700; }
+  .needs-total { font-size: 0.875rem; font-weight: 650; color: var(--muted); background: #eef1f5; border-radius: 999px; padding: 2px 10px; white-space: nowrap; }
+  .needs-total:empty { display: none; }
+  .needs-text { margin-top: 16px; }
+  .needs-empty { margin-top: 16px; color: var(--faint); }
+  .needs-people { margin-top: 20px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px 24px; align-items: start; }
+  .needs-person { padding: 16px 18px; border: 1px solid var(--line); border-radius: 12px; background: #fbfcfe; min-width: 0; }
+  .needs-who { display: flex; align-items: center; gap: 10px; }
+  .needs-avatar { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 36px; height: 36px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 0.875rem; font-weight: 750; letter-spacing: 0.02em; }
+  .needs-who strong { font-size: 1.0625rem; }
+  .needs-count { margin-left: auto; font-size: 0.875rem; color: var(--muted); white-space: nowrap; }
+  .needs-list { margin-top: 8px; }
+  .needs-list li { display: flex; align-items: baseline; justify-content: space-between; gap: 6px 12px; padding: 10px 0; border-top: 1px solid #e6ebf1; }
+  .needs-list li:first-child { border-top: 0; }
+  .needs-task { min-width: 0; overflow-wrap: anywhere; font-size: 1rem; line-height: 1.5; }
+  .needs-with { display: inline-block; margin-left: 6px; padding: 0 8px; border-radius: 999px; background: #eef1f5; color: var(--muted); font-size: 0.8125rem; font-weight: 600; white-space: nowrap; vertical-align: 1px; }
+  .due-tag { flex: none; font-size: 0.8125rem; font-weight: 650; padding: 1px 10px; border-radius: 999px; border: 1px solid #c9d6e4; background: #edf2f7; color: #34506e; white-space: nowrap; font-variant-numeric: tabular-nums; }
+  .due-tag.soon { border-color: #e6c66a; background: #fff3d6; color: #6b4a00; }
+  .due-tag.late { border-color: #e3a3a3; background: #fde8e8; color: #8b1a1a; }
+  .needs-person .more { margin-top: 4px; }
+  .needs-person .more > .needs-list { margin-top: 0; }
+  .print-more { display: none; }
 
   /* ---------- status / badges */
   .status {
@@ -282,6 +297,7 @@
     .strategy-grid { grid-template-columns: 1fr; gap: 24px; }
     .boxes, .products { grid-template-columns: 1fr; }
     .cycle-card { grid-template-columns: 1fr; }
+    .needs-people { grid-template-columns: 1fr; }
   }
   @media (max-width: 480px) {
     .cycle-list li { grid-template-columns: minmax(0, 1fr) auto; }
@@ -292,7 +308,7 @@
     .site-header h1 { font-size: 1.625rem; }
     .strategy-band { margin-top: 36px; }
     .status-large { font-size: 1.25rem; }
-    .needs { padding: 14px 18px; align-items: flex-start; }
+    .needs-person { padding: 14px; }
     .pillars { grid-template-columns: 1fr; }
     #funnel-table tbody th, #funnel-table thead th:first-child { position: sticky; left: 0; z-index: 1; background: #fff; box-shadow: 1px 0 0 var(--line); white-space: normal; min-width: 110px; }
   }
@@ -317,7 +333,7 @@
     .boxes { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1fr) !important; }
     .products { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     .status-large { font-size: 13pt !important; }
-    .needs { align-items: center !important; }
+    .needs-people { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
     .controls, .details, .more, .more-btn, .timelog-link, .hours-worked, noscript { display: none !important; }
     .wrap { max-width: none; padding: 0; }
     .card, .table-scroll { box-shadow: none; border: 1px solid #c9d1da; border-radius: 8px; padding: 3mm 4.5mm; }
@@ -345,7 +361,21 @@
     .lines li + li { margin-top: 1.2mm; }
     .box-status { margin-bottom: 2mm; }
     .status-large { font-size: 13pt; padding: 1mm 4mm 1mm 1.5mm; }
-    .needs { margin-top: 3mm; padding: 1.6mm 4mm; border-radius: 8px; }
+    .needs { margin-top: 3mm; break-inside: avoid; }
+    .needs-head h2 { font-size: 12pt; }
+    .needs-total { font-size: 9pt; padding: 0 2mm; }
+    .needs-text, .needs-empty { margin-top: 1.5mm; }
+    .needs-people { margin-top: 1.5mm; gap: 2mm 4mm; }
+    .needs-person { padding: 1.5mm 3mm; border-radius: 6px; break-inside: avoid; }
+    .needs-avatar { width: 6mm; height: 6mm; font-size: 8pt; }
+    .needs-who { gap: 2mm; }
+    .needs-who strong { font-size: 10.5pt; }
+    .needs-count { font-size: 9pt; }
+    .needs-list { margin-top: 0.5mm; }
+    .needs-list li { padding: 0.6mm 0; gap: 3mm; }
+    .needs-task { font-size: 10pt; line-height: 1.3; }
+    .needs-with, .due-tag { font-size: 8.5pt; padding: 0 2mm; }
+    .print-more { display: block; font-size: 9pt; color: var(--muted); padding-top: 0.5mm; }
     .products { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4mm; }
     .product-card { break-inside: avoid; }
     .product-card h3 { font-size: 12pt; margin-bottom: 2mm; }
@@ -427,12 +457,15 @@
             <div id="box-change-more"></div>
           </article>
         </div>
-        <aside class="needs" id="needs" aria-labelledby="needs-title" hidden>
-          <svg class="i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18 14.3a6.5 6.5 0 0 1 3.5 5.7"/></svg>
-          <div class="needs-body">
+        <aside class="card needs" id="needs" aria-labelledby="needs-title" hidden>
+          <div class="needs-head">
+            <span class="box-icon" aria-hidden="true"><svg class="i" viewBox="0 0 24 24" focusable="false"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8"/><path d="M18 14.3a6.5 6.5 0 0 1 3.5 5.7"/></svg></span>
             <h2 id="needs-title"></h2>
-            <p id="needs-text"></p>
+            <span class="needs-total" id="needs-total"></span>
           </div>
+          <p class="needs-text" id="needs-text" hidden></p>
+          <p class="needs-empty" id="needs-empty" hidden></p>
+          <div class="needs-people" id="needs-people"></div>
         </aside>
       </div>
 
@@ -556,6 +589,12 @@
     'label.task_late':         { 'en-CA': 'Late since {date}', 'pt-BR': 'Atrasada desde {date}' },
     'label.task_due':          { 'en-CA': 'due {date}', 'pt-BR': 'prazo {date}' },
     'label.task_no_due':       { 'en-CA': 'no due date', 'pt-BR': 'sem prazo' },
+    'label.requests_one':      { 'en-CA': '{n} request', 'pt-BR': '{n} pedido' },
+    'label.requests_many':     { 'en-CA': '{n} requests', 'pt-BR': '{n} pedidos' },
+    'label.needs_with':        { 'en-CA': 'with {names}', 'pt-BR': 'com {names}' },
+    'label.needs_none':        { 'en-CA': 'Nothing to ask the team.', 'pt-BR': 'Nada a pedir ao time.' },
+    'label.due_late':          { 'en-CA': 'late', 'pt-BR': 'atrasado' },
+    'label.due_soon':          { 'en-CA': 'due within 2 days', 'pt-BR': 'vence em até 2 dias' },
     'label.forced_reason':     { 'en-CA': 'Reason', 'pt-BR': 'Motivo' },
     'label.forced_rule':       { 'en-CA': 'rule: {color}', 'pt-BR': 'regra: {color}' },
     'label.cycle_progress':    { 'en-CA': '{x} of {y} in the cycle', 'pt-BR': '{x} de {y} do ciclo' },
@@ -794,14 +833,8 @@
     renderHowTasks(tasks);
     $('box-change-title').textContent = L('box.what_to_change');
     boxLines($('box-change'), tasks ? toChangeLines(tasks) : aiText(snap, 'what_to_change_text'));
-    // needs from the team: one strip, only when there is something to ask
-    var needs = tasks ? needsLines(tasks) : splitLines(aiText(snap, 'needs_from_team'));
-    $('needs').hidden = !needs.length;
-    $('needs-title').textContent = L('box.needs_from_team');
-    var needsBox = $('needs-text');
-    clear(needsBox);
-    if (tasks) needs.forEach(function (n) { needsBox.appendChild(el('span', 'needs-person', n)); });
-    else needsBox.textContent = needs.join(' · ');
+    // needs from the team: one section per person (weeks with kpi.tasks); older weeks keep the AI text
+    renderNeeds(tasks, tasks ? [] : splitLines(aiText(snap, 'needs_from_team')));
 
     renderMainFunnel(kpi);
     renderCycle();
@@ -865,13 +898,106 @@
     });
     return (out.length ? out : [uiText('label.tasks_none')]).join('\n');
   }
-  function needsLines(t) {
-    return arr(t.team_needs).filter(isObj).map(function (p) {
-      // Grouped under the person's name once; no "(no due date)" when there is none.
-      return str(p.person) + ': ' + arr(p.tasks).filter(isObj).map(function (x) {
-        var when = x.due_date ? ' (' + fill(uiText('label.task_due'), { date: shortDate(x.due_date) }) + ')' : '';
-        return bareTitle(t, x.task_id) + when;
-      }).join('; ');
+  // ---------- needs from the team: presentation only (data = kpi.tasks.team_needs + items, unchanged)
+  var NEEDS_SOON_DAYS = 2;
+  var MONTHS_EN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  function initials(name) {
+    var w = str(name).trim().split(/\s+/).filter(Boolean);
+    if (!w.length) return '?';
+    return (w[0].charAt(0) + (w.length > 1 ? w[w.length - 1].charAt(0) : '')).toLocaleUpperCase();
+  }
+  // "20 nov." / "Nov 20"
+  function tagDate(iso) {
+    var d = parseDate(iso);
+    if (!d) return DASH;
+    if (state.lang === 'en-CA') return MONTHS_EN[d.getUTCMonth()] + ' ' + d.getUTCDate();
+    try { return d.getUTCDate() + ' ' + new Intl.DateTimeFormat('pt-BR', { timeZone: 'UTC', month: 'short' }).format(d); }
+    catch (e) { return str(iso); }
+  }
+  function dayDiff(a, b) { var x = parseDate(a), y = parseDate(b); return x && y ? Math.round((x - y) / 86400000) : null; }
+  function titleKey(t, id) { var it = taskItem(t, id); return oneLine(it.title_pt_BR || it.title_en_CA || id).toLowerCase(); }
+  // One entry per (person, request). The same request (same id or same title) under several people is one request.
+  function needsModel(t) {
+    var people = [], byTitle = {}, owners = {};
+    arr(t.team_needs).filter(isObj).forEach(function (p) {
+      var name = str(p.person).trim();
+      if (!name) return;
+      var list = arr(p.tasks).filter(function (x) { return isObj(x) && str(x.task_id); }).map(function (x) {
+        var id = str(x.task_id), k = titleKey(t, id);
+        var group = byTitle[k] || id;
+        byTitle[k] = group;
+        (owners[group] = owners[group] || []);
+        if (owners[group].indexOf(name) < 0) owners[group].push(name);
+        return { id: id, group: group, due: str(x.due_date) || str(taskItem(t, id).due_date) };
+      });
+      list.sort(function (a, b) {
+        if (a.due !== b.due) { if (!a.due) return 1; if (!b.due) return -1; return a.due < b.due ? -1 : 1; }
+        return a.id.localeCompare(b.id, undefined, { numeric: true });
+      });
+      if (list.length) people.push({ name: name, items: list });
+    });
+    people.forEach(function (p) { p.items.forEach(function (x) { x.with = owners[x.group].filter(function (n) { return n !== p.name; }); }); });
+    return { people: people, total: Object.keys(owners).length };
+  }
+  function countText(n) { return fill(uiText(n === 1 ? 'label.requests_one' : 'label.requests_many'), { n: fmtNumber(n) }); }
+  function needItem(t, x, base) {
+    var li = el('li');
+    var title = el('span', 'needs-task', bareTitle(t, x.id));
+    if (x.with.length) title.appendChild(document.createTextNode(' '));
+    if (x.with.length) title.appendChild(el('span', 'needs-with', fill(uiText('label.needs_with'), { names: x.with.join(', ') })));
+    li.appendChild(title);
+    var diff = x.due ? dayDiff(x.due, base) : null;
+    var kind = diff === null ? '' : (diff < 0 ? 'late' : (diff <= NEEDS_SOON_DAYS ? 'soon' : ''));
+    var tag = el('span', 'due-tag' + (kind ? ' ' + kind : ''), x.due ? tagDate(x.due) : uiText('label.task_no_due'));
+    if (kind) {
+      var why = uiText(kind === 'late' ? 'label.due_late' : 'label.due_soon');
+      tag.title = why;
+      tag.appendChild(el('span', 'visually-hidden', ' (' + why + ')'));   // colour is never the only signal
+    }
+    li.appendChild(tag);
+    return li;
+  }
+  function renderNeeds(t, fallbackLines) {
+    var box = $('needs'), people = $('needs-people'), text = $('needs-text'), empty = $('needs-empty');
+    clear(people);
+    $('needs-title').textContent = L('box.needs_from_team');
+    $('needs-total').textContent = '';
+    text.hidden = true; empty.hidden = true;
+    if (!t) {   // older weeks: the AI text, as before; hidden when there is none
+      box.hidden = !fallbackLines.length;
+      text.textContent = fallbackLines.join(' · ');
+      text.hidden = !fallbackLines.length;
+      return;
+    }
+    box.hidden = false;
+    var m = needsModel(t), base = str(t.base_date);
+    if (!m.people.length) { empty.textContent = uiText('label.needs_none'); empty.hidden = false; return; }
+    $('needs-total').textContent = countText(m.total);
+    m.people.forEach(function (p) {
+      var sec = el('div', 'needs-person');
+      sec.setAttribute('role', 'group');
+      sec.setAttribute('aria-label', p.name);
+      var who = el('div', 'needs-who');
+      var av = el('span', 'needs-avatar', initials(p.name));
+      av.setAttribute('aria-hidden', 'true');
+      who.appendChild(av);
+      who.appendChild(el('strong', null, p.name));
+      who.appendChild(el('span', 'needs-count', countText(p.items.length)));
+      sec.appendChild(who);
+      var ul = el('ul', 'needs-list');
+      p.items.slice(0, MAX_BOX_ITEMS).forEach(function (x) { ul.appendChild(needItem(t, x, base)); });
+      sec.appendChild(ul);
+      var rest = p.items.slice(MAX_BOX_ITEMS);
+      if (rest.length) {
+        var det = el('details', 'more');
+        det.appendChild(el('summary', null, uiText('label.see_more') + ' (+' + fmtNumber(rest.length) + ')'));
+        var more = el('ul', 'needs-list');
+        rest.forEach(function (x) { more.appendChild(needItem(t, x, base)); });
+        det.appendChild(more);
+        sec.appendChild(det);
+        sec.appendChild(el('p', 'print-more', '+' + fmtNumber(rest.length)));   // paper has no "see more"
+      }
+      people.appendChild(sec);
     });
   }
   function renderForced(t) {
