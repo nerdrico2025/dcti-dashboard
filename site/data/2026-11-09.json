@@ -282,15 +282,15 @@
   "snapshot": {
     "snapshot_date": "2026-11-17",
     "week_start": "2026-11-09",
-    "executing_text_en_CA": "No activities were logged this week.\nTasks in progress include STL-02, STL-03 and STL-10.",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nTarefas em andamento incluem STL-02, STL-03 e STL-10.",
+    "executing_text_en_CA": "No activities were logged this week.\nSTL-03, the STL Lab page with dated sessions and email capture, is in progress.\nREU-1103-02, the content agent structure and flow, is in progress.",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nSTL-03, a página do STL Lab com sessões datadas e captura de e-mail, está em andamento.\nREU-1103-02, a estrutura e o fluxo do agente de conteúdo, está em andamento.",
     "how_its_going_status": "Yellow",
-    "how_its_going_text_en_CA": "Yellow: 72.5% of the cycle's tasks are done, with 11 late and 2 blocked.\nNo weekly targets are set for the funnel lines, so none can be compared.",
-    "how_its_going_text_pt_BR": "Amarelo: 72,5% das tarefas do ciclo estão concluídas, com 11 atrasadas e 2 bloqueadas.\nNão há metas semanais definidas para as linhas do funil, então nenhuma pode ser comparada.",
-    "what_to_change_text_en_CA": "Unblock FND-02 and AUD-02, the two blocked tasks.\nFinish the late STL Lab tasks STL-02, STL-03 and STL-10 first.\nConnect data sources for the funnel stages still without data.",
-    "what_to_change_text_pt_BR": "Destravar FND-02 e AUD-02, as duas tarefas bloqueadas.\nConcluir primeiro as tarefas atrasadas do STL Lab: STL-02, STL-03 e STL-10.\nConectar fontes de dados para as etapas do funil ainda sem dados.",
-    "needs_from_team_en_CA": "Scott: confirm ad account, billing and budget split (FND-02, due October 7).\nBoard, Maurício, Panorea and Scott: deliver the network exports (AUD-02, due November 25).\nMaurício: publish the STL Lab page (STL-03, due October 14).",
-    "needs_from_team_pt_BR": "Scott: confirmar conta de anúncios, faturamento e divisão de orçamento (FND-02, prazo 7 de outubro).\nBoard, Maurício, Panorea e Scott: entregar as exportações das redes (AUD-02, prazo 25 de novembro).\nMaurício: publicar a página do STL Lab (STL-03, prazo 14 de outubro).",
+    "how_its_going_text_en_CA": "Yellow: 29 of 39 cycle tasks done, with 10 late and 2 blocked.\nNo weekly targets are set for the funnel lines, so none can be compared to plan.",
+    "how_its_going_text_pt_BR": "Amarelo: 29 de 39 tarefas do ciclo concluídas, com 10 atrasadas e 2 bloqueadas.\nNão há metas semanais definidas para as linhas do funil, então nenhuma pode ser comparada ao plano.",
+    "what_to_change_text_en_CA": "Unblock the two blocked tasks: ad account confirmation (FND-02) and network exports (AUD-02).\nReview the due dates of STL-02, STL-03 and STL-10, still in progress after their due dates.\nConnect data sources for the stages without data, such as White paper download and Sale.",
+    "what_to_change_text_pt_BR": "Desbloquear as duas tarefas bloqueadas: confirmação da conta de anúncios (FND-02) e exportações das redes (AUD-02).\nRever os prazos de STL-02, STL-03 e STL-10, ainda em andamento após o vencimento.\nConectar fontes de dados para as etapas sem dados, como download de white paper e venda.",
+    "needs_from_team_en_CA": "Scott: confirm the ad account, billing and budget split (FND-02), due Oct. 7.\nBoard and Scott: deliver the network exports (AUD-02), due Nov. 25.\nScott: fix the public dates for the Lab sessions (STL-02), due Oct. 7.",
+    "needs_from_team_pt_BR": "Scott: confirmar a conta de anúncios, o faturamento e a divisão de orçamento (FND-02), prazo 7 de outubro.\nBoard e Scott: entregar as exportações das redes (AUD-02), prazo 25 de novembro.\nScott: definir as datas públicas das sessões do Lab (STL-02), prazo 7 de outubro.",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-09"
   },
   "kpi": {
@@ -308,22 +308,22 @@
       "cycle_end": "2026-11-15",
       "cycle": {
         "done": 29,
-        "total": 40,
-        "pct": 72.5
+        "total": 39,
+        "pct": 74.4
       },
       "gtm_original": {
         "done": 11,
-        "expected": 21,
-        "total": 26,
-        "done_pct": 42.3,
-        "expected_pct": 80.8,
-        "diff_points": -38.5
+        "expected": 20,
+        "total": 25,
+        "done_pct": 44,
+        "expected_pct": 80,
+        "diff_points": -36
       },
       "meeting_tasks": {
         "added": 42,
         "done": 20
       },
-      "late_count": 11,
+      "late_count": 10,
       "blocked_count": 2,
       "late_gates": [],
       "funnel_pct": null,
@@ -351,7 +351,6 @@
       },
       "to_change": [
         "FND-02",
-        "FND-05",
         "CNT-05",
         "CMP-04",
         "CMP-05",
@@ -390,21 +389,8 @@
           "person": "Maurício",
           "tasks": [
             {
-              "task_id": "AUD-02",
-              "due_date": "2026-11-25"
-            },
-            {
               "task_id": "STL-03",
               "due_date": "2026-10-14"
-            }
-          ]
-        },
-        {
-          "person": "Panorea",
-          "tasks": [
-            {
-              "task_id": "AUD-02",
-              "due_date": "2026-11-25"
             }
           ]
         },
@@ -464,13 +450,6 @@
           "title_pt_BR": "Confirmar a conta de anúncios, o faturamento e a divisão sugerida de orçamento 70 / 30",
           "due_date": "2026-10-07",
           "status": "blocked",
-          "change_note": ""
-        },
-        "FND-05": {
-          "title_en_CA": "Adjust the White Paper landing page after the initial review",
-          "title_pt_BR": "Ajustar a landing page do White Paper após a revisão inicial",
-          "due_date": "2026-10-21",
-          "status": "backlog",
           "change_note": ""
         },
         "CNT-05": {
@@ -600,8 +579,8 @@
           "change_note": ""
         },
         "REU-1103-12": {
-          "title_en_CA": "Align with Scott on the agentic-process idea and send a full video before taking it to Mauricio",
-          "title_pt_BR": "Alinhar com o Scott a ideia dos processos agênticos e enviar um vídeo completo antes de levar ao Mauricio",
+          "title_en_CA": "Align with Scott on the agentic-process idea before taking it to Mauricio",
+          "title_pt_BR": "Alinhar com o Scott a ideia dos processos agênticos antes de levar ao Mauricio",
           "due_date": "2026-11-20",
           "status": "next",
           "change_note": ""
