@@ -182,7 +182,7 @@
   .tab:hover { background: var(--accent-soft); color: var(--text); }
   .tab[aria-selected="true"] { color: var(--accent); border-bottom-color: var(--accent); background: var(--card); }
   .tabpanel:focus { outline: none; }
-  .task-hours { margin-top: 8px; }
+  .task-hours { margin-top: 0; }
 
   /* Prazos tab (every id and class starts with dl-) */
   .dl-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-top: 16px; }
@@ -229,6 +229,11 @@
   .lh-cats .lh-sugg { color: var(--muted); font-size: 0.8125rem; }
   .lh-done { color: var(--text); font-weight: 600; }
   .tag-cat { background: #eef2f7; color: var(--muted); }
+  .tag-noen { background: #fff5d6; color: #5f4200; border: 1px solid #e6c66a; }
+  .task-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+  .ed-dialog { max-height: calc(100vh - 32px); overflow-y: auto; }
+  .ed-dialog .lh-body .item-id { display: inline; margin-top: 0; }
+  .ed-dialog .item-meta { margin-top: 2px; }
   .h-loading { margin-top: 24px; color: var(--muted); }
   .h-total { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
   .h-total-label { font-size: 0.875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
@@ -544,6 +549,55 @@
         </div>
       </dialog>
 
+      <dialog class="confirm lh-dialog ed-dialog" id="ed-dialog" aria-labelledby="ed-title" aria-describedby="ed-id-line">
+        <div class="lh-body">
+          <h2 id="ed-title" data-i18n="ed.title">Editar tarefa</h2>
+          <p class="item-meta" id="ed-id-line"><span data-i18n="ed.code">Código (não muda):</span> <span class="item-id" id="ed-id"></span></p>
+          <form class="stack" id="ed-form" novalidate>
+            <div class="field">
+              <label for="ed-title-pt" data-i18n="ed.title_pt">Título (português)</label>
+              <input type="text" id="ed-title-pt" maxlength="300" autocomplete="off" required aria-describedby="ed-error">
+            </div>
+            <div class="field">
+              <label for="ed-title-en" data-i18n="ed.title_en">Título (inglês)</label>
+              <input type="text" id="ed-title-en" maxlength="300" autocomplete="off" aria-describedby="ed-title-en-hint">
+              <span class="hint" id="ed-title-en-hint" data-i18n="ed.title_en_hint">Se ficar vazio, a tela em inglês mostra o título em português.</span>
+            </div>
+            <div class="field">
+              <label for="ed-owners" data-i18n="ed.owners">Responsáveis (separados por vírgula)</label>
+              <input type="text" id="ed-owners" maxlength="200" autocomplete="off">
+            </div>
+            <div class="lh-row">
+              <div class="field">
+                <label for="ed-due" data-i18n="ed.due">Prazo</label>
+                <input type="date" id="ed-due">
+              </div>
+              <div class="field">
+                <label for="ed-status" data-i18n="ed.status">Status</label>
+                <select id="ed-status"></select>
+              </div>
+            </div>
+            <div class="field">
+              <label for="ed-show" data-i18n="ed.show">Mostrar na Home</label>
+              <select id="ed-show"></select>
+            </div>
+            <div class="field">
+              <label for="ed-note" data-i18n="ed.note">Nota de mudança (aparece na Home se a tarefa estiver visível)</label>
+              <textarea class="short" id="ed-note" maxlength="500"></textarea>
+            </div>
+            <div class="field">
+              <label for="ed-by" data-i18n="ed.by">Seu nome (vai para o histórico de alterações)</label>
+              <input type="text" id="ed-by" maxlength="60" autocomplete="name">
+            </div>
+            <p class="error-text" id="ed-error" role="alert"></p>
+            <div class="actions">
+              <button type="button" class="btn btn-quiet" id="ed-cancel" data-i18n="ed.cancel">Cancelar</button>
+              <button type="submit" class="btn" id="ed-submit" data-i18n="ed.save">Salvar</button>
+            </div>
+          </form>
+        </div>
+      </dialog>
+
       <dialog class="confirm" id="bulk-delete-dialog" aria-labelledby="bulk-delete-title" aria-describedby="bulk-delete-text bulk-delete-gtm">
         <h2 id="bulk-delete-title"></h2>
         <p class="hint" id="bulk-delete-text"></p>
@@ -633,6 +687,7 @@
 
   var API = 'api/admin-meeting';      // same origin: Vercel rewrites it to the n8n webhook (site/vercel.json)
   var KEY_STORE = 'dcti_admin_key';   // the password, saved only in this browser
+  var NAME_STORE = 'dcti_admin_name'; // name typed in "Editar", for the task_log tab (this browser only)
   var TZ = 'America/Sao_Paulo';
   var MAX_TEXT = 60000, MAX_FILE = 300 * 1024;
   var ANALYZE_TIMEOUT = 115000, DEFAULT_TIMEOUT = 25000;
@@ -677,11 +732,14 @@
     change_too_long: 'O texto passa de 400 caracteres.',
     updates_too_long: 'As atualizações desta tarefa passam de 5.000 caracteres. Resuma a coluna meeting_updates na planilha antes de aceitar.',
     column_missing: 'Falta a coluna meeting_updates na aba tasks. Crie a coluna e tente de novo.',
-    duplicate_id: 'Há mais de uma linha com este código na planilha. Corrija a planilha antes.'
+    duplicate_id: 'Há mais de uma linha com este código na planilha. Corrija a planilha antes.',
+    name_too_long: 'O nome passa de 60 caracteres.',
+    invalid_field: 'O título só pode ser alterado em uma tarefa por vez.',
+    column_missing_manual_edit: 'Falta a coluna manual_edit na aba tasks. Crie a coluna (no fim) e tente de novo.'
   };
 
   // ---------- language: same mechanism as the Home (index.html): ?lang=, then localStorage dcti_lang, then en-CA.
-  // Only the header, the Summary, the tab names, the Prazos tab and the Horas tab follow it; Tarefas and Reuniões stay in Portuguese.
+  // Only the header, the Summary, the tab names, the Prazos tab and the Horas tab follow it; Tarefas and Reuniões stay in Portuguese, except the task titles, the "Editar" button, its form and the "no English title" tag in Tarefas.
   var LANGS = ['en-CA', 'pt-BR'];
   var UI = {
     'lang.selector_label': { 'pt-BR': 'Idioma', 'en-CA': 'Language' },
@@ -792,7 +850,30 @@
     'h.cancel': { 'pt-BR': 'Cancelar', 'en-CA': 'Cancel' },
     'h.saved': { 'pt-BR': 'Período salvo.', 'en-CA': 'Time entry saved.' },
     'h.removed': { 'pt-BR': 'Período removido.', 'en-CA': 'Time entry removed.' },
-    'h.remove_confirm': { 'pt-BR': 'Remover o período de {h} em {d}?', 'en-CA': 'Remove the {h} entry on {d}?' }
+    'h.remove_confirm': { 'pt-BR': 'Remover o período de {h} em {d}?', 'en-CA': 'Remove the {h} entry on {d}?' },
+    // "Editar" button and form of the Tarefas tab
+    'ed.button': { 'pt-BR': 'Editar', 'en-CA': 'Edit' },
+    'ed.button_aria': { 'pt-BR': 'Editar a tarefa {id}', 'en-CA': 'Edit task {id}' },
+    'ed.no_en': { 'pt-BR': 'Sem título em inglês', 'en-CA': 'No English title' },
+    'ed.title': { 'pt-BR': 'Editar tarefa', 'en-CA': 'Edit task' },
+    'ed.code': { 'pt-BR': 'Código (não muda):', 'en-CA': 'Code (does not change):' },
+    'ed.title_pt': { 'pt-BR': 'Título (português)', 'en-CA': 'Title (Portuguese)' },
+    'ed.title_en': { 'pt-BR': 'Título (inglês)', 'en-CA': 'Title (English)' },
+    'ed.title_en_hint': { 'pt-BR': 'Se ficar vazio, a tela em inglês mostra o título em português.', 'en-CA': 'If left empty, the English screens show the Portuguese title.' },
+    'ed.owners': { 'pt-BR': 'Responsáveis (separados por vírgula)', 'en-CA': 'Owners (separated by commas)' },
+    'ed.due': { 'pt-BR': 'Prazo', 'en-CA': 'Deadline' },
+    'ed.status': { 'pt-BR': 'Status', 'en-CA': 'Status' },
+    'ed.show': { 'pt-BR': 'Mostrar na Home', 'en-CA': 'Show on the Home page' },
+    'ed.yes': { 'pt-BR': 'Sim', 'en-CA': 'Yes' },
+    'ed.no': { 'pt-BR': 'Não', 'en-CA': 'No' },
+    'ed.note': { 'pt-BR': 'Nota de mudança (aparece na Home se a tarefa estiver visível)', 'en-CA': 'Change note (shows on the Home page if the task is visible)' },
+    'ed.by': { 'pt-BR': 'Seu nome (vai para o histórico de alterações)', 'en-CA': 'Your name (goes into the change history)' },
+    'ed.cancel': { 'pt-BR': 'Cancelar', 'en-CA': 'Cancel' },
+    'ed.save': { 'pt-BR': 'Salvar', 'en-CA': 'Save' },
+    'ed.saving': { 'pt-BR': 'Salvando…', 'en-CA': 'Saving…' },
+    'ed.nothing': { 'pt-BR': 'Nada mudou. Altere algum campo ou clique em Cancelar.', 'en-CA': 'Nothing changed. Change a field or click Cancel.' },
+    'ed.saved': { 'pt-BR': 'Tarefa {id} salva.', 'en-CA': 'Task {id} saved.' },
+    'ed.duplicate': { 'pt-BR': 'Já existe uma tarefa com este título em português ({id}).', 'en-CA': 'Another task already has this Portuguese title ({id}).' }
   };
   var STATUS_EN = { backlog: 'Backlog', next: 'Next', doing: 'In progress', blocked: 'Blocked', done: 'Done', frozen: 'Frozen', dropped: 'Discarded' };
   var ORIGIN_EN = { gtm: 'GTM', meeting: 'Meeting', manual: 'Manual' };
@@ -804,6 +885,22 @@
     network: 'Could not reach the server. Check the connection and try again.',
     server: 'The server returned an error. Try again in a moment.',
     b_not_configured: 'The workflow B ID has not been filled in workflow F yet.'
+  };
+  // Only the "Editar" form uses these (see edMessage), so the other tabs keep their messages.
+  var ED_MSG_EN = {
+    title_required: 'Write the Portuguese title.',
+    title_too_long: 'The title is longer than 300 characters.',
+    duplicate_title: 'Another task already has this title.',
+    invalid_due_date: 'Invalid deadline.',
+    note_too_long: 'The note is longer than 500 characters.',
+    owners_too_long: 'The owners list is longer than 200 characters.',
+    invalid_status: 'Invalid status.',
+    name_too_long: 'The name is longer than 60 characters.',
+    not_found: 'This task no longer exists. Reload the page.',
+    write_not_confirmed: 'The spreadsheet did not confirm the write. Reload the page and check.',
+    invalid_action: 'The server does not know this action yet. Re-import workflow F.',
+    invalid_field: 'The title can only be changed one task at a time.',
+    column_missing_manual_edit: 'The manual_edit column is missing in the tasks tab. Create it (at the end) and try again.'
   };
   var HMSG_EN = {
     unauthorized: 'The time log did not accept the admin password. In n8n, TIMELOG_SECRET must hold the same value as ADMIN_SECRET.',
@@ -855,6 +952,7 @@
   function read(k) { try { return window.localStorage.getItem(k); } catch (e) { return null; } }
   function messageFor(err) {
     if (err.code === 'column_missing' && err.field === 'categoria') return MSG.column_missing_categoria;
+    if (err.code === 'column_missing' && err.field === 'manual_edit') return isEN() ? ED_MSG_EN.column_missing_manual_edit : MSG.column_missing_manual_edit;
     if (isEN() && MSG_EN[err.code]) return MSG_EN[err.code];
     return MSG[err.code] || (isEN() ? MSG_EN.server : MSG.server);
   }
@@ -879,6 +977,8 @@
     var timer = ctrl ? setTimeout(function () { ctrl.abort(); }, timeout || DEFAULT_TIMEOUT) : null;
     var headers = { 'Content-Type': 'application/json' };
     headers[header || 'X-Admin-Key'] = state.key;
+    // task edits carry the name typed in "Editar" (remembered in this browser) for the task_log tab
+    if ((body.action === 'update_task' || body.action === 'bulk_update') && !('edited_by' in body)) body.edited_by = read(NAME_STORE) || '';
     return fetch(url || API, {
       method: 'POST', cache: 'no-store', credentials: 'same-origin',
       headers: headers,
@@ -921,6 +1021,7 @@
   function signOut(msg) {
     state.key = ''; state.suggestions = []; state.proposals = []; state.meeting = null; state.addMsg = ''; state.tasks = []; state.forced = null; state.panel = null;
     state.rowLine = null; state.page = 1;
+    closeEdit(true);
     closeDelete();
     closeBulkDelete();
     state.selected = {}; state.shownIds = []; state.pageIds = [];
@@ -1796,8 +1897,9 @@
     if (rowCat) head.appendChild(el('span', 'tag tag-cat', rowCat.pt));
     var lastUpdate = lastMeetingUpdate(t);
     if (lastUpdate !== null) head.appendChild(el('span', 'tag tag-updated', 'atualizada em reunião' + (lastUpdate ? ' ' + lastUpdate : '')));
+    if (!String(t.title_en_CA || '').trim()) head.appendChild(el('span', 'tag tag-noen', T('ed.no_en')));
     main.appendChild(head);
-    main.appendChild(el('p', 'item-title', t.title_pt_BR || t.title_en_CA));
+    main.appendChild(el('p', 'item-title', taskTitle(t)));
     var meta = el('p', 'item-meta');
     var late = isLate(t);
     meta.appendChild(el('span', late ? 'due-late' : null, 'Prazo: ' + (fmtDate(t.due_date) || 'sem prazo') + (late ? ' (vencido)' : '')));
@@ -1808,7 +1910,13 @@
     hoursBtn.type = 'button';
     hoursBtn.setAttribute('aria-label', 'Registrar horas: ' + t.task_id);
     hoursBtn.addEventListener('click', function () { logHoursFor(t, hoursBtn); });
-    main.appendChild(hoursBtn);
+    var editBtn = el('button', 'btn btn-quiet btn-small task-editbtn', T('ed.button'));
+    editBtn.type = 'button'; editBtn.disabled = saving;
+    editBtn.setAttribute('aria-label', T('ed.button_aria', { id: t.task_id }));
+    editBtn.addEventListener('click', function () { openEdit(t, editBtn); });
+    var buttons = el('div', 'task-buttons');
+    buttons.appendChild(editBtn); buttons.appendChild(hoursBtn);
+    main.appendChild(buttons);
     li.appendChild(main);
 
     var controls = el('div', 'task-controls');
@@ -1901,6 +2009,110 @@
       state.rowLine = { id: t.task_id, kind: 'failed', text: 'Não foi salvo. ' + messageFor(err) };
       replaceRow(t, focusId);
       showError(messageFor(err));
+    });
+  }
+
+  // ---------- "Editar": one form with titles, owners, deadline, status, Home visibility and change note.
+  // Saves with update_task (only the fields that changed). The task_id is shown but never sent as a change.
+  // Workflow F marks the task manual_edit = sim and writes one task_log row per changed field.
+  var ed = { task: null, opener: null, busy: false };
+  // Title for the current language: English falls back to Portuguese (same rule as the Home and the Prazos tab).
+  function taskTitle(t) { return isEN() ? (t.title_en_CA || t.title_pt_BR) : (t.title_pt_BR || t.title_en_CA); }
+  function edMessage(err) {
+    if (err.code === 'duplicate_title' && err.similarTo) return T('ed.duplicate', { id: err.similarTo });
+    if (err.code === 'column_missing') return messageFor(err);
+    if (isEN()) return ED_MSG_EN[err.code] || MSG_EN[err.code] || MSG_EN.server;
+    return MSG[err.code] || MSG.server;
+  }
+  function edBusy(on) {
+    ed.busy = on;
+    ['ed-title-pt', 'ed-title-en', 'ed-owners', 'ed-due', 'ed-status', 'ed-show', 'ed-note', 'ed-by', 'ed-cancel', 'ed-submit'].forEach(function (id) { $(id).disabled = on; });
+    $('ed-submit').textContent = T(on ? 'ed.saving' : 'ed.save');
+  }
+  function edFields() {
+    return {
+      title_pt_BR: $('ed-title-pt').value.replace(/\s+/g, ' ').trim(),
+      title_en_CA: $('ed-title-en').value.replace(/\s+/g, ' ').trim(),
+      owners: ownersText($('ed-owners').value),
+      due_date: $('ed-due').value,
+      status: $('ed-status').value,
+      show_to_scott: $('ed-show').value,
+      change_note: $('ed-note').value.trim()
+    };
+  }
+  function ownersText(v) {
+    var seen = {};
+    return String(v || '').split(',').map(function (x) { return x.trim(); }).filter(function (x) { if (!x || seen[x]) return false; seen[x] = true; return true; }).join(', ');
+  }
+  function openEdit(t, opener) {
+    if (ed.task || state.savingTask) return;
+    ed.task = t; ed.opener = opener || null;
+    $('ed-id').textContent = t.task_id;
+    $('ed-title-pt').value = t.title_pt_BR || '';
+    $('ed-title-en').value = t.title_en_CA || '';
+    $('ed-owners').value = t.owners || '';
+    $('ed-due').value = t.due_date || '';
+    var st = $('ed-status'); clear(st);
+    STATUS.forEach(function (s) { var o = el('option', null, isEN() ? STATUS_EN[s[0]] : s[1]); o.value = s[0]; st.appendChild(o); });
+    st.value = t.status;
+    var sh = $('ed-show'); clear(sh);
+    [['yes', T('ed.yes')], ['no', T('ed.no')]].forEach(function (p) { var o = el('option', null, p[1]); o.value = p[0]; sh.appendChild(o); });
+    sh.value = t.show_to_scott === 'yes' ? 'yes' : 'no';
+    $('ed-note').value = t.change_note || '';
+    $('ed-by').value = read(NAME_STORE) || '';
+    $('ed-error').textContent = '';
+    $('ed-title-pt').setAttribute('aria-invalid', 'false');
+    edBusy(false);
+    var d = $('ed-dialog');
+    if (typeof d.showModal === 'function') d.showModal(); else d.setAttribute('open', '');
+    $('ed-title-pt').focus();
+  }
+  function closeEdit(signingOut) {
+    if (!ed.task || (ed.busy && !signingOut)) return;
+    var d = $('ed-dialog'), id = ed.task.task_id, opener = ed.opener;
+    ed.task = null; ed.opener = null;
+    if (signingOut) edBusy(false);
+    if (d.open) { if (typeof d.close === 'function') d.close(); else d.removeAttribute('open'); }
+    if (signingOut) return;
+    var target = opener && document.body.contains(opener) ? opener : document.querySelector('[data-task="' + id + '"] .task-editbtn');
+    if (target) { try { target.focus({ preventScroll: true }); } catch (e) { target.focus(); } }
+  }
+  function onEditSubmit(ev) {
+    ev.preventDefault();
+    if (!ed.task || ed.busy) return;
+    var t = ed.task, f = edFields();
+    $('ed-error').textContent = '';
+    $('ed-title-pt').setAttribute('aria-invalid', 'false');
+    if (!f.title_pt_BR) {
+      $('ed-error').textContent = edMessage({ code: 'title_required' });
+      $('ed-title-pt').setAttribute('aria-invalid', 'true');
+      $('ed-title-pt').focus();
+      return;
+    }
+    var was = { title_pt_BR: t.title_pt_BR || '', title_en_CA: t.title_en_CA || '', owners: t.owners || '', due_date: t.due_date || '',
+      status: t.status, show_to_scott: t.show_to_scott === 'yes' ? 'yes' : 'no', change_note: t.change_note || '' };
+    var changes = {};
+    Object.keys(f).forEach(function (k) { if (f[k] !== was[k]) changes[k] = f[k]; });
+    var name = $('ed-by').value.replace(/\s+/g, ' ').trim();
+    store(NAME_STORE, name || null);
+    if (!Object.keys(changes).length) { $('ed-error').textContent = T('ed.nothing'); return; }
+    edBusy(true);
+    api({ action: 'update_task', task_id: t.task_id, changes: changes, edited_by: name }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      edBusy(false);
+      state.tasks = state.tasks.map(function (x) { return x.task_id === data.task.task_id ? data.task : x; });
+      state.rowLine = { id: data.task.task_id, kind: 'saved', text: 'Salvo às ' + timeNow() + '.' };
+      renderFilters();
+      renderSummary();
+      renderTasks();
+      dlRender();                       // Prazos tab: same list, new title
+      if (horas.loaded) hRender();      // Horas tab: "code · title" notes follow the new title
+      closeEdit(false);
+      toast(T('ed.saved', { id: data.task.task_id }));
+    }, function (err) {
+      edBusy(false);
+      if (err.code === 'unauthorized') { closeEdit(true); signOut(MSG.unauthorized); return; }
+      $('ed-error').textContent = edMessage(err);
+      if (err.field === 'title_pt_BR') { $('ed-title-pt').setAttribute('aria-invalid', 'true'); $('ed-title-pt').focus(); }
     });
   }
 
@@ -2485,15 +2697,20 @@
   function hApi(body) { return api(body, DEFAULT_TIMEOUT, HORAS_API, 'X-Timelog-Key'); }
   function hMsg(code) { var d = isEN() ? HMSG_EN : HMSG; return d[code] || d.server; }
   function hMessage(err) { return hMsg(err.code); }
-  // Notes written by "Registrar horas" are "<code> · <Portuguese title>". In English, show the task's title_en_CA
-  // (the same field the Home uses) when the note is exactly that. Anything typed by hand stays as written.
+  // Notes written by "Registrar horas" are "<code> · <title>". The task is found by the code and the CURRENT title is shown
+  // (English falls back to Portuguese), also after the title was edited: the saved text is one of the task's titles,
+  // now or before (old_titles, from the task_log tab). The saved note is never rewritten; anything typed by hand stays as written.
   function hNoteText(note) {
-    if (!note || !isEN()) return note;
+    if (!note) return note;
     var m = /^(\S+) · ([\s\S]+)$/.exec(note);
     if (!m) return note;
     var t = state.tasks.filter(function (x) { return x.task_id === m[1]; })[0];
-    var en = t ? String(t.title_en_CA || '').trim() : '';
-    return en && String(t.title_pt_BR || '').trim() === m[2].trim() ? m[1] + ' · ' + en : note;
+    if (!t) return note;
+    var said = m[2].trim();
+    var titles = [t.title_pt_BR, t.title_en_CA].concat(Array.isArray(t.old_titles) ? t.old_titles : [])
+      .map(function (x) { return String(x || '').trim(); }).filter(Boolean);
+    var now = String(taskTitle(t) || '').trim();
+    return now && titles.indexOf(said) >= 0 ? m[1] + ' · ' + now : note;
   }
   function hShowError(msg) { $('h-error-text').textContent = msg; $('h-error').hidden = false; }
   function hHideError() { $('h-error').hidden = true; }
@@ -2971,6 +3188,8 @@
     if ($('login-btn').disabled) $('login-btn').textContent = T('login.checking');
     if (state.tasks.length || state.panel) renderSummary();
     if (state.tasks.length) dlRender();
+    if (state.tasks.length) renderTasks();   // task titles (English falls back to Portuguese) and the "Editar" button
+    if (ed.task && !ed.busy) $('ed-submit').textContent = T('ed.save');
     hRenderWeekBar();
     if (horas.loaded) hRender();
   }
@@ -3018,6 +3237,9 @@
     $('bulk-delete-dialog').addEventListener('cancel', function (ev) {   // Esc
       if (state.bulkBusy) ev.preventDefault(); else state.bulkIds = [];
     });
+    $('ed-form').addEventListener('submit', onEditSubmit);
+    $('ed-cancel').addEventListener('click', function () { closeEdit(false); });
+    $('ed-dialog').addEventListener('cancel', function (ev) { ev.preventDefault(); closeEdit(false); });   // Esc
     $('delete-cancel').addEventListener('click', closeDelete);
     $('delete-confirm').addEventListener('click', confirmDelete);
     $('delete-dialog').addEventListener('cancel', function (ev) {   // Esc
