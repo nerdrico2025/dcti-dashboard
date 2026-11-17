@@ -184,6 +184,29 @@
   .tabpanel:focus { outline: none; }
   .task-hours { margin-top: 8px; }
 
+  /* Prazos tab (every id and class starts with dl-) */
+  .dl-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px 16px; margin-top: 16px; }
+  .dl-count { font-size: 1.125rem; font-weight: 750; }
+  .dl-count.all-set { color: var(--ok); }
+  .dl-bulk { margin-top: 14px; padding: 12px 14px; border-radius: 12px; background: var(--accent-soft); display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 14px; }
+  .dl-bulk-title { width: 100%; font-size: 0.8125rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--muted); }
+  .dl-bulk .check { min-height: 38px; color: var(--text); }
+  .dl-sel { align-self: center; font-weight: 650; min-width: 7rem; }
+  .dl-bulk .field input { min-height: 38px; padding: 4px 8px; }
+  .dl-quick, .dl-controls { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+  .dl-bulk-msg { width: 100%; font-size: 0.875rem; font-weight: 600; }
+  .dl-bulk-msg:empty { display: none; }
+  .dl-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: center; gap: 6px 14px; margin-top: 10px; padding: 10px 14px; border: 1px solid var(--line); border-left: 6px solid var(--st); border-radius: 10px; }
+  .dl-row > input[type="checkbox"] { width: 20px; height: 20px; margin: 0; }
+  .dl-row .item-title { font-weight: 600; font-size: 1rem; margin-top: 2px; }
+  .dl-controls { justify-content: flex-end; }
+  .dl-controls input[type="date"] { min-height: 38px; padding: 4px 8px; border: 1px solid #9aa5b1; border-radius: 8px; background: #fff; }
+  .dl-line { grid-column: 2 / -1; font-size: 0.875rem; font-weight: 600; color: var(--muted); }
+  .dl-line:empty { display: none; }
+  .dl-line.ok { color: var(--ok); }
+  .dl-line.fail { color: var(--danger); }
+  .dl-warn { color: #7a4a00; }
+
   /* Horas tab (moved from horas.html; every id and class starts with h-) */
   .visually-hidden { position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
   .h-weekbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
@@ -260,6 +283,9 @@
     .h-form { grid-template-columns: 1fr 1fr; }
     .h-form .h-f-note { grid-column: 1 / -1; }
     .h-nav { width: 100%; }
+    .dl-row { grid-template-columns: auto minmax(0, 1fr); }
+    .dl-controls { grid-column: 1 / -1; justify-content: flex-start; }
+    .dl-controls input[type="date"] { min-height: 44px; flex: 1 1 100%; }
     .h-nav .btn { flex: 1 1 auto; }
   }
 </style>
@@ -311,6 +337,7 @@
 
       <div class="tabs" role="tablist" aria-label="Seções da admin" data-i18n-aria="tabs.label">
         <button type="button" class="tab" role="tab" id="tab-tarefas" aria-controls="panel-tarefas" aria-selected="true" data-i18n="tab.tarefas">Tarefas</button>
+        <button type="button" class="tab" role="tab" id="tab-prazos" aria-controls="panel-prazos" aria-selected="false" tabindex="-1" data-i18n="tab.prazos">Prazos</button>
         <button type="button" class="tab" role="tab" id="tab-horas" aria-controls="panel-horas" aria-selected="false" tabindex="-1" data-i18n="tab.horas">Horas</button>
         <button type="button" class="tab" role="tab" id="tab-reunioes" aria-controls="panel-reunioes" aria-selected="false" tabindex="-1" data-i18n="tab.reunioes">Reuniões</button>
       </div>
@@ -403,7 +430,29 @@
       </details>
       </div>
 
-      <div class="tabpanel" role="tabpanel" id="panel-horas" aria-labelledby="tab-horas" tabindex="-1" hidden>
+      <div class="tabpanel" role="tabpanel" id="panel-prazos" aria-labelledby="tab-prazos" tabindex="-1" hidden>
+      <section class="card" aria-labelledby="dl-title">
+        <h2 id="dl-title" tabindex="-1" data-i18n="dl.title">Prazos</h2>
+        <p class="hint" data-i18n="dl.hint">Toda tarefa ativa precisa de prazo para entrar no cálculo do ciclo e da cor. Escolha a data: ela é salva na hora.</p>
+        <div class="dl-bar">
+          <p class="dl-count" id="dl-count" role="status" aria-live="polite"></p>
+          <button type="button" class="btn btn-quiet btn-small" id="dl-toggle"></button>
+        </div>
+        <div class="dl-bulk" role="group" aria-labelledby="dl-bulk-title">
+          <p class="dl-bulk-title" id="dl-bulk-title" data-i18n="dl.bulk_title">Várias de uma vez</p>
+          <label class="check" for="dl-all"><input type="checkbox" id="dl-all"> <span data-i18n="dl.select_all">Selecionar todas da lista</span></label>
+          <span class="dl-sel" id="dl-sel"></span>
+          <div class="field"><label for="dl-bulk-date" data-i18n="dl.bulk_date">Data para as selecionadas</label><input type="date" id="dl-bulk-date"></div>
+          <div class="dl-quick" id="dl-bulk-quick"></div>
+          <button type="button" class="btn btn-small" id="dl-apply" data-i18n="dl.apply">Aplicar data às selecionadas</button>
+          <button type="button" class="btn btn-danger btn-small" id="dl-freeze-sel" data-i18n="dl.freeze_selected">Congelar selecionadas</button>
+          <p class="dl-bulk-msg" id="dl-bulk-msg" role="status" aria-live="polite"></p>
+        </div>
+        <ul id="dl-list"></ul>
+      </section>
+      </div>
+
+      <div class="tabpanel" role="tabpanel" id="panel-horas"aria-labelledby="tab-horas" tabindex="-1" hidden>
         <section class="card h-weekbar" aria-labelledby="h-week-name">
           <div>
             <h2 class="h-week-name" id="h-week-name" data-i18n="h.time_log">Registro de horas</h2>
@@ -632,7 +681,7 @@
   };
 
   // ---------- language: same mechanism as the Home (index.html): ?lang=, then localStorage dcti_lang, then en-CA.
-  // Only the header, the Summary, the tab names and the Horas tab follow it; Tarefas and Reuniões stay in Portuguese.
+  // Only the header, the Summary, the tab names, the Prazos tab and the Horas tab follow it; Tarefas and Reuniões stay in Portuguese.
   var LANGS = ['en-CA', 'pt-BR'];
   var UI = {
     'lang.selector_label': { 'pt-BR': 'Idioma', 'en-CA': 'Language' },
@@ -666,6 +715,46 @@
     'tab.tarefas': { 'pt-BR': 'Tarefas', 'en-CA': 'Tasks' },
     'tab.horas': { 'pt-BR': 'Horas', 'en-CA': 'Hours' },
     'tab.reunioes': { 'pt-BR': 'Reuniões', 'en-CA': 'Meetings' },
+    'tab.prazos': { 'pt-BR': 'Prazos', 'en-CA': 'Deadlines' },
+    'dl.title': { 'pt-BR': 'Prazos', 'en-CA': 'Deadlines' },
+    'dl.hint': { 'pt-BR': 'Toda tarefa ativa precisa de prazo para entrar no cálculo do ciclo e da cor. Escolha a data: ela é salva na hora.', 'en-CA': 'Every active task needs a deadline to count in the cycle and the status colour. Pick a date: it is saved right away.' },
+    'dl.count_one': { 'pt-BR': '1 sem prazo', 'en-CA': '1 without a deadline' },
+    'dl.count_many': { 'pt-BR': '{n} sem prazo', 'en-CA': '{n} without a deadline' },
+    'dl.all_set': { 'pt-BR': 'Todas as tarefas ativas têm prazo.', 'en-CA': 'All active tasks have a deadline.' },
+    'dl.show_all': { 'pt-BR': 'Ver todas as ativas', 'en-CA': 'Show all active' },
+    'dl.show_missing': { 'pt-BR': 'Ver só sem prazo', 'en-CA': 'Show only without a deadline' },
+    'dl.none_missing': { 'pt-BR': 'Nenhuma tarefa ativa sem prazo.', 'en-CA': 'No active task without a deadline.' },
+    'dl.none': { 'pt-BR': 'Nenhuma tarefa ativa.', 'en-CA': 'No active task.' },
+    'dl.this_friday': { 'pt-BR': 'Esta sexta', 'en-CA': 'This Friday' },
+    'dl.next_friday': { 'pt-BR': 'Próxima sexta', 'en-CA': 'Next Friday' },
+    'dl.two_weeks': { 'pt-BR': '+2 semanas', 'en-CA': '+2 weeks' },
+    'dl.passed': { 'pt-BR': 'Esta sexta já passou', 'en-CA': 'This Friday has passed' },
+    'dl.deadline_of': { 'pt-BR': 'Prazo de {id}', 'en-CA': 'Deadline for {id}' },
+    'dl.shortcut_aria': { 'pt-BR': '{s} ({d}) para {id}', 'en-CA': '{s} ({d}) for {id}' },
+    'dl.select': { 'pt-BR': 'Selecionar {id}', 'en-CA': 'Select {id}' },
+    'dl.bulk_title': { 'pt-BR': 'Várias de uma vez', 'en-CA': 'Several at once' },
+    'dl.select_all': { 'pt-BR': 'Selecionar todas da lista', 'en-CA': 'Select all in the list' },
+    'dl.selected': { 'pt-BR': '{n} selecionada(s)', 'en-CA': '{n} selected' },
+    'dl.bulk_date': { 'pt-BR': 'Data para as selecionadas', 'en-CA': 'Date for the selected' },
+    'dl.apply': { 'pt-BR': 'Aplicar data às selecionadas', 'en-CA': 'Apply date to selected' },
+    'dl.freeze': { 'pt-BR': 'Congelar', 'en-CA': 'Freeze' },
+    'dl.freeze_aria': { 'pt-BR': 'Congelar {id}', 'en-CA': 'Freeze {id}' },
+    'dl.freeze_selected': { 'pt-BR': 'Congelar selecionadas', 'en-CA': 'Freeze selected' },
+    'dl.freeze_confirm': { 'pt-BR': 'Congelar {n} tarefa(s)? Elas saem das contas do painel até o status mudar de novo.', 'en-CA': 'Freeze {n} task(s)? They leave the dashboard counts until their status changes again.' },
+    'dl.saving': { 'pt-BR': 'Salvando…', 'en-CA': 'Saving…' },
+    'dl.saved': { 'pt-BR': 'Salvo às {t}.', 'en-CA': 'Saved at {t}.' },
+    'dl.saved_toast': { 'pt-BR': 'Prazo de {id} salvo.', 'en-CA': 'Deadline for {id} saved.' },
+    'dl.late': { 'pt-BR': 'Esta tarefa ficará atrasada.', 'en-CA': 'This task will be late.' },
+    'dl.late_many': { 'pt-BR': 'A data é anterior a hoje: estas tarefas ficarão atrasadas.', 'en-CA': 'The date is before today: these tasks will be late.' },
+    'dl.not_saved': { 'pt-BR': 'Não foi salvo. {e}', 'en-CA': 'Not saved. {e}' },
+    'dl.nothing_changed': { 'pt-BR': 'Nada foi alterado. {e}', 'en-CA': 'Nothing was changed. {e}' },
+    'dl.frozen_one': { 'pt-BR': 'Tarefa {id} congelada.', 'en-CA': 'Task {id} frozen.' },
+    'dl.updated': { 'pt-BR': '{n} tarefa(s) com prazo novo.', 'en-CA': '{n} task(s) with a new deadline.' },
+    'dl.frozen_many': { 'pt-BR': '{n} tarefa(s) congelada(s).', 'en-CA': '{n} task(s) frozen.' },
+    'dl.failed': { 'pt-BR': 'Falharam: {x}.', 'en-CA': 'Failed: {x}.' },
+    'dl.pick_date': { 'pt-BR': 'Escolha a data.', 'en-CA': 'Pick a date.' },
+    'dl.pick_tasks': { 'pt-BR': 'Selecione ao menos uma tarefa.', 'en-CA': 'Select at least one task.' },
+    'dl.applying': { 'pt-BR': 'Aplicando…', 'en-CA': 'Applying…' },
     'h.time_log': { 'pt-BR': 'Registro de horas', 'en-CA': 'Time log' },
     'h.week_name': { 'pt-BR': 'Semana {w} de {y}', 'en-CA': 'Week {w} of {y}' },
     'h.prev': { 'pt-BR': '← Anterior', 'en-CA': '← Previous' },
@@ -854,6 +943,7 @@
     resetMeeting();
     closeLogHours(true);
     resetHoras();
+    dlReset();
     $('result').hidden = true;
     clear($('result-body'));
     $('suggestions-error').textContent = '';
@@ -1378,6 +1468,7 @@
       renderTasks();
       renderForced();
       renderSummary();
+      dlRender();
       if (horas.loaded && !horas.form) hRender();   // English task titles in the notes need the task list
     }, function (err) {
       if (err.code === 'unauthorized') { signOut(messageFor(err)); return; }
@@ -1969,8 +2060,8 @@
     });
   }
 
-  // ---------- tabs: Tarefas / Horas / Reuniões. The active one is the URL hash, so it survives a reload.
-  var TABS = ['tarefas', 'horas', 'reunioes'];
+  // ---------- tabs: Tarefas / Prazos / Horas / Reuniões. The active one is the URL hash, so it survives a reload.
+  var TABS = ['tarefas', 'prazos', 'horas', 'reunioes'];
   function tabFromHash() {
     var h = String(window.location.hash || '').replace(/^#/, '').split('?')[0].toLowerCase();
     return TABS.indexOf(h) >= 0 ? h : 'tarefas';
@@ -2016,6 +2107,292 @@
     ev.preventDefault();
     goTab(next);
     $('tab-' + next).focus();
+  }
+
+  // ---------- Prazos: every active task (not done, frozen or dropped) needs a due date.
+  // Same routes as the Tarefas tab: update_task for one row, bulk_update for the selected ones. Nothing new on the server.
+  var DL_ORDER = { doing: 0, next: 1, blocked: 2, backlog: 3 };
+  var DL_MSG_EN = {
+    invalid_due_date: 'Invalid deadline.', invalid_status: 'Invalid status.', task_gone: 'This task no longer exists. The list was reloaded.',
+    too_many: 'Select at most 100 tasks at a time.', no_tasks: 'No task selected.', write_not_confirmed: 'The spreadsheet did not confirm the write. Reload the page and check.',
+    duplicate_id: 'There is more than one row with this code in the spreadsheet. Fix the spreadsheet first.'
+  };
+  var DL_REASON = { not_found: ['não encontrada', 'not found'], duplicate_id: ['código repetido na planilha', 'code repeated in the spreadsheet'] };
+  var dl = { all: false, selected: {}, keep: {}, lines: {}, saving: {}, pending: {}, timers: {}, busy: false };
+  function dlReset() {
+    Object.keys(dl.timers).forEach(function (id) { clearTimeout(dl.timers[id]); });
+    dl = { all: false, selected: {}, keep: {}, lines: {}, saving: {}, pending: {}, timers: {}, busy: false };
+    clear($('dl-list'));
+    $('dl-bulk-msg').textContent = '';
+    $('dl-bulk-date').value = '';
+  }
+  function dlFind(id) { return state.tasks.filter(function (t) { return t.task_id === id; })[0] || null; }
+  function dlPut(t) { state.tasks = state.tasks.map(function (x) { return x.task_id === t.task_id ? t : x; }); }
+  function dlMissing() { return state.tasks.filter(function (t) { return isOpen(t) && !t.due_date; }); }
+  function dlTitle(t) { return isEN() ? (t.title_en_CA || t.title_pt_BR) : (t.title_pt_BR || t.title_en_CA); }
+  function dlStatus(s) {
+    if (isEN()) return STATUS_EN[s] || s;
+    for (var i = 0; i < STATUS.length; i++) if (STATUS[i][0] === s) return STATUS[i][1];
+    return s;
+  }
+  function dlMsg(err) {
+    var code = err.code === 'not_found' ? 'task_gone' : err.code;
+    if (isEN() && DL_MSG_EN[code]) return DL_MSG_EN[code];
+    return MSG[code] || messageFor(err);
+  }
+  function dlValid(v) { return /^(20\d\d|2100)-\d{2}-\d{2}$/.test(v || ''); }   // ignores a half-typed year such as 0002
+  function addDays(ds, n) {
+    var p = ds.split('-').map(Number);
+    return new Date(Date.UTC(p[0], p[1] - 1, p[2] + n)).toISOString().slice(0, 10);
+  }
+  // Shortcuts only give future dates: "Esta sexta" is off from Friday on (today, Saturday and Sunday are not future Fridays of this week).
+  function dlShortcuts() {
+    var today = todaySP(), p = today.split('-').map(Number);
+    var dow = new Date(Date.UTC(p[0], p[1] - 1, p[2])).getUTCDay() || 7;   // Monday 1 … Sunday 7
+    var fri = addDays(today, 5 - dow);
+    return [['dl.this_friday', fri], ['dl.next_friday', addDays(fri, 7)], ['dl.two_weeks', addDays(today, 14)]]
+      .map(function (s) { return { key: s[0], date: s[1], ok: s[1] > today }; });
+  }
+  function dlVisible() {
+    var rank = function (t) { return Object.prototype.hasOwnProperty.call(DL_ORDER, t.status) ? DL_ORDER[t.status] : 9; };
+    return state.tasks.filter(function (t) { return isOpen(t) && (dl.all || !t.due_date || dl.keep[t.task_id]); })
+      .sort(function (a, b) { return (rank(a) - rank(b)) || byId(a, b); });
+  }
+  function dlRenderHead() {
+    var n = dlMissing().length, c = $('dl-count');
+    c.textContent = n ? (n === 1 ? T('dl.count_one') : T('dl.count_many', { n: n })) : T('dl.all_set');
+    c.classList.toggle('all-set', !n);
+    $('dl-toggle').textContent = T(dl.all ? 'dl.show_missing' : 'dl.show_all');
+  }
+  function dlRenderBulk() {
+    var shown = dlVisible().map(function (t) { return t.task_id; });
+    var n = Object.keys(dl.selected).length;
+    var all = $('dl-all');
+    all.checked = shown.length > 0 && n === shown.length;
+    all.indeterminate = n > 0 && n < shown.length;
+    all.disabled = dl.busy || !shown.length;
+    $('dl-sel').textContent = T('dl.selected', { n: n });
+    $('dl-apply').disabled = dl.busy || !n;
+    $('dl-freeze-sel').disabled = dl.busy || !n;
+    $('dl-apply').textContent = dl.busy ? T('dl.applying') : T('dl.apply');
+    var q = $('dl-bulk-quick');
+    clear(q);
+    dlShortcuts().forEach(function (s) {
+      var b = el('button', 'btn btn-quiet btn-small', T(s.key));
+      b.type = 'button';
+      b.disabled = dl.busy || !s.ok;
+      b.title = s.ok ? fmtDateL(s.date) : T('dl.passed');
+      b.addEventListener('click', function () { $('dl-bulk-date').value = s.date; });
+      q.appendChild(b);
+    });
+  }
+  function dlRender() {
+    dlRenderHead();
+    var shown = dlVisible(), vis = {};
+    shown.forEach(function (t) { vis[t.task_id] = true; });
+    Object.keys(dl.selected).forEach(function (id) { if (!vis[id]) delete dl.selected[id]; });
+    var list = $('dl-list');
+    clear(list);
+    if (!shown.length) list.appendChild(el('li', 'empty', T(dl.all ? 'dl.none' : 'dl.none_missing')));
+    shown.forEach(function (t) { list.appendChild(dlRow(t)); });
+    dlRenderBulk();
+  }
+  function dlRow(t) {
+    var id = t.task_id;
+    var li = el('li', 'dl-row ' + statusClass(t.status));
+    li.setAttribute('data-dl', id);
+    var pick = el('input');
+    pick.type = 'checkbox';
+    pick.checked = !!dl.selected[id];
+    pick.disabled = dl.busy;
+    pick.setAttribute('aria-label', T('dl.select', { id: id }));
+    pick.addEventListener('change', function () { if (pick.checked) dl.selected[id] = true; else delete dl.selected[id]; dlRenderBulk(); });
+    li.appendChild(pick);
+    var main = el('div');
+    var head = el('div', 'task-head');
+    head.appendChild(el('span', 'item-id', id));
+    head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), dlStatus(t.status)));
+    main.appendChild(head);
+    main.appendChild(el('p', 'item-title', dlTitle(t)));
+    li.appendChild(main);
+    var ctr = el('div', 'dl-controls');
+    var inp = el('input');
+    inp.type = 'date';
+    inp.id = 'dl-due-' + id;
+    inp.value = t.due_date || '';
+    inp.disabled = dl.busy;
+    inp.setAttribute('aria-label', T('dl.deadline_of', { id: id }));
+    inp.addEventListener('change', function () {
+      clearTimeout(dl.timers[id]);
+      if (!dlValid(inp.value)) return;   // still typing, or cleared: nothing is saved
+      dl.timers[id] = setTimeout(function () { dlSave(id, inp.value); }, 700);
+    });
+    inp.addEventListener('blur', function () {
+      if (dlValid(inp.value)) return;
+      clearTimeout(dl.timers[id]);
+      var cur = dlFind(id);
+      inp.value = cur ? cur.due_date || '' : '';   // a cleared or half-typed date goes back to the saved one
+    });
+    ctr.appendChild(inp);
+    dlShortcuts().forEach(function (s) {
+      var b = el('button', 'btn btn-quiet btn-small', T(s.key));
+      b.type = 'button';
+      b.disabled = dl.busy || !s.ok;
+      b.title = s.ok ? fmtDateL(s.date) : T('dl.passed');
+      b.setAttribute('aria-label', T('dl.shortcut_aria', { s: T(s.key), d: fmtDateL(s.date), id: id }));
+      b.addEventListener('click', function () { inp.value = s.date; dlSave(id, s.date); });
+      ctr.appendChild(b);
+    });
+    var fz = el('button', 'btn btn-danger btn-small', T('dl.freeze'));
+    fz.type = 'button';
+    fz.disabled = dl.busy || !!dl.saving[id];
+    fz.setAttribute('aria-label', T('dl.freeze_aria', { id: id }));
+    fz.addEventListener('click', function () { dlFreeze(id); });
+    ctr.appendChild(fz);
+    li.appendChild(ctr);
+    var line = el('p', 'dl-line');
+    line.id = 'dl-line-' + id;
+    li.appendChild(line);
+    dlPaintLine(id, line);
+    return li;
+  }
+  // The row line is updated in place, so the focus stays on the date field.
+  function dlPaintLine(id, node) {
+    var p = node || $('dl-line-' + id), l = dl.lines[id];
+    if (!p) return;
+    clear(p);
+    p.className = 'dl-line' + (l && l.kind ? ' ' + l.kind : '');
+    p.setAttribute('role', l && l.kind === 'fail' ? 'alert' : 'status');
+    if (!l) return;
+    p.appendChild(document.createTextNode(l.text));
+    if (l.warn) { p.appendChild(document.createTextNode(' ')); p.appendChild(el('span', 'dl-warn', l.warn)); }
+  }
+  function dlLine(id, kind, text, warn) { dl.lines[id] = { kind: kind, text: text, warn: warn || '' }; dlPaintLine(id); }
+  function dlFreezeBtn(id, disabled) {
+    var row = document.querySelector('[data-dl="' + id + '"] .btn-danger');
+    if (row) row.disabled = disabled;
+  }
+  // Keeps the Tarefas tab and the Summary in step with what changed here.
+  function dlSynced() {
+    dlRenderHead();
+    renderFilters();
+    renderTasks();
+    renderSummary();
+  }
+  function dlSave(id, v) {
+    clearTimeout(dl.timers[id]);
+    var cur = dlFind(id);
+    if (!cur || !dlValid(v) || dl.busy) return;
+    if (dl.saving[id]) { dl.pending[id] = v; return; }
+    if (v === cur.due_date) return;
+    dl.saving[id] = true;
+    dl.keep[id] = true;   // stays on the list (even with the "Sem prazo" filter) so the confirmation can be seen
+    dlFreezeBtn(id, true);
+    dlLine(id, '', T('dl.saving'));
+    api({ action: 'update_task', task_id: id, changes: { due_date: v } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      delete dl.saving[id];
+      dlPut(data.task);
+      dlLine(id, 'ok', T('dl.saved', { t: timeNow() }), data.task.due_date < todaySP() ? T('dl.late') : '');
+      dlFreezeBtn(id, false);
+      dlSynced();
+      toast(T('dl.saved_toast', { id: id }));
+      dlNext(id);
+    }, function (err) {
+      delete dl.saving[id];
+      delete dl.pending[id];
+      if (err.code === 'unauthorized') { signOut(messageFor(err)); return; }
+      var old = dlFind(id), inp = $('dl-due-' + id);
+      if (inp && old) inp.value = old.due_date || '';   // the old value stays
+      dlLine(id, 'fail', T('dl.not_saved', { e: dlMsg(err) }));
+      dlFreezeBtn(id, false);
+      if (err.code === 'not_found') loadTasks(false);
+    });
+  }
+  function dlNext(id) {
+    if (!Object.prototype.hasOwnProperty.call(dl.pending, id)) return;
+    var v = dl.pending[id];
+    delete dl.pending[id];
+    dlSave(id, v);
+  }
+  function dlFreeze(id) {
+    if (dl.saving[id] || dl.busy || !dlFind(id)) return;
+    clearTimeout(dl.timers[id]);
+    dl.saving[id] = true;
+    dlFreezeBtn(id, true);
+    dlLine(id, '', T('dl.saving'));
+    api({ action: 'update_task', task_id: id, changes: { status: 'frozen' } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
+      delete dl.saving[id];
+      dlPut(data.task);
+      delete dl.keep[id]; delete dl.selected[id]; delete dl.lines[id];
+      dlRender();
+      dlSynced();
+      toast(T('dl.frozen_one', { id: id }));
+      $('dl-title').focus();
+    }, function (err) {
+      delete dl.saving[id];
+      if (err.code === 'unauthorized') { signOut(messageFor(err)); return; }
+      dlLine(id, 'fail', T('dl.not_saved', { e: dlMsg(err) }));
+      dlFreezeBtn(id, false);
+      if (err.code === 'not_found') loadTasks(false);
+    });
+  }
+  function dlBulk(kind) {
+    var msg = $('dl-bulk-msg');
+    msg.textContent = '';
+    var ids = Object.keys(dl.selected).filter(dlFind);
+    if (dl.busy) return;
+    if (!ids.length) { msg.textContent = T('dl.pick_tasks'); return; }
+    if (ids.length > BULK_MAX) { msg.textContent = dlMsg({ code: 'too_many' }); return; }
+    var changes;
+    if (kind === 'date') {
+      var v = $('dl-bulk-date').value;
+      if (!dlValid(v)) { msg.textContent = T('dl.pick_date'); $('dl-bulk-date').focus(); return; }
+      changes = { due_date: v };
+    } else {
+      if (!window.confirm(T('dl.freeze_confirm', { n: ids.length }))) return;
+      changes = { status: 'frozen' };
+    }
+    dl.busy = true;
+    dlRender();
+    msg.textContent = T('dl.applying');
+    api({ action: 'bulk_update', task_ids: ids, changes: changes }, BULK_TIMEOUT, ADMIN_API).then(function (data) {
+      dl.busy = false;
+      (Array.isArray(data.tasks) ? data.tasks : []).forEach(dlPut);
+      var results = Array.isArray(data.results) ? data.results : [];
+      var ok = results.filter(function (r) { return r.ok; }).map(function (r) { return r.task_id; });
+      var failed = results.filter(function (r) { return !r.ok; });
+      var when = T('dl.saved', { t: timeNow() });
+      var late = kind === 'date' && changes.due_date < todaySP();
+      ok.forEach(function (id) {
+        delete dl.selected[id];
+        if (kind === 'date') { dl.keep[id] = true; dl.lines[id] = { kind: 'ok', text: when, warn: late ? T('dl.late') : '' }; }
+        else { delete dl.keep[id]; delete dl.lines[id]; }
+      });
+      var text = ok.length ? T(kind === 'date' ? 'dl.updated' : 'dl.frozen_many', { n: ok.length }) : '';
+      if (late && ok.length) text += ' ' + T('dl.late_many');
+      if (failed.length) text += (text ? ' ' : '') + T('dl.failed', { x: failed.map(function (r) { var w = DL_REASON[r.error]; return r.task_id + ' (' + (w ? w[isEN() ? 1 : 0] : r.error) + ')'; }).join(', ') });
+      dlRender();
+      dlSynced();
+      msg.textContent = text;
+      toast(text);
+    }, function (err) {
+      dl.busy = false;
+      if (err.code === 'unauthorized') { signOut(messageFor(err)); return; }
+      dlRender();
+      msg.textContent = T('dl.nothing_changed', { e: dlMsg(err) });
+    });
+  }
+  function initPrazos() {
+    $('dl-toggle').addEventListener('click', function () { dl.all = !dl.all; dl.keep = {}; dlRender(); });
+    $('dl-all').addEventListener('change', function () {
+      var on = $('dl-all').checked;
+      dl.selected = {};
+      if (on) dlVisible().forEach(function (t) { dl.selected[t.task_id] = true; });
+      [].forEach.call(document.querySelectorAll('#dl-list .dl-row > input[type="checkbox"]'), function (c) { c.checked = on; });
+      dlRenderBulk();
+    });
+    $('dl-apply').addEventListener('click', function () { dlBulk('date'); });
+    $('dl-freeze-sel').addEventListener('click', function () { dlBulk('freeze'); });
   }
 
   // ---------- Horas (workflow timelog). Same password as the admin: the timelog checks it in X-Timelog-Key
@@ -2593,6 +2970,7 @@
     });
     if ($('login-btn').disabled) $('login-btn').textContent = T('login.checking');
     if (state.tasks.length || state.panel) renderSummary();
+    if (state.tasks.length) dlRender();
     hRenderWeekBar();
     if (horas.loaded) hRender();
   }
@@ -2660,6 +3038,7 @@
     });
     normalizeUrl();
     initHoras();
+    initPrazos();
     initLang();
     TABS.forEach(function (t) {
       $('tab-' + t).addEventListener('click', function () { goTab(t); });
