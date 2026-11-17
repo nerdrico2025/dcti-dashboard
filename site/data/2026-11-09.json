@@ -282,15 +282,15 @@
   "snapshot": {
     "snapshot_date": "2026-11-17",
     "week_start": "2026-11-09",
-    "executing_text_en_CA": "No activities were logged this week.\nIn progress: content agent structure and flow, to present to Scott and Panorea.\nIn progress: Scott and Mauricio defining the LLM-driven newsletter and the LinkedIn group.",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: estrutura e fluxo do agente de conteúdo, para apresentar ao Scott e à Panorea.\nEm andamento: Scott e Mauricio definindo a newsletter automática por LLM e o grupo no LinkedIn.",
-    "how_its_going_status": "Green",
-    "how_its_going_text_en_CA": "Green: all 22 cycle tasks are done, with none late or blocked.",
-    "how_its_going_text_pt_BR": "Verde: as 22 tarefas do ciclo estão concluídas, sem nenhuma atrasada ou bloqueada.",
-    "what_to_change_text_en_CA": "Connect data sources for stages without data, such as white paper downloads and newsletter signups.\nSet weekly targets for the funnel lines; all are Gray because none has a target.\n7 of 8 pillar items are not tracked yet; add tracking.",
-    "what_to_change_text_pt_BR": "Conectar fontes de dados às etapas sem dados, como downloads de white paper e inscrições na newsletter.\nDefinir metas semanais para as linhas do funil; todas estão Cinza porque nenhuma tem meta.\n7 de 8 itens dos pilares ainda não têm acompanhamento; incluir o acompanhamento.",
-    "needs_from_team_en_CA": "Scott: grant access to the Change View folders, due November 20.\nMauricio: confirm how to reach ProSci or change-management certified people on LinkedIn, due November 20.",
-    "needs_from_team_pt_BR": "Scott: liberar o acesso às pastas do Change View, prazo 20 de novembro.\nMauricio: confirmar como alcançar pessoas com certificação ProSci ou de gestão de mudança no LinkedIn, prazo 20 de novembro.",
+    "executing_text_en_CA": "No activities were logged this week.\nTasks in progress include STL-02, STL-03 and STL-10.",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nTarefas em andamento incluem STL-02, STL-03 e STL-10.",
+    "how_its_going_status": "Yellow",
+    "how_its_going_text_en_CA": "Yellow: 72.5% of the cycle's tasks are done, with 11 late and 2 blocked.\nNo weekly targets are set for the funnel lines, so none can be compared.",
+    "how_its_going_text_pt_BR": "Amarelo: 72,5% das tarefas do ciclo estão concluídas, com 11 atrasadas e 2 bloqueadas.\nNão há metas semanais definidas para as linhas do funil, então nenhuma pode ser comparada.",
+    "what_to_change_text_en_CA": "Unblock FND-02 and AUD-02, the two blocked tasks.\nFinish the late STL Lab tasks STL-02, STL-03 and STL-10 first.\nConnect data sources for the funnel stages still without data.",
+    "what_to_change_text_pt_BR": "Destravar FND-02 e AUD-02, as duas tarefas bloqueadas.\nConcluir primeiro as tarefas atrasadas do STL Lab: STL-02, STL-03 e STL-10.\nConectar fontes de dados para as etapas do funil ainda sem dados.",
+    "needs_from_team_en_CA": "Scott: confirm ad account, billing and budget split (FND-02, due October 7).\nBoard, Maurício, Panorea and Scott: deliver the network exports (AUD-02, due November 25).\nMaurício: publish the STL Lab page (STL-03, due October 14).",
+    "needs_from_team_pt_BR": "Scott: confirmar conta de anúncios, faturamento e divisão de orçamento (FND-02, prazo 7 de outubro).\nBoard, Maurício, Panorea e Scott: entregar as exportações das redes (AUD-02, prazo 25 de novembro).\nMaurício: publicar a página do STL Lab (STL-03, prazo 14 de outubro).",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-09"
   },
   "kpi": {
@@ -302,49 +302,77 @@
       "yellow_min_pct": 70,
       "review_alert_days": 3
     },
-    "how_its_going_status": "Green",
+    "how_its_going_status": "Yellow",
     "tasks": {
       "base_date": "2026-11-17",
       "cycle_end": "2026-11-15",
       "cycle": {
-        "done": 22,
-        "total": 22,
-        "pct": 100
+        "done": 29,
+        "total": 40,
+        "pct": 72.5
       },
       "gtm_original": {
-        "done": 3,
-        "expected": 3,
-        "total": 3,
-        "done_pct": 100,
-        "expected_pct": 100,
-        "diff_points": 0
+        "done": 11,
+        "expected": 21,
+        "total": 26,
+        "done_pct": 42.3,
+        "expected_pct": 80.8,
+        "diff_points": -38.5
       },
       "meeting_tasks": {
-        "added": 41,
-        "done": 19
+        "added": 42,
+        "done": 20
       },
-      "late_count": 0,
-      "blocked_count": 0,
+      "late_count": 11,
+      "blocked_count": 2,
       "late_gates": [],
       "funnel_pct": null,
       "executing": {
         "this_week": [
+          "STL-02",
+          "STL-03",
+          "STL-10",
           "REU-1006-09",
           "REU-1006-10",
           "REU-1014-04",
           "REU-1103-02"
         ],
         "next_week": [
+          "CMP-04",
           "REU-1020-04",
           "REU-1103-06",
           "REU-1103-09",
           "REU-1103-11",
           "REU-1103-12",
-          "M1110-03"
+          "M1110-03",
+          "MAN-CNT-001",
+          "MAN-CNT-002"
         ]
       },
-      "to_change": [],
+      "to_change": [
+        "FND-02",
+        "FND-05",
+        "CNT-05",
+        "CMP-04",
+        "CMP-05",
+        "AUD-02",
+        "STL-02",
+        "STL-03",
+        "STL-04",
+        "STL-10",
+        "STL-12",
+        "STL-15"
+      ],
       "team_needs": [
+        {
+          "person": "Board",
+          "tasks": [
+            {
+              "task_id": "AUD-02",
+              "due_date": "2026-11-25"
+            }
+          ]
+        },
         {
           "person": "Mauricio",
           "tasks": [
@@ -359,8 +387,46 @@
           ]
         },
         {
+          "person": "Maurício",
+          "tasks": [
+            {
+              "task_id": "AUD-02",
+              "due_date": "2026-11-25"
+            },
+            {
+              "task_id": "STL-03",
+              "due_date": "2026-10-14"
+            }
+          ]
+        },
+        {
+          "person": "Panorea",
+          "tasks": [
+            {
+              "task_id": "AUD-02",
+              "due_date": "2026-11-25"
+            }
+          ]
+        },
+        {
           "person": "Scott",
           "tasks": [
+            {
+              "task_id": "FND-02",
+              "due_date": "2026-10-07"
+            },
+            {
+              "task_id": "AUD-02",
+              "due_date": "2026-11-25"
+            },
+            {
+              "task_id": "STL-02",
+              "due_date": "2026-10-07"
+            },
+            {
+              "task_id": "STL-10",
+              "due_date": "2026-10-28"
+            },
             {
               "task_id": "REU-1006-09",
               "due_date": "2026-11-20"
@@ -380,11 +446,103 @@
             {
               "task_id": "REU-1103-12",
               "due_date": "2026-11-20"
+            },
+            {
+              "task_id": "MAN-CNT-001",
+              "due_date": "2026-11-27"
+            },
+            {
+              "task_id": "MAN-CNT-002",
+              "due_date": "2026-11-20"
             }
           ]
         }
       ],
       "items": {
+        "FND-02": {
+          "title_en_CA": "Confirm the ad account, billing and the suggested 70 / 30 budget split",
+          "title_pt_BR": "Confirmar a conta de anúncios, o faturamento e a divisão sugerida de orçamento 70 / 30",
+          "due_date": "2026-10-07",
+          "status": "blocked",
+          "change_note": ""
+        },
+        "FND-05": {
+          "title_en_CA": "Adjust the White Paper landing page after the initial review",
+          "title_pt_BR": "Ajustar a landing page do White Paper após a revisão inicial",
+          "due_date": "2026-10-21",
+          "status": "backlog",
+          "change_note": ""
+        },
+        "CNT-05": {
+          "title_en_CA": "Content bank 2/3 — write the remaining 5–6 posts; select the webinar segments to cut",
+          "title_pt_BR": "Banco de conteúdo 2/3: escrever os 5–6 posts restantes; selecionar os trechos de webinar a cortar",
+          "due_date": "2026-10-21",
+          "status": "backlog",
+          "change_note": ""
+        },
+        "CMP-04": {
+          "title_en_CA": "Phase 1 branding campaign goes live (LinkedIn native targeting)",
+          "title_pt_BR": "Campanha de branding da Fase 1 entra no ar (segmentação nativa do LinkedIn)",
+          "due_date": "2026-11-04",
+          "status": "next",
+          "change_note": ""
+        },
+        "CMP-05": {
+          "title_en_CA": "Produce the Phase 2 creative set (White Paper offer)",
+          "title_pt_BR": "Produzir o conjunto de criativos da Fase 2 (oferta do White Paper)",
+          "due_date": "2026-11-04",
+          "status": "backlog",
+          "change_note": ""
+        },
+        "AUD-02": {
+          "title_en_CA": "Exports delivered by the nominated networks",
+          "title_pt_BR": "Exportações entregues pelas redes indicadas",
+          "due_date": "2026-11-25",
+          "status": "blocked",
+          "change_note": ""
+        },
+        "STL-02": {
+          "title_en_CA": "Fix the public dates for the Lab sessions (taster and half-day)",
+          "title_pt_BR": "Definir as datas públicas das sessões do Lab (taster e meio período)",
+          "due_date": "2026-10-07",
+          "status": "doing",
+          "change_note": ""
+        },
+        "STL-03": {
+          "title_en_CA": "Publish the STL Lab page: dated sessions, email capture, Zoho tag",
+          "title_pt_BR": "Publicar a página do STL Lab: sessões com data, captura de e-mail e tag no Zoho",
+          "due_date": "2026-10-14",
+          "status": "doing",
+          "change_note": ""
+        },
+        "STL-04": {
+          "title_en_CA": "Start the tier-1 target list (30 European corporate universities)",
+          "title_pt_BR": "Iniciar a lista-alvo tier 1 (30 universidades corporativas europeias)",
+          "due_date": "2026-10-14",
+          "status": "backlog",
+          "change_note": ""
+        },
+        "STL-10": {
+          "title_en_CA": "Define the taster: format, dates (W8–W10), registration page, SHRM plan",
+          "title_pt_BR": "Definir o taster: formato, datas (W8–W10), página de inscrição e plano SHRM",
+          "due_date": "2026-10-28",
+          "status": "doing",
+          "change_note": ""
+        },
+        "STL-12": {
+          "title_en_CA": "Fix the taster dates; publish the registration on the STL page",
+          "title_pt_BR": "Definir as datas do taster; publicar a inscrição na página do STL",
+          "due_date": "2026-11-04",
+          "status": "backlog",
+          "change_note": ""
+        },
+        "STL-15": {
+          "title_en_CA": "Register the taster in the SHRM programme database",
+          "title_pt_BR": "Registrar o taster na base de programas da SHRM",
+          "due_date": "2026-11-11",
+          "status": "backlog",
+          "change_note": ""
+        },
         "REU-1006-09": {
           "title_en_CA": "Scott: ask 10–20 people in his network for their LinkedIn contacts file",
           "title_pt_BR": "Scott: pedir o arquivo de contatos do LinkedIn a 10 a 20 pessoas da rede dele",
@@ -454,9 +612,23 @@
           "due_date": "2026-11-20",
           "status": "next",
           "change_note": ""
+        },
+        "MAN-CNT-001": {
+          "title_en_CA": "Review press releases created",
+          "title_pt_BR": "Revisar os press releases criados",
+          "due_date": "2026-11-27",
+          "status": "next",
+          "change_note": ""
+        },
+        "MAN-CNT-002": {
+          "title_en_CA": "Review weekly post for Linkedin",
+          "title_pt_BR": "Revisar o post semanal para Linkedin",
+          "due_date": "2026-11-20",
+          "status": "next",
+          "change_note": ""
         }
       },
-      "auto_color": "Green",
+      "auto_color": "Yellow",
       "forced_color": null,
       "forced_reason": null
     },
