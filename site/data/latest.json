@@ -280,17 +280,17 @@
     }
   ],
   "snapshot": {
-    "snapshot_date": "2026-11-16",
+    "snapshot_date": "2026-11-17",
     "week_start": "2026-11-09",
-    "executing_text_en_CA": "No activities were logged this week.\nIn progress: automated weekly GTM dashboard.\nIn progress: content agent structure and flow (Red, Blue, Yellow).",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: painel semanal automatizado do GTM.\nEm andamento: estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow).",
+    "executing_text_en_CA": "No activities were logged this week.\nIn progress: content agent structure and flow, to present to Scott and Panorea.\nIn progress: Scott and Mauricio defining the LLM-driven newsletter and the LinkedIn group.",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: estrutura e fluxo do agente de conteúdo, para apresentar ao Scott e à Panorea.\nEm andamento: Scott e Mauricio definindo a newsletter automática por LLM e o grupo no LinkedIn.",
     "how_its_going_status": "Green",
-    "how_its_going_text_en_CA": "Green: 21 of 21 cycle tasks are done, with none late or blocked.\nMany funnel stages have no data yet, including all Sale (revenue) lines.",
-    "how_its_going_text_pt_BR": "Verde: 21 de 21 tarefas do ciclo concluídas, nenhuma atrasada ou bloqueada.\nVárias etapas do funil ainda não têm dados, incluindo todas as linhas de Sale (revenue).",
-    "what_to_change_text_en_CA": "Connect a data source for white paper downloads and newsletter signups. No product has data.\nAdd Demo/Trial request tracking for STL Course and AI Transformation. There is no data yet.\nSet weekly targets for funnel stages. Without targets, every line shows Gray.",
-    "what_to_change_text_pt_BR": "Conectar uma fonte de dados para downloads de white paper e inscrições na newsletter. Nenhum produto tem dados.\nAdicionar o acompanhamento de Demo/Trial request para STL Course e AI Transformation. Ainda não há dados.\nDefinir metas semanais para as etapas do funil. Sem metas, todas as linhas ficam em Cinza.",
-    "needs_from_team_en_CA": "",
-    "needs_from_team_pt_BR": "",
+    "how_its_going_text_en_CA": "Green: all 22 cycle tasks are done, with none late or blocked.",
+    "how_its_going_text_pt_BR": "Verde: as 22 tarefas do ciclo estão concluídas, sem nenhuma atrasada ou bloqueada.",
+    "what_to_change_text_en_CA": "Connect data sources for stages without data, such as white paper downloads and newsletter signups.\nSet weekly targets for the funnel lines; all are Gray because none has a target.\n7 of 8 pillar items are not tracked yet; add tracking.",
+    "what_to_change_text_pt_BR": "Conectar fontes de dados às etapas sem dados, como downloads de white paper e inscrições na newsletter.\nDefinir metas semanais para as linhas do funil; todas estão Cinza porque nenhuma tem meta.\n7 de 8 itens dos pilares ainda não têm acompanhamento; incluir o acompanhamento.",
+    "needs_from_team_en_CA": "Scott: grant access to the Change View folders, due November 20.\nMauricio: confirm how to reach ProSci or change-management certified people on LinkedIn, due November 20.",
+    "needs_from_team_pt_BR": "Scott: liberar o acesso às pastas do Change View, prazo 20 de novembro.\nMauricio: confirmar como alcançar pessoas com certificação ProSci ou de gestão de mudança no LinkedIn, prazo 20 de novembro.",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-09"
   },
   "kpi": {
@@ -304,11 +304,11 @@
     },
     "how_its_going_status": "Green",
     "tasks": {
-      "base_date": "2026-11-16",
+      "base_date": "2026-11-17",
       "cycle_end": "2026-11-15",
       "cycle": {
-        "done": 21,
-        "total": 21,
+        "done": 22,
+        "total": 22,
         "pct": 100
       },
       "gtm_original": {
@@ -320,8 +320,8 @@
         "diff_points": 0
       },
       "meeting_tasks": {
-        "added": 43,
-        "done": 18
+        "added": 41,
+        "done": 19
       },
       "late_count": 0,
       "blocked_count": 0,
@@ -331,10 +331,15 @@
         "this_week": [
           "REU-1006-09",
           "REU-1006-10",
-          "REU-1020-07",
+          "REU-1014-04",
           "REU-1103-02"
         ],
         "next_week": [
+          "REU-1020-04",
+          "REU-1103-06",
+          "REU-1103-09",
+          "REU-1103-11",
+          "REU-1103-12",
           "M1110-03"
         ]
       },
@@ -345,7 +350,11 @@
           "tasks": [
             {
               "task_id": "REU-1006-10",
-              "due_date": ""
+              "due_date": "2026-11-20"
+            },
+            {
+              "task_id": "REU-1014-04",
+              "due_date": "2026-11-20"
             }
           ]
         },
@@ -354,11 +363,23 @@
           "tasks": [
             {
               "task_id": "REU-1006-09",
-              "due_date": ""
+              "due_date": "2026-11-20"
             },
             {
               "task_id": "REU-1006-10",
-              "due_date": ""
+              "due_date": "2026-11-20"
+            },
+            {
+              "task_id": "REU-1020-04",
+              "due_date": "2026-11-20"
+            },
+            {
+              "task_id": "REU-1103-11",
+              "due_date": "2026-11-20"
+            },
+            {
+              "task_id": "REU-1103-12",
+              "due_date": "2026-11-20"
             }
           ]
         }
@@ -367,35 +388,70 @@
         "REU-1006-09": {
           "title_en_CA": "Scott: ask 10–20 people in his network for their LinkedIn contacts file",
           "title_pt_BR": "Scott: pedir o arquivo de contatos do LinkedIn a 10 a 20 pessoas da rede dele",
-          "due_date": "",
+          "due_date": "2026-11-20",
           "status": "doing",
           "change_note": ""
         },
         "REU-1006-10": {
           "title_en_CA": "Scott and Mauricio: define the LLM-driven newsletter and the LinkedIn group",
           "title_pt_BR": "Scott e Mauricio: definir a newsletter automática por LLM e o grupo no LinkedIn",
-          "due_date": "",
+          "due_date": "2026-11-20",
           "status": "doing",
           "change_note": ""
         },
-        "REU-1020-07": {
-          "title_en_CA": "Build the automated weekly GTM dashboard",
-          "title_pt_BR": "Construir o painel semanal automatizado do GTM",
-          "due_date": "",
+        "REU-1014-04": {
+          "title_en_CA": "Check with Mauricio how to reach people with ProSci or change-management certifications on LinkedIn",
+          "title_pt_BR": "Verificar com o Mauricio como alcançar pessoas com certificação ProSci ou de gestão de mudança no LinkedIn",
+          "due_date": "2026-11-20",
           "status": "doing",
+          "change_note": ""
+        },
+        "REU-1020-04": {
+          "title_en_CA": "Scott: grant access to the Change View folders",
+          "title_pt_BR": "Scott: liberar o acesso às pastas do Change View",
+          "due_date": "2026-11-20",
+          "status": "next",
           "change_note": ""
         },
         "REU-1103-02": {
           "title_en_CA": "Content agent structure and flow (Red, Blue, Yellow) to present to Scott and Panorea",
           "title_pt_BR": "Estrutura e fluxo do agente de conteúdo (Red, Blue, Yellow) para apresentar ao Scott e à Panorea",
-          "due_date": "",
+          "due_date": "2026-11-20",
           "status": "doing",
+          "change_note": ""
+        },
+        "REU-1103-06": {
+          "title_en_CA": "Monthly report: region, segment and 3 source buckets",
+          "title_pt_BR": "Relatório mensal: região, segmento e 3 baldes de fonte",
+          "due_date": "2026-11-20",
+          "status": "next",
+          "change_note": ""
+        },
+        "REU-1103-09": {
+          "title_en_CA": "Visibility plan with Prosci, IMD and SHRM",
+          "title_pt_BR": "Plano de visibilidade com Prosci, IMD e SHRM",
+          "due_date": "2026-11-27",
+          "status": "next",
+          "change_note": ""
+        },
+        "REU-1103-11": {
+          "title_en_CA": "Build the journalist list",
+          "title_pt_BR": "Montar a lista de jornalistas",
+          "due_date": "2026-11-20",
+          "status": "next",
+          "change_note": ""
+        },
+        "REU-1103-12": {
+          "title_en_CA": "Align with Scott on the agentic-process idea and send a full video before taking it to Mauricio",
+          "title_pt_BR": "Alinhar com o Scott a ideia dos processos agênticos e enviar um vídeo completo antes de levar ao Mauricio",
+          "due_date": "2026-11-20",
+          "status": "next",
           "change_note": ""
         },
         "M1110-03": {
           "title_en_CA": "Prepare one strategic blog article for Google",
           "title_pt_BR": "Preparar um artigo estratégico para o blog, voltado ao Google",
-          "due_date": "",
+          "due_date": "2026-11-20",
           "status": "next",
           "change_note": ""
         }
@@ -1071,28 +1127,6 @@
       "AI Transformation / Demo/Trial request",
       "AI Transformation / Sale (revenue)"
     ],
-    "collection": {
-      "stages_without_source": [
-        "ISRA / Site visits",
-        "ISRA / White paper download",
-        "ISRA / Newsletter signup",
-        "ISRA / Product page view",
-        "ISRA / Demo/Trial request",
-        "ISRA / Sale (revenue)",
-        "STL Course / Site visits",
-        "STL Course / White paper download",
-        "STL Course / Newsletter signup",
-        "STL Course / Product page view",
-        "STL Course / Demo/Trial request",
-        "STL Course / Sale (revenue)",
-        "AI Transformation / Site visits",
-        "AI Transformation / White paper download",
-        "AI Transformation / Newsletter signup",
-        "AI Transformation / Product page view",
-        "AI Transformation / Demo/Trial request",
-        "AI Transformation / Sale (revenue)"
-      ],
-      "failures": []
-    }
+    "collection": null
   }
 }
