@@ -282,15 +282,15 @@
   "snapshot": {
     "snapshot_date": "2026-11-19",
     "week_start": "2026-11-09",
-    "executing_text_en_CA": "No activities were logged this week.\nIn progress: publishing the STL Lab page (STL-03).\nIn progress: defining the taster (STL-10).",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: publicação da página do STL Lab (STL-03).\nEm andamento: definição do taster (STL-10).",
+    "executing_text_en_CA": "No activities or team notes were logged this week.\nSix tasks are in progress, such as the STL Lab page (STL-03).",
+    "executing_text_pt_BR": "Nenhuma atividade ou nota da equipe foi registrada nesta semana.\nSeis tarefas estão em andamento, como a página do STL Lab (STL-03).",
     "how_its_going_status": "Yellow",
-    "how_its_going_text_en_CA": "Yellow: 30 of 33 cycle tasks are done, with 3 late and 1 blocked.\nNo weekly targets are set for the funnel lines, so they show Gray.",
-    "how_its_going_text_pt_BR": "Amarelo: 30 de 33 tarefas do ciclo estão concluídas, com 3 atrasadas e 1 bloqueada.\nNão há metas semanais definidas para as linhas do funil, por isso aparecem em cinza.",
-    "what_to_change_text_en_CA": "Unblock FND-02: ad account, billing and budget split are still unconfirmed.\nCMP-04 was due 4 November and is still listed as next.\nSTL-03 was due 14 October and is still in progress.",
-    "what_to_change_text_pt_BR": "Destravar o FND-02: conta de anúncios, faturamento e divisão de orçamento ainda não confirmados.\nO CMP-04 venceu em 4 de novembro e ainda consta como próximo.\nO STL-03 venceu em 14 de outubro e ainda está em andamento.",
-    "needs_from_team_en_CA": "Scott: confirm ad account, billing and budget split (FND-02), currently blocked.\nMaurício: finish the STL Lab page (STL-03), past its 14 October due date.",
-    "needs_from_team_pt_BR": "Scott: confirmar conta de anúncios, faturamento e divisão de orçamento (FND-02), atualmente bloqueado.\nMaurício: concluir a página do STL Lab (STL-03), com prazo de 14 de outubro vencido.",
+    "how_its_going_text_en_CA": "Yellow: 30 of 33 cycle tasks are done, with 3 late and 1 blocked.",
+    "how_its_going_text_pt_BR": "Amarelo: 30 de 33 tarefas do ciclo estão concluídas, com 3 atrasadas e 1 bloqueada.",
+    "what_to_change_text_en_CA": "Unblock FND-02: confirm the ad account, billing and budget split.\nReview the due dates of CMP-04, CMP-05 and STL-03, which are past due.\nConnect data sources for the 11 funnel stages with no data.",
+    "what_to_change_text_pt_BR": "Desbloquear a FND-02: confirmar a conta de anúncios, o faturamento e a divisão de orçamento.\nRever os prazos de CMP-04, CMP-05 e STL-03, que estão vencidos.\nConectar fontes de dados para as 11 etapas do funil sem dados.",
+    "needs_from_team_en_CA": "Scott: confirm the ad account, billing and budget split (FND-02, blocked).\nMaurício: publish the STL Lab page (STL-03), which is past due.",
+    "needs_from_team_pt_BR": "Scott: confirmar a conta de anúncios, o faturamento e a divisão de orçamento (FND-02, bloqueada).\nMaurício: publicar a página do STL Lab (STL-03), que está vencida.",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-09"
   },
   "kpi": {
@@ -321,7 +321,7 @@
       },
       "meeting_tasks": {
         "added": 57,
-        "done": 25
+        "done": 26
       },
       "late_count": 3,
       "blocked_count": 1,
@@ -352,7 +352,6 @@
           "M1117-06",
           "M1117-07",
           "M1117-08",
-          "M1117-09",
           "M1117-10",
           "M1117-12",
           "M1117-13",
@@ -428,10 +427,6 @@
             {
               "task_id": "M1117-08",
               "due_date": "2026-11-23"
-            },
-            {
-              "task_id": "M1117-09",
-              "due_date": "2026-11-19"
             },
             {
               "task_id": "M1117-10",
@@ -655,13 +650,6 @@
           "status": "next",
           "change_note": ""
         },
-        "M1117-09": {
-          "title_en_CA": "Reorganize delayed tasks on the dashboard and move paid traffic items to January",
-          "title_pt_BR": "Reorganizar as tarefas atrasadas no painel e mover o tráfego pago para janeiro",
-          "due_date": "2026-11-19",
-          "status": "next",
-          "change_note": ""
-        },
         "M1117-10": {
           "title_en_CA": "Build wireframe of webcasts on the STL Lab in January and February",
           "title_pt_BR": "Montar a estrutura de webcasts sobre o STL Lab em janeiro e fevereiro",
@@ -697,6 +685,15 @@
           "status": "next",
           "change_note": ""
         }
+      },
+      "summary": {
+        "active": 85,
+        "backlog": 18,
+        "next": 20,
+        "doing": 6,
+        "blocked": 1,
+        "late": 3,
+        "done": 40
       },
       "auto_color": "Yellow",
       "forced_color": null,
