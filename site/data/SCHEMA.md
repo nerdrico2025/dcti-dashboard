@@ -120,6 +120,7 @@ Calculado da aba `tasks`. A IA só redige a frase de "Como está" (primeira linh
 | `to_change` | array de task_id | `blocked`, atrasadas ou com `change_note` |
 | `team_needs` | `[{ person, tasks: [{ task_id, due_date }] }]` | `next`, `doing` ou `blocked` com responsável diferente de Rafael |
 | `items` | objeto por task_id: `{ title_en_CA, title_pt_BR, due_date, status, change_note }` | detalhes só das tarefas listadas |
+| `summary` | `{ active, backlog, next, doing, blocked, late, done }` (números) | bloco **Resumo** da Home (`site/resumo.js`, o mesmo da admin). `active` = todas menos `frozen` e `dropped` (inclui `done`); `late` = `late_count`. Só contagens: nenhum título, responsável ou hora. Semanas sem o campo não mostram o bloco. |
 
 - As listas têm só tarefas com `show_to_scott=yes`. As contas e a cor usam todas.
 - `how_its_going_status` (snapshot e kpi) = `forced_color`, ou `auto_color` quando não há cor forçada.
