@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; connect-src 'self'; img-src 'self' data:; base-uri 'none'; form-action 'none'">
 <meta name="referrer" content="no-referrer">
 <title>DCTI-Institute</title>
 <style>
@@ -92,6 +92,10 @@
     color: var(--muted); margin-bottom: 16px;
   }
   .card { background: var(--card); border-radius: var(--radius); box-shadow: var(--shadow); padding: var(--card-pad); }
+
+  /* summary band (resumo.js / resumo.css, same tiles as the admin), first block of the page */
+  .resumo-band { margin-top: 48px; }
+  .resumo-band .rs-grid { margin-top: 0; }
 
   /* strategy band: 3 columns */
   .strategy-band { margin-top: 48px; }
@@ -306,7 +310,7 @@
   @media (max-width: 600px) {
     .wrap { padding: 24px 16px 48px; }
     .site-header h1 { font-size: 1.625rem; }
-    .strategy-band { margin-top: 36px; }
+    .strategy-band, .resumo-band { margin-top: 36px; }
     .status-large { font-size: 1.25rem; }
     .needs-person { padding: 14px; }
     .pillars { grid-template-columns: 1fr; }
@@ -334,7 +338,7 @@
     .products { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     .status-large { font-size: 13pt !important; }
     .needs-people { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-    .controls, .details, .more, .more-btn, .timelog-link, .hours-worked, noscript { display: none !important; }
+    .controls, .details, .more, .more-btn, .timelog-link, .hours-worked, .resumo-band, noscript { display: none !important; }
     .wrap { max-width: none; padding: 0; }
     .card, .table-scroll { box-shadow: none; border: 1px solid #c9d1da; border-radius: 8px; padding: 3mm 4.5mm; }
     .site-header h1 { font-size: 17pt; margin-top: 0.5mm; }
@@ -391,6 +395,8 @@
     .status, .badge { font-size: 8.5pt; }
   }
 </style>
+<link rel="stylesheet" href="resumo.css">
+<script src="resumo.js"></script>
 </head>
 <body>
 <div class="wrap">
@@ -420,6 +426,14 @@
     <div id="notice" role="alert" hidden></div>
     <div id="content" hidden>
       <!-- main screen (also the printed page) -->
+      <section class="resumo-band" aria-labelledby="resumo-title" id="resumo-section" hidden>
+        <h2 class="section-title" id="resumo-title"></h2>
+        <div class="card">
+          <div id="resumo"></div>
+          <p class="rs-footer" id="resumo-updated"></p>
+        </div>
+      </section>
+
       <section class="strategy-band" aria-labelledby="strategy-title">
         <h2 class="section-title" id="strategy-title"></h2>
         <div class="card">
@@ -582,6 +596,7 @@
     'label.hours_total':       { 'en-CA': 'Total', 'pt-BR': 'Total' },
     'label.hours_cycle_none':  { 'en-CA': 'No hours logged for this cycle.', 'pt-BR': 'Nenhuma hora registrada neste ciclo.' },
     'label.hours_note':        { 'en-CA': 'Read-only. "To date" = all hours since the log started.', 'pt-BR': 'Somente leitura. "Acumulado" = todas as horas desde o início do registro.' },
+    'label.summary':         { 'en-CA': 'Summary', 'pt-BR': 'Resumo' },
     'label.tasks_this_week':   { 'en-CA': 'This week', 'pt-BR': 'Esta semana' },
     'label.tasks_next_week':   { 'en-CA': 'Next week', 'pt-BR': 'Próxima semana' },
     'label.tasks_none':        { 'en-CA': 'Nothing to list.', 'pt-BR': 'Nada a listar.' },
@@ -792,6 +807,8 @@
     });
     renderWeekOptions();
 
+    renderResumo(snap, kpi);
+
     // strategy
     $('strategy-title').textContent = L('label.strategy');
     var sb = $('strategy');
@@ -848,6 +865,23 @@
     var missing = Object.keys(state.missing);
     if (missing.length && window.console) console.warn('ui_labels keys missing for ' + state.lang + ':', missing);
     window.requestAnimationFrame(updateClamps);
+  }
+
+  // ---------- summary (resumo.js): only the counts in kpi.tasks.summary; weeks without it hide the block
+  function renderResumo(snap, kpi) {
+    var sec = $('resumo-section');
+    var t = isObj(kpi.tasks) ? kpi.tasks : null;
+    var s = t && isObj(t.summary) ? t.summary : null;
+    sec.hidden = !s || !window.DctiResumo;
+    if (sec.hidden) return;
+    $('resumo-title').textContent = uiText('label.summary');
+    var data = {
+      active: s.active, backlog: s.backlog, next: s.next, doing: s.doing, blocked: s.blocked, late: s.late, done: s.done,
+      color: str(snap.how_its_going_status || kpi.how_its_going_status),
+      updated_on: str(snap.snapshot_date), week_start: str(snap.week_start || kpi.week_start)
+    };
+    window.DctiResumo.render($('resumo'), data, state.lang);
+    window.DctiResumo.footer($('resumo-updated'), data, state.lang);
   }
 
   // ---------- task boxes (kpi.tasks, workflow B)
