@@ -1533,9 +1533,10 @@
   }
   // Owners: one name per person. ownerName() compares ignoring case, extra spaces and accents and returns the
   // canonical spelling ("mauricio" -> "Maurício"). OWNER_ALIASES = other spellings seen in the data (key = plainText).
+  // Same lists as site/index.html ("Pedidos ao time"): change both together.
   // A name that is not in the list is kept as typed (spaces tidied). Used when reading AND before every write.
   var OWNER_NAMES = ['Rafael', 'Maurício', 'Scott', 'Panorea', 'Henrique', 'Board'];
-  var OWNER_ALIASES = {};
+  var OWNER_ALIASES = { 'Rafael Cruz': 'Rafael' };
   function ownerKey(v) { return plainText(String(v || '').replace(/\s+/g, ' ').trim()); }
   var OWNER_CANON = {};
   OWNER_NAMES.forEach(function (n) { OWNER_CANON[ownerKey(n)] = n; });
