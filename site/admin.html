@@ -140,6 +140,7 @@
   .p-GATE { color: #fff; background: #1b2430; }
   .p-MTG, .p-other { color: #39424e; background: #eef1f4; }
   .tag-status { background: var(--st-bg); color: var(--st-fg); border: 1px solid var(--st); }
+  .tag-late { background: #fde8e8; color: #8b1a1a; border: 1px solid #c8322f; }
   .tag-new { background: #fff5d6; color: #5f4200; border: 1px solid #e6c66a; }
   .task-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; align-self: start; }
   .task-controls label { display: block; font-size: 0.8125rem; font-weight: 600; color: var(--muted); margin-bottom: 2px; }
@@ -1160,7 +1161,7 @@
   }
   function readProposal(p, key, checked, similar) {
     return { key: key, title_pt_BR: String(p.title_pt_BR || ''), title_en_CA: String(p.title_en_CA || ''),
-      owners: Array.isArray(p.owners) ? p.owners.join(', ') : String(p.owners || ''), due_date: String(p.due_date || ''),
+      owners: normalizeOwners(Array.isArray(p.owners) ? p.owners.join(', ') : p.owners), due_date: String(p.due_date || ''),
       excerpt: String(p.excerpt || ''), checked: checked, similar: similar || null, origTitle: [String(p.title_pt_BR || ''), String(p.title_en_CA || '')],
       task_id: '', already: false, error: '' };
   }
@@ -1383,7 +1384,7 @@
     state.adding = true;
     renderResult();
     api({ action: 'add_tasks', meeting_date: state.meeting.date, tasks: list.map(function (p) {
-      return { key: p.key, title_pt_BR: p.title_pt_BR.trim(), title_en_CA: p.title_en_CA.trim(), owners: p.owners, due_date: p.due_date, excerpt: p.excerpt };
+      return { key: p.key, title_pt_BR: p.title_pt_BR.trim(), title_en_CA: p.title_en_CA.trim(), owners: normalizeOwners(p.owners), due_date: p.due_date, excerpt: p.excerpt };
     }) }, ADD_TIMEOUT).then(function (data) {
       state.adding = false;
       var saved = 0, failed = 0;
@@ -1532,7 +1533,30 @@
     var m = /^\[(\d{2}\/\d{2})\]/.exec(lines[lines.length - 1].trim());
     return m ? m[1] : '';
   }
-  function ownersOf(t) { return t.owners.split(',').map(function (x) { return x.trim(); }).filter(Boolean); }
+  // Owners: one name per person. ownerName() compares ignoring case, extra spaces and accents and returns the
+  // canonical spelling ("mauricio" -> "Maurício"). OWNER_ALIASES = other spellings seen in the data (key = plainText).
+  // Same lists as site/index.html ("Pedidos ao time"): change both together.
+  // A name that is not in the list is kept as typed (spaces tidied). Used when reading AND before every write.
+  var OWNER_NAMES = ['Rafael', 'Maurício', 'Scott', 'Panorea', 'Henrique', 'Board'];
+  var OWNER_ALIASES = { 'Rafael Cruz': 'Rafael' };
+  function ownerKey(v) { return plainText(String(v || '').replace(/\s+/g, ' ').trim()); }
+  var OWNER_CANON = {};
+  OWNER_NAMES.forEach(function (n) { OWNER_CANON[ownerKey(n)] = n; });
+  Object.keys(OWNER_ALIASES).forEach(function (k) { OWNER_CANON[ownerKey(k)] = OWNER_ALIASES[k]; });
+  function ownerName(v) {
+    var tidy = String(v || '').replace(/\s+/g, ' ').trim();
+    return OWNER_CANON[ownerKey(tidy)] || tidy;
+  }
+  function ownerList(v) {   // "mauricio,  Rafael , rafael" -> ['Maurício', 'Rafael']
+    var seen = {};
+    return String(v || '').split(',').map(ownerName).filter(function (n) {
+      var k = ownerKey(n);
+      if (!n || seen[k]) return false;
+      seen[k] = true; return true;
+    });
+  }
+  function normalizeOwners(v) { return ownerList(v).join(', '); }
+  function ownersOf(t) { return ownerList(t.owners); }
   // Origin: "manual" = created here; starts with "reunião" (any case or accent) = meeting; empty or anything else = GTM.
   var ORIGINS = [['gtm', 'GTM'], ['meeting', 'Reunião'], ['manual', 'Manual']];
   function originKind(t) {
@@ -1582,7 +1606,8 @@
   function renderFilters() {
     var owners = {};
     state.tasks.forEach(function (t) { ownersOf(t).forEach(function (o) { owners[o] = true; }); });
-    fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto']].concat(STATUS));
+    var lateCount = state.tasks.filter(isLate).length;
+    fillSelect($('filter-status'), 'Todas', [['open', 'Em aberto'], ['late', 'Atrasada (' + lateCount + ')']].concat(STATUS));
     fillSelect($('filter-owner'), 'Todos', Object.keys(owners).sort().map(function (o) { return [o, o]; }));
     fillSelect($('filter-section'), 'Todos', SECTIONS);
     fillSelect($('filter-category'), 'Todas', [['none', 'Sem categoria']].concat(CATEGORIES.map(function (c) { return [c.key, c.pt]; })));
@@ -1600,12 +1625,12 @@
     var hideFrozen = $('filter-hide-frozen').checked;
     var found = state.tasks.filter(function (t) {
       if (hideFrozen && t.status === 'frozen') return false;
-      if (st === 'open' ? !isOpen(t) : (st && t.status !== st)) return false;
+      if (st === 'open' ? !isOpen(t) : st === 'late' ? !isLate(t) : (st && t.status !== st)) return false;
       if (ow && ownersOf(t).indexOf(ow) < 0) return false;
       if (se && sectionOf(t.task_id) !== se) return false;
       if (orig && originKind(t) !== orig) return false;
       if (cat && (catKey(t.categoria) || 'none') !== cat) return false;
-      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, t.change_note, t.meeting_updates, t.origin].join(' ')).indexOf(q) >= 0;
+      return !q || plainText([t.task_id, t.title_pt_BR, t.title_en_CA, t.owners, normalizeOwners(t.owners), t.change_note, t.meeting_updates, t.origin].join(' ')).indexOf(q) >= 0;
     });
     return found.sort($('filter-sort').value === 'id' ? byId : byDue);
   }
@@ -1733,7 +1758,7 @@
     var v = $('bulk-value').value, changes = {};
     if (action === 'status') changes.status = v;
     if (action === 'show') changes.show_to_scott = v;
-    if (action === 'owners') { if (!v.trim()) { bulkMsg('Escreva os responsáveis.'); $('bulk-value').focus(); return; } changes.owners = v; }
+    if (action === 'owners') { if (!v.trim()) { bulkMsg('Escreva os responsáveis.'); $('bulk-value').focus(); return; } changes.owners = normalizeOwners(v); }
     if (action === 'due') { if (!v) { bulkMsg('Escolha o prazo.'); $('bulk-value').focus(); return; } changes.due_date = v; }
     if (action === 'category') changes.categoria = v;
     hideError();
@@ -1882,6 +1907,7 @@
     var section = sectionOf(t.task_id);
     head.appendChild(el('span', 'pid p-' + (PILLAR_CODES.indexOf(section) >= 0 ? section : 'other'), t.task_id));
     head.appendChild(el('span', 'tag tag-status ' + statusClass(t.status), statusLabel(t.status)));
+    if (isLate(t)) head.appendChild(el('span', 'tag tag-late', 'Atrasada'));
     if (t.is_new === 'yes') head.appendChild(el('span', 'tag tag-new', 'novo'));
     var rowCat = catByKey(catKey(t.categoria));
     if (rowCat) head.appendChild(el('span', 'tag tag-cat', rowCat.pt));
@@ -1893,7 +1919,7 @@
     var meta = el('p', 'item-meta');
     var late = isLate(t);
     meta.appendChild(el('span', late ? 'due-late' : null, 'Prazo: ' + (fmtDate(t.due_date) || 'sem prazo') + (late ? ' (vencido)' : '')));
-    meta.appendChild(el('span', null, ' · Responsáveis: ' + (t.owners || 'não informado')));
+    meta.appendChild(el('span', null, ' · Responsáveis: ' + (normalizeOwners(t.owners) || 'não informado')));
     main.appendChild(meta);
     if (t.change_note) main.appendChild(el('p', 'item-meta', 'Nota: ' + t.change_note));
     var hoursBtn = el('button', 'btn btn-quiet btn-small task-hours', 'Registrar horas');
@@ -1925,7 +1951,7 @@
     det.appendChild(el('summary', null, 'Editar detalhes'));
     var form = el('form', 'stack');
     form.noValidate = true;
-    var owners = el('input'); owners.type = 'text'; owners.maxLength = 200; owners.value = t.owners;
+    var owners = el('input'); owners.type = 'text'; owners.maxLength = 200; owners.value = normalizeOwners(t.owners);
     form.appendChild(field('owners-' + t.task_id, 'Responsáveis (separados por vírgula)', owners));
     var due = el('input'); due.type = 'date'; due.value = t.due_date;
     form.appendChild(field('due-' + t.task_id, 'Prazo', due));
@@ -1960,7 +1986,7 @@
     form.appendChild(acts);
     form.addEventListener('submit', function (ev) {
       ev.preventDefault();
-      var changes = { owners: owners.value, due_date: due.value, change_note: note.value };
+      var changes = { owners: normalizeOwners(owners.value), due_date: due.value, change_note: note.value };
       if (catSel.value !== (curCat ? curCat.pt : '')) changes.categoria = catSel.value;   // only when changed: works before the column exists
       saveTask(t, changes, 'owners-' + t.task_id);
     });
@@ -2030,17 +2056,14 @@
       change_note: $('ed-note').value.trim()
     };
   }
-  function ownersText(v) {
-    var seen = {};
-    return String(v || '').split(',').map(function (x) { return x.trim(); }).filter(function (x) { if (!x || seen[x]) return false; seen[x] = true; return true; }).join(', ');
-  }
+  function ownersText(v) { return normalizeOwners(v); }   // edit dialog: same rule as everywhere else
   function openEdit(t, opener) {
     if (ed.task || state.savingTask) return;
     ed.task = t; ed.opener = opener || null;
     $('ed-id').textContent = t.task_id;
     $('ed-title-pt').value = t.title_pt_BR || '';
     $('ed-title-en').value = t.title_en_CA || '';
-    $('ed-owners').value = t.owners || '';
+    $('ed-owners').value = normalizeOwners(t.owners);
     $('ed-due').value = t.due_date || '';
     var st = $('ed-status'); clear(st);
     STATUS.forEach(function (s) { var o = el('option', null, isEN() ? STATUS_EN[s[0]] : s[1]); o.value = s[0]; st.appendChild(o); });
@@ -2198,7 +2221,7 @@
     $('new-btn').disabled = true;
     $('new-btn').textContent = 'Criando…';
     api({ action: 'create_task', task: {
-      title_pt_BR: title, title_en_CA: $('new-title-en').value, owners: $('new-owners').value, due_date: $('new-due').value,
+      title_pt_BR: title, title_en_CA: $('new-title-en').value, owners: normalizeOwners($('new-owners').value), due_date: $('new-due').value,
       section: section, status: $('new-status').value, show_to_scott: $('new-show').value
     } }, DEFAULT_TIMEOUT, ADMIN_API).then(function (data) {
       $('new-btn').disabled = false;
@@ -3205,6 +3228,7 @@
 
   // ---------- start
   function init() {
+    $('filter-status').addEventListener('change', function () { if ($('filter-status').value === 'late') $('filter-sort').value = 'due'; });
     ['filter-status', 'filter-origin', 'filter-owner', 'filter-section', 'filter-category', 'filter-sort', 'filter-hide-frozen'].forEach(function (id) { $(id).addEventListener('change', filtersChanged); });
     $('filter-search').addEventListener('input', filtersChanged);
     $('toggle-all').addEventListener('click', function () {
