@@ -2,3 +2,4 @@
 !/site/
 !/.gitignore
 .DS_Store
+!/workflows/
