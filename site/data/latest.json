@@ -280,22 +280,22 @@
     }
   ],
   "snapshot": {
-    "snapshot_date": "2026-11-22",
-    "week_start": "2026-11-09",
-    "executing_text_en_CA": "No activities were logged this week.\n7 tasks are in progress, such as the STL Lab page (STL-03).",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada esta semana.\n7 tarefas estão em andamento, como a página do STL Lab (STL-03).",
+    "snapshot_date": "2026-11-23",
+    "week_start": "2026-11-16",
+    "executing_text_en_CA": "No activities were logged this week.\nIn progress: publish the STL Lab page (STL-03).\nDone: taster specifications sent to Scott (M1117-12).",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: publicar a página do STL Lab (STL-03).\nConcluído: especificações do taster enviadas ao Scott (M1117-12).",
     "how_its_going_status": "Yellow",
-    "how_its_going_text_en_CA": "Yellow: 30 of 31 cycle tasks done (96.8%), with 2 late and 1 blocked.\nFunnel lines have no weekly targets, so they show Gray.",
-    "how_its_going_text_pt_BR": "Amarelo: 30 de 31 tarefas do ciclo concluídas (96,8%), com 2 atrasadas e 1 bloqueada.\nAs linhas do funil não têm metas semanais, por isso aparecem em cinza.",
-    "what_to_change_text_en_CA": "Resolve the FND-02 blocker (ad account, billing, budget split) before its 2026-12-10 due date.\nSchedule CMP-05, the Phase 2 creative set, which sits in backlog past its 2026-11-04 due date.\nConnect data sources for funnel stages with no data, such as STL Course demo requests.",
-    "what_to_change_text_pt_BR": "Resolver o bloqueio do FND-02 (conta de anúncios, faturamento, divisão do orçamento) antes do prazo de 2026-12-10.\nAgendar o CMP-05, conjunto de criativos da Fase 2, que está no backlog além do prazo de 2026-11-04.\nConectar fontes de dados aos estágios do funil sem dados, como os pedidos de demo do STL Course.",
-    "needs_from_team_en_CA": "Scott: FND-02 is blocked and needs a decision by 2026-12-10.\nBoard: AUD-02, exports from the nominated networks, is due 2026-11-25.",
-    "needs_from_team_pt_BR": "Scott: o FND-02 está bloqueado e precisa de uma decisão até 2026-12-10.\nBoard: o AUD-02, exportações das redes indicadas, vence em 2026-11-25.",
-    "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-09"
+    "how_its_going_text_en_CA": "Yellow because 1 task is blocked, even though the cycle is 100% done.\nNo funnel data is available yet: no source is connected.",
+    "how_its_going_text_pt_BR": "Amarelo porque 1 tarefa está bloqueada, mesmo com o ciclo 100% concluído.\nAinda não há dados do funil: nenhuma fonte está conectada.",
+    "what_to_change_text_en_CA": "Unblock the LinkedIn profile logo research (M1117-06).\nConnect data sources to the funnel, since no stage has data.\nSet up tracking for the 7 pillar items still marked \"Not yet\".",
+    "what_to_change_text_pt_BR": "Desbloquear a pesquisa do logo nos perfis do LinkedIn (M1117-06).\nConectar fontes de dados ao funil, pois nenhuma etapa tem dados.\nConfigurar o acompanhamento dos 7 itens de pilares ainda marcados como \"Not yet\".",
+    "needs_from_team_en_CA": "M1117-06 is blocked: the LinkedIn profile logo research needs to be unblocked.\nBoard and Scott: exports from the nominated networks (AUD-02) are due Nov 25.\nScott and Mauricio: define the newsletter and LinkedIn group (REU-1006-10), due Nov 24.",
+    "needs_from_team_pt_BR": "M1117-06 está bloqueada: a pesquisa do logo nos perfis do LinkedIn precisa ser desbloqueada.\nBoard e Scott: exportações das redes indicadas (AUD-02) vencem em 25/11.\nScott e Mauricio: definir a newsletter e o grupo no LinkedIn (REU-1006-10), prazo 24/11.",
+    "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-16"
   },
   "kpi": {
-    "week_start": "2026-11-09",
-    "week_end": "2026-11-15",
+    "week_start": "2026-11-16",
+    "week_end": "2026-11-22",
     "currency": "EUR",
     "status_rules": {
       "green_min_pct": 100,
@@ -304,26 +304,26 @@
     },
     "how_its_going_status": "Yellow",
     "tasks": {
-      "base_date": "2026-11-22",
-      "cycle_end": "2026-11-15",
+      "base_date": "2026-11-23",
+      "cycle_end": "2026-11-22",
       "cycle": {
-        "done": 30,
-        "total": 31,
-        "pct": 96.8
+        "done": 38,
+        "total": 38,
+        "pct": 100
       },
       "gtm_original": {
         "done": 12,
         "expected": 12,
-        "total": 25,
-        "done_pct": 48,
-        "expected_pct": 48,
+        "total": 24,
+        "done_pct": 50,
+        "expected_pct": 50,
         "diff_points": 0
       },
       "meeting_tasks": {
         "added": 57,
-        "done": 26
+        "done": 31
       },
-      "late_count": 2,
+      "late_count": 0,
       "blocked_count": 1,
       "late_gates": [],
       "funnel_pct": null,
@@ -332,8 +332,8 @@
           "STL-03",
           "STL-10",
           "REU-1006-10",
-          "REU-1014-04",
           "REU-1103-02",
+          "REU-1103-06",
           "M1110-04",
           "M1117-05"
         ],
@@ -341,27 +341,23 @@
           "CMP-04",
           "AUD-02",
           "STL-12",
-          "REU-1103-06",
           "REU-1103-09",
           "REU-1103-11",
           "REU-1103-12",
           "M1110-03",
           "M1117-02",
           "M1117-03",
-          "M1117-04",
-          "M1117-06",
-          "M1117-07",
           "M1117-08",
           "M1117-10",
-          "M1117-12",
           "M1117-13",
-          "M1117-14",
           "MAN-CNT-003"
         ]
       },
       "to_change": [
-        "FND-02",
-        "CMP-05"
+        "STL-10",
+        "REU-1014-04",
+        "M1117-06",
+        "M1117-12"
       ],
       "team_needs": [
         {
@@ -378,10 +374,6 @@
           "tasks": [
             {
               "task_id": "REU-1006-10",
-              "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "REU-1014-04",
               "due_date": "2026-11-24"
             }
           ]
@@ -407,40 +399,16 @@
               "due_date": "2026-11-24"
             },
             {
-              "task_id": "M1117-04",
-              "due_date": "2026-11-24"
-            },
-            {
               "task_id": "M1117-05",
               "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "M1117-06",
-              "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "M1117-07",
-              "due_date": "2026-11-23"
             },
             {
               "task_id": "M1117-08",
               "due_date": "2026-11-24"
             },
             {
-              "task_id": "M1117-10",
-              "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "M1117-12",
-              "due_date": "2026-11-24"
-            },
-            {
               "task_id": "M1117-13",
               "due_date": "2026-11-30"
-            },
-            {
-              "task_id": "M1117-14",
-              "due_date": "2026-11-24"
             }
           ]
         },
@@ -448,16 +416,12 @@
           "person": "Scott",
           "tasks": [
             {
-              "task_id": "FND-02",
-              "due_date": "2026-12-10"
-            },
-            {
               "task_id": "AUD-02",
               "due_date": "2026-11-25"
             },
             {
               "task_id": "STL-10",
-              "due_date": "2026-11-27"
+              "due_date": "2026-12-02"
             },
             {
               "task_id": "STL-12",
@@ -477,7 +441,7 @@
             },
             {
               "task_id": "M1117-10",
-              "due_date": "2026-11-24"
+              "due_date": "2026-12-08"
             },
             {
               "task_id": "M1117-13",
@@ -487,25 +451,11 @@
         }
       ],
       "items": {
-        "FND-02": {
-          "title_en_CA": "Confirm the ad account, billing and the suggested 70 / 30 budget split",
-          "title_pt_BR": "Confirmar a conta de anúncios, o faturamento e a divisão sugerida de orçamento 70 / 30",
-          "due_date": "2026-12-10",
-          "status": "blocked",
-          "change_note": ""
-        },
         "CMP-04": {
           "title_en_CA": "Phase 1 branding campaign goes live (LinkedIn native targeting)",
           "title_pt_BR": "Campanha de branding da Fase 1 entra no ar (segmentação nativa do LinkedIn)",
           "due_date": "2027-01-15",
           "status": "next",
-          "change_note": ""
-        },
-        "CMP-05": {
-          "title_en_CA": "Produce the Phase 2 creative set (White Paper offer)",
-          "title_pt_BR": "Produzir o conjunto de criativos da Fase 2 (oferta do White Paper)",
-          "due_date": "2026-11-04",
-          "status": "backlog",
           "change_note": ""
         },
         "AUD-02": {
@@ -525,9 +475,9 @@
         "STL-10": {
           "title_en_CA": "Define the taster: format, dates (W8–W10), registration page, SHRM plan",
           "title_pt_BR": "Definir o taster: formato, datas (W8–W10), página de inscrição e plano SHRM",
-          "due_date": "2026-11-27",
+          "due_date": "2026-12-02",
           "status": "doing",
-          "change_note": ""
+          "change_note": "Taste Definition - https://docs.google.com/document/d/1vjIF0RkiCqwSulH-fVE7-ljmXpd35fYSWgQ9DtRkIMM/edit?usp=sharing"
         },
         "STL-12": {
           "title_en_CA": "Fix the taster dates; publish the registration on the STL page",
@@ -544,11 +494,11 @@
           "change_note": ""
         },
         "REU-1014-04": {
-          "title_en_CA": "Check with Mauricio how to reach people with ProSci or change-management certifications on LinkedIn",
-          "title_pt_BR": "Verificar com o Mauricio como alcançar pessoas com certificação ProSci ou de gestão de mudança no LinkedIn",
+          "title_en_CA": "Check how to reach people with ProSci or change-management certifications on LinkedIn",
+          "title_pt_BR": "Verificar como alcançar pessoas com certificação ProSci ou de gestão de mudança no LinkedIn",
           "due_date": "2026-11-24",
-          "status": "doing",
-          "change_note": ""
+          "status": "done",
+          "change_note": "https://docs.google.com/document/d/1X3QKVu02zlzrIKiEW0FNFhnfgRnS0aA5mDrM_TYPh9U/edit?usp=sharing"
         },
         "REU-1103-02": {
           "title_en_CA": "Content agent structure and flow (Red, Blue, Yellow) to present to Scott and Panorea",
@@ -561,7 +511,7 @@
           "title_en_CA": "Monthly report: region, segment and 3 source buckets",
           "title_pt_BR": "Relatório mensal: região, segmento e 3 baldes de fonte",
           "due_date": "2026-11-24",
-          "status": "next",
+          "status": "doing",
           "change_note": ""
         },
         "REU-1103-09": {
@@ -613,13 +563,6 @@
           "status": "next",
           "change_note": ""
         },
-        "M1117-04": {
-          "title_en_CA": "Generate engagement content with AI from post questions",
-          "title_pt_BR": "Gerar conteúdo de engajamento com IA a partir das perguntas dos posts",
-          "due_date": "2026-11-24",
-          "status": "next",
-          "change_note": ""
-        },
         "M1117-05": {
           "title_en_CA": "Design 3–4 LinkedIn branding templates",
           "title_pt_BR": "Criar 3 a 4 templates de marca para posts no LinkedIn",
@@ -630,15 +573,8 @@
         "M1117-06": {
           "title_en_CA": "Research adding the DCTI logo to team members' LinkedIn profiles",
           "title_pt_BR": "Pesquisar como adicionar o logo do DCTI aos perfis de LinkedIn da equipe",
-          "due_date": "2026-11-24",
-          "status": "next",
-          "change_note": ""
-        },
-        "M1117-07": {
-          "title_en_CA": "Email Scott his tasks for the week every Monday morning",
-          "title_pt_BR": "Enviar ao Scott toda segunda de manhã as tarefas dele da semana",
-          "due_date": "2026-11-23",
-          "status": "next",
+          "due_date": "2026-11-27",
+          "status": "blocked",
           "change_note": ""
         },
         "M1117-08": {
@@ -651,7 +587,7 @@
         "M1117-10": {
           "title_en_CA": "Build wireframe of webcasts on the STL Lab in January and February",
           "title_pt_BR": "Montar a estrutura de webcasts sobre o STL Lab em janeiro e fevereiro",
-          "due_date": "2026-11-24",
+          "due_date": "2026-12-08",
           "status": "next",
           "change_note": ""
         },
@@ -659,20 +595,13 @@
           "title_en_CA": "Email the Sintera transformation lab specifications TASTER to Scott",
           "title_pt_BR": "Enviar ao Scott as especificações do TASTER lab de transformação Sintera",
           "due_date": "2026-11-24",
-          "status": "next",
-          "change_note": ""
+          "status": "done",
+          "change_note": "Taste Structure - https://docs.google.com/document/d/1vjIF0RkiCqwSulH-fVE7-ljmXpd35fYSWgQ9DtRkIMM/edit?usp=sharing"
         },
         "M1117-13": {
           "title_en_CA": "Finalize and distribute the 3 press releases to journalists",
           "title_pt_BR": "Finalizar e distribuir os 3 press releases aos jornalistas",
           "due_date": "2026-11-30",
-          "status": "next",
-          "change_note": ""
-        },
-        "M1117-14": {
-          "title_en_CA": "Set up the weekly automatic status report email to Scott",
-          "title_pt_BR": "Configurar o envio semanal automático do relatório de status ao Scott",
-          "due_date": "2026-11-24",
           "status": "next",
           "change_note": ""
         },
@@ -685,13 +614,13 @@
         }
       },
       "summary": {
-        "active": 85,
+        "active": 84,
         "backlog": 18,
-        "next": 19,
+        "next": 13,
         "doing": 7,
         "blocked": 1,
-        "late": 2,
-        "done": 40
+        "late": 0,
+        "done": 45
       },
       "auto_color": "Yellow",
       "forced_color": null,
@@ -703,14 +632,18 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": 1,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
         "previous_week_value": 1,
-        "change_abs": 0,
-        "change_pct": 0,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 1
+          },
           {
             "week_start": "2026-11-02",
             "value": 1
@@ -722,10 +655,6 @@
           {
             "week_start": "2026-10-19",
             "value": null
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": null
           }
         ]
       },
@@ -743,6 +672,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -752,10 +685,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -774,6 +703,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -784,10 +717,6 @@
           {
             "week_start": "2026-10-19",
             "value": null
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": null
           }
         ]
       },
@@ -796,14 +725,18 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": 4,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 2,
-        "change_abs": 2,
-        "change_pct": 100,
+        "previous_week_value": 4,
+        "change_abs": null,
+        "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 4
+          },
           {
             "week_start": "2026-11-02",
             "value": 2
@@ -815,10 +748,6 @@
           {
             "week_start": "2026-10-19",
             "value": null
-          },
-          {
-            "week_start": "2026-10-12",
-            "value": null
           }
         ]
       },
@@ -827,14 +756,18 @@
         "stage": "Demo/Trial request",
         "unit": "count",
         "provisional": false,
-        "value": 2,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 2,
+        "previous_week_value": 2,
+        "change_abs": null,
         "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 2
+          },
           {
             "week_start": "2026-11-02",
             "value": 0
@@ -845,10 +778,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -867,6 +796,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -876,10 +809,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -889,14 +818,18 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": 1,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 1,
+        "previous_week_value": 1,
+        "change_abs": null,
         "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 1
+          },
           {
             "week_start": "2026-11-02",
             "value": 0
@@ -907,10 +840,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -929,6 +858,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -938,10 +871,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -960,6 +889,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -969,10 +902,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -982,14 +911,18 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": 3,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 3,
+        "previous_week_value": 3,
+        "change_abs": null,
         "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 3
+          },
           {
             "week_start": "2026-11-02",
             "value": 0
@@ -1000,10 +933,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1022,6 +951,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -1031,10 +964,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1053,6 +982,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -1062,10 +995,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1075,14 +1004,18 @@
         "stage": "Site visits",
         "unit": "count",
         "provisional": false,
-        "value": 1,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 1,
+        "previous_week_value": 1,
+        "change_abs": null,
         "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 1
+          },
           {
             "week_start": "2026-11-02",
             "value": 0
@@ -1093,10 +1026,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1115,6 +1044,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -1124,10 +1057,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1146,6 +1075,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -1155,10 +1088,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1168,14 +1097,18 @@
         "stage": "Product page view",
         "unit": "count",
         "provisional": false,
-        "value": 3,
+        "value": null,
         "target_per_week": null,
         "pct_of_plan": null,
         "status": "Gray",
-        "previous_week_value": 0,
-        "change_abs": 3,
+        "previous_week_value": 3,
+        "change_abs": null,
         "change_pct": null,
         "history": [
+          {
+            "week_start": "2026-11-09",
+            "value": 3
+          },
           {
             "week_start": "2026-11-02",
             "value": 0
@@ -1186,10 +1119,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1208,6 +1137,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -1217,10 +1150,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1239,6 +1168,10 @@
         "change_pct": null,
         "history": [
           {
+            "week_start": "2026-11-09",
+            "value": null
+          },
+          {
             "week_start": "2026-11-02",
             "value": null
           },
@@ -1248,10 +1181,6 @@
           },
           {
             "week_start": "2026-10-19",
-            "value": null
-          },
-          {
-            "week_start": "2026-10-12",
             "value": null
           }
         ]
@@ -1282,7 +1211,7 @@
         "kpi_name": "report delivered",
         "kpi_value": 0,
         "tracking": "Automated",
-        "last_update": "2026-11-16"
+        "last_update": "2026-11-23"
       }
     ],
     "pillars_all": [
@@ -1352,18 +1281,47 @@
       }
     ],
     "stages_without_data": [
+      "ISRA / Site visits",
       "ISRA / White paper download",
       "ISRA / Newsletter signup",
+      "ISRA / Product page view",
+      "ISRA / Demo/Trial request",
       "ISRA / Sale (revenue)",
+      "STL Course / Site visits",
       "STL Course / White paper download",
       "STL Course / Newsletter signup",
+      "STL Course / Product page view",
       "STL Course / Demo/Trial request",
       "STL Course / Sale (revenue)",
+      "AI Transformation / Site visits",
       "AI Transformation / White paper download",
       "AI Transformation / Newsletter signup",
+      "AI Transformation / Product page view",
       "AI Transformation / Demo/Trial request",
       "AI Transformation / Sale (revenue)"
     ],
-    "collection": null
+    "collection": {
+      "stages_without_source": [
+        "ISRA / Site visits",
+        "ISRA / White paper download",
+        "ISRA / Newsletter signup",
+        "ISRA / Product page view",
+        "ISRA / Demo/Trial request",
+        "ISRA / Sale (revenue)",
+        "STL Course / Site visits",
+        "STL Course / White paper download",
+        "STL Course / Newsletter signup",
+        "STL Course / Product page view",
+        "STL Course / Demo/Trial request",
+        "STL Course / Sale (revenue)",
+        "AI Transformation / Site visits",
+        "AI Transformation / White paper download",
+        "AI Transformation / Newsletter signup",
+        "AI Transformation / Product page view",
+        "AI Transformation / Demo/Trial request",
+        "AI Transformation / Sale (revenue)"
+      ],
+      "failures": []
+    }
   }
 }
