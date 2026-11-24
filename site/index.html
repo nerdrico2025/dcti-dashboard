@@ -1005,7 +1005,8 @@
   }
   function dayDiff(a, b) { var x = parseDate(a), y = parseDate(b); return x && y ? Math.round((x - y) / 86400000) : null; }
   function titleKey(t, id) { var it = taskItem(t, id); return oneLine(it.title_pt_BR || it.title_en_CA || id).toLowerCase(); }
-  // Owners: one name per person, same rule and lists as site/admin.html (change both together). Compares ignoring
+  // Owners: one name per person, same rule and lists as site/admin.html, task_metrics.js (B) and workflows D and F
+  // (change all together; list of copies in site/admin.html). Compares ignoring
   // case, extra spaces and accents and returns the canonical spelling ("Mauricio" -> "Maurício"); other names stay as written.
   var OWNER_NAMES = ['Rafael', 'Maurício', 'Scott', 'Panorea', 'Henrique', 'Board'];
   var OWNER_ALIASES = { 'Rafael Cruz': 'Rafael' };
