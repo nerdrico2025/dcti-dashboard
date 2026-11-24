@@ -282,6 +282,7 @@
   .cycle-list li.zero .cycle-name, .cycle-list li.zero .cycle-h { color: var(--faint); font-weight: 500; }
 
   /* ---------- tasks completed in the last cycle (same card as the hours; one group per owner) */
+  .done-note { margin: -8px 0 16px; font-size: 0.875rem; color: var(--muted); }
   .done-group + .done-group { margin-top: 18px; }
   .done-group .needs-list { margin-top: 4px; }
   .done-id { display: block; font-size: 0.8125rem; font-weight: 650; color: var(--muted); }
@@ -517,6 +518,7 @@
       <!-- tasks completed in the last closed cycle (kpi.tasks.completed_last_cycle), read-only, never printed. Weeks without the field hide it. -->
       <section class="completed-cycle" id="done-section" aria-labelledby="done-title" hidden>
         <h2 class="section-title" id="done-title"></h2>
+        <p class="done-note" id="done-note"></p>
         <div class="card cycle-card">
           <div>
             <p class="cycle-k" id="done-k"></p>
@@ -669,7 +671,8 @@
     'label.meeting_done_one':  { 'en-CA': '{n} completed', 'pt-BR': '{n} concluída' },
     'label.meeting_done_many': { 'en-CA': '{n} completed', 'pt-BR': '{n} concluídas' },
     'label.done_title':        { 'en-CA': 'Completed last cycle', 'pt-BR': 'Concluídas no último ciclo' },
-    'label.done_cycle':        { 'en-CA': 'Last work cycle', 'pt-BR': 'Último ciclo de trabalho' },
+    'label.done_note':         { 'en-CA': 'Tasks completed during the cycle, regardless of their due date.', 'pt-BR': 'Tarefas concluídas durante o ciclo, independentemente do prazo.' },
+    'label.done_cycle':      { 'en-CA': 'Last work cycle', 'pt-BR': 'Último ciclo de trabalho' },
     'label.done_total_one':    { 'en-CA': 'task completed', 'pt-BR': 'tarefa concluída' },
     'label.done_total_many':   { 'en-CA': 'tasks completed', 'pt-BR': 'tarefas concluídas' },
     'label.done_none':         { 'en-CA': 'No tasks completed in this cycle.', 'pt-BR': 'Nenhuma tarefa concluída neste ciclo.' },
@@ -1519,6 +1522,7 @@
     if (!list) return;
     var ws = WEEK_RE.test(str(t.cycle_start)) ? t.cycle_start : cycleWeekStart();
     $('done-title').textContent = uiText('label.done_title');
+    $('done-note').textContent = uiText('label.done_note');
     $('done-k').textContent = uiText('label.done_cycle');
     $('done-range').textContent = cycleRange(ws);
     $('done-value').textContent = fmtNumber(list.length);
