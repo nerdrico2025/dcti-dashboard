@@ -280,17 +280,17 @@
     }
   ],
   "snapshot": {
-    "snapshot_date": "2026-11-23",
+    "snapshot_date": "2026-11-24",
     "week_start": "2026-11-16",
-    "executing_text_en_CA": "No activities were logged this week.\nIn progress: publish the STL Lab page (STL-03).\nDone: taster specifications sent to Scott (M1117-12).",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada nesta semana.\nEm andamento: publicar a página do STL Lab (STL-03).\nConcluído: especificações do taster enviadas ao Scott (M1117-12).",
+    "executing_text_en_CA": "No activities were logged in the activity list this week.\nTasks in progress: STL Lab page, taster definition, LinkedIn branding templates.\nCompleted this cycle: SHRM provider approval confirmed and press releases written.",
+    "executing_text_pt_BR": "Nenhuma atividade foi registrada na lista de atividades esta semana.\nTarefas em andamento: página do STL Lab, definição do taster, templates de marca para LinkedIn.\nConcluído neste ciclo: aprovação de provedor na SHRM confirmada e press releases escritos.",
     "how_its_going_status": "Yellow",
-    "how_its_going_text_en_CA": "Yellow because 1 task is blocked, even though the cycle is 100% done.\nNo funnel data is available yet: no source is connected.",
-    "how_its_going_text_pt_BR": "Amarelo porque 1 tarefa está bloqueada, mesmo com o ciclo 100% concluído.\nAinda não há dados do funil: nenhuma fonte está conectada.",
-    "what_to_change_text_en_CA": "Unblock the LinkedIn profile logo research (M1117-06).\nConnect data sources to the funnel, since no stage has data.\nSet up tracking for the 7 pillar items still marked \"Not yet\".",
-    "what_to_change_text_pt_BR": "Desbloquear a pesquisa do logo nos perfis do LinkedIn (M1117-06).\nConectar fontes de dados ao funil, pois nenhuma etapa tem dados.\nConfigurar o acompanhamento dos 7 itens de pilares ainda marcados como \"Not yet\".",
-    "needs_from_team_en_CA": "M1117-06 is blocked: the LinkedIn profile logo research needs to be unblocked.\nBoard and Scott: exports from the nominated networks (AUD-02) are due Nov 25.\nScott and Mauricio: define the newsletter and LinkedIn group (REU-1006-10), due Nov 24.",
-    "needs_from_team_pt_BR": "M1117-06 está bloqueada: a pesquisa do logo nos perfis do LinkedIn precisa ser desbloqueada.\nBoard e Scott: exportações das redes indicadas (AUD-02) vencem em 25/11.\nScott e Mauricio: definir a newsletter e o grupo no LinkedIn (REU-1006-10), prazo 24/11.",
+    "how_its_going_text_en_CA": "Yellow: the cycle is 100% done with nothing late, but 1 task is blocked.\nNo funnel data this week: every product stage has no source value.",
+    "how_its_going_text_pt_BR": "Amarelo: o ciclo está 100% concluído e nada está atrasado, mas 1 tarefa está bloqueada.\nSem dados de funil esta semana: nenhuma etapa de produto tem valor de fonte.",
+    "what_to_change_text_en_CA": "Connect data sources for the funnel stages, which all show no data.\nSet up tracking for the 7 pillar items marked \"Not yet\".",
+    "what_to_change_text_pt_BR": "Conectar fontes de dados para as etapas do funil, que estão todas sem dados.\nConfigurar o acompanhamento dos 7 itens de pilar marcados como \"Not yet\".",
+    "needs_from_team_en_CA": "Scott: choose the LinkedIn branding template (M1117-05), due 2026-11-24.\nUnblock M1117-06: research adding the DCTI logo to team LinkedIn profiles.",
+    "needs_from_team_pt_BR": "Scott: escolher o template de marca para LinkedIn (M1117-05), prazo 24/11/2026.\nDesbloquear M1117-06: pesquisar como adicionar o logo do DCTI aos perfis de LinkedIn da equipe.",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-16"
   },
   "kpi": {
@@ -304,7 +304,8 @@
     },
     "how_its_going_status": "Yellow",
     "tasks": {
-      "base_date": "2026-11-23",
+      "base_date": "2026-11-24",
+      "cycle_start": "2026-11-16",
       "cycle_end": "2026-11-22",
       "cycle": {
         "done": 38,
@@ -321,7 +322,7 @@
       },
       "meeting_tasks": {
         "added": 57,
-        "done": 31
+        "done": 32
       },
       "late_count": 0,
       "blocked_count": 1,
@@ -333,7 +334,6 @@
           "STL-10",
           "REU-1006-10",
           "REU-1103-02",
-          "REU-1103-06",
           "M1110-04",
           "M1117-05"
         ],
@@ -356,6 +356,7 @@
       "to_change": [
         "STL-10",
         "REU-1014-04",
+        "M1117-05",
         "M1117-06",
         "M1117-12"
       ],
@@ -396,10 +397,6 @@
             },
             {
               "task_id": "M1117-03",
-              "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "M1117-05",
               "due_date": "2026-11-24"
             },
             {
@@ -507,13 +504,6 @@
           "status": "doing",
           "change_note": ""
         },
-        "REU-1103-06": {
-          "title_en_CA": "Monthly report: region, segment and 3 source buckets",
-          "title_pt_BR": "Relatório mensal: região, segmento e 3 baldes de fonte",
-          "due_date": "2026-11-24",
-          "status": "doing",
-          "change_note": ""
-        },
         "REU-1103-09": {
           "title_en_CA": "Visibility plan with Prosci, IMD and SHRM",
           "title_pt_BR": "Plano de visibilidade com Prosci, IMD e SHRM",
@@ -568,7 +558,7 @@
           "title_pt_BR": "Criar 3 a 4 templates de marca para posts no LinkedIn",
           "due_date": "2026-11-24",
           "status": "doing",
-          "change_note": ""
+          "change_note": "Pan escolheu o template \"Track every step...\" Falta Scott decidir."
         },
         "M1117-06": {
           "title_en_CA": "Research adding the DCTI logo to team members' LinkedIn profiles",
@@ -617,10 +607,256 @@
         "active": 84,
         "backlog": 18,
         "next": 13,
-        "doing": 7,
+        "doing": 6,
         "blocked": 1,
         "late": 0,
-        "done": 45
+        "done": 46
+      },
+      "completed_last_cycle": [
+        {
+          "task_id": "REU-1020-07",
+          "title_en_CA": "Build the automated weekly GTM dashboard",
+          "title_pt_BR": "Construir o painel semanal automatizado do GTM",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-16"
+        },
+        {
+          "task_id": "AUD-01",
+          "title_en_CA": "Send the export instructions to the nominated networks",
+          "title_pt_BR": "Enviar as instruções de exportação às redes indicadas",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "CMP-01",
+          "title_en_CA": "Paid campaign 1/3 — brief: objective, Persona Matrix audience, targeting, budget, KPIs",
+          "title_pt_BR": "Campanha paga 1/3: briefing com objetivo, público da Persona Matrix, segmentação, orçamento e KPIs",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "CNT-04",
+          "title_en_CA": "Join the first batch of groups (listening only)",
+          "title_pt_BR": "Entrar no primeiro lote de grupos (só escuta)",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "FND-03",
+          "title_en_CA": "Write the UTM convention and the campaign naming taxonomy",
+          "title_pt_BR": "Escrever a convenção de UTM e a taxonomia de nomes de campanha",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "FND-04",
+          "title_en_CA": "Review the existing White Paper landing page and registration form",
+          "title_pt_BR": "Revisar a landing page e o formulário de inscrição do White Paper",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "FND-08",
+          "title_en_CA": "Final check of the White Paper landing page; test lead end to end into Zoho",
+          "title_pt_BR": "Checagem final da landing page do White Paper; testar um lead de ponta a ponta até o Zoho",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "REU-1103-10",
+          "title_en_CA": "Write the press releases (ISRA, course and institute)",
+          "title_pt_BR": "Escrever os press releases (ISRA, curso e instituto)",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "STL-01",
+          "title_en_CA": "Confirm the SHRM application status and applying entity; email SHRM the eligibility questions",
+          "title_pt_BR": "Confirmar o status da inscrição na SHRM e a entidade solicitante; enviar à SHRM as perguntas de elegibilidade",
+          "owners": [
+            "Rafael",
+            "Scott"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "STL-05",
+          "title_en_CA": "Submit the SHRM provider application (Gold tier), if not yet submitted",
+          "title_pt_BR": "Enviar a inscrição de provedor na SHRM (nível Gold), se ainda não enviada",
+          "owners": [
+            "Rafael",
+            "Scott"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "STL-14",
+          "title_en_CA": "Confirm the SHRM provider approval",
+          "title_pt_BR": "Confirmar a aprovação de provedor na SHRM",
+          "owners": [
+            "Scott",
+            "Rafael"
+          ],
+          "done_on": "2026-11-17"
+        },
+        {
+          "task_id": "M1117-15",
+          "title_en_CA": "Email Scott the tutorial for extracting LinkedIn connections",
+          "title_pt_BR": "Enviar por e-mail ao Scott o tutorial de extração das conexões do LinkedIn",
+          "owners": [
+            "Rafael Cruz"
+          ],
+          "done_on": "2026-11-18"
+        },
+        {
+          "task_id": "REU-1020-05",
+          "title_en_CA": "Bring the historical Change View posts into the DCTI library",
+          "title_pt_BR": "Trazer os posts históricos do Change View para a biblioteca do DCTI",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-18"
+        },
+        {
+          "task_id": "M1117-01",
+          "title_en_CA": "Vet the LinkedIn contact Abraham and the CLLO exchange",
+          "title_pt_BR": "Verificar a credibilidade do contato Abraham e da troca com o CLLO",
+          "owners": [
+            "Rafael Cruz"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "M1117-09",
+          "title_en_CA": "Reorganize delayed tasks on the dashboard and move paid traffic items to January",
+          "title_pt_BR": "Reorganizar as tarefas atrasadas no painel e mover o tráfego pago para janeiro",
+          "owners": [
+            "Rafael Cruz"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "M1117-16",
+          "title_en_CA": "Review the 3 press release drafts to finalize them",
+          "title_pt_BR": "Revisar os 3 rascunhos de press release para finalizá-los",
+          "owners": [
+            "Scott"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "MAN-CNT-001",
+          "title_en_CA": "Review press releases created",
+          "title_pt_BR": "Revisar os press releases criados",
+          "owners": [
+            "Scott"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "MAN-CNT-002",
+          "title_en_CA": "Review weekly post for Linkedin",
+          "title_pt_BR": "Revisar o post semanal para Linkedin",
+          "owners": [
+            "Scott"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "REU-1006-09",
+          "title_en_CA": "Scott: ask 10–20 people in his network for their LinkedIn contacts file",
+          "title_pt_BR": "Scott: pedir o arquivo de contatos do LinkedIn a 10 a 20 pessoas da rede dele",
+          "owners": [
+            "Scott"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "STL-02",
+          "title_en_CA": "Fix the public dates for the Lab sessions (taster and half-day)",
+          "title_pt_BR": "Definir as datas públicas das sessões do Lab (taster e meio período)",
+          "owners": [
+            "Scott"
+          ],
+          "done_on": "2026-11-19"
+        },
+        {
+          "task_id": "M1117-04",
+          "title_en_CA": "Generate engagement content with AI from post questions",
+          "title_pt_BR": "Gerar conteúdo de engajamento com IA a partir das perguntas dos posts",
+          "owners": [
+            "Rafael Cruz"
+          ],
+          "done_on": "2026-11-22"
+        },
+        {
+          "task_id": "M1117-07",
+          "title_en_CA": "Email Scott his tasks for the week every Monday morning",
+          "title_pt_BR": "Enviar ao Scott toda segunda de manhã as tarefas dele da semana",
+          "owners": [
+            "Rafael Cruz"
+          ],
+          "done_on": "2026-11-22"
+        },
+        {
+          "task_id": "M1117-12",
+          "title_en_CA": "Email the Sintera transformation lab specifications TASTER to Scott",
+          "title_pt_BR": "Enviar ao Scott as especificações do TASTER lab de transformação Sintera",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-22"
+        },
+        {
+          "task_id": "M1117-14",
+          "title_en_CA": "Set up the weekly automatic status report email to Scott",
+          "title_pt_BR": "Configurar o envio semanal automático do relatório de status ao Scott",
+          "owners": [
+            "Rafael Cruz"
+          ],
+          "done_on": "2026-11-22"
+        },
+        {
+          "task_id": "REU-1014-04",
+          "title_en_CA": "Check how to reach people with ProSci or change-management certifications on LinkedIn",
+          "title_pt_BR": "Verificar como alcançar pessoas com certificação ProSci ou de gestão de mudança no LinkedIn",
+          "owners": [
+            "Rafael"
+          ],
+          "done_on": "2026-11-22"
+        }
+      ],
+      "done_without_date": {
+        "count": 11,
+        "task_ids": [
+          "WLX-01",
+          "REU-1006-01",
+          "REU-1006-03",
+          "REU-1006-04",
+          "REU-1006-05",
+          "REU-1006-06",
+          "REU-1006-07",
+          "REU-1006-08",
+          "REU-1008-01",
+          "REU-1008-02",
+          "REU-1103-01"
+        ]
       },
       "auto_color": "Yellow",
       "forced_color": null,
@@ -1300,28 +1536,6 @@
       "AI Transformation / Demo/Trial request",
       "AI Transformation / Sale (revenue)"
     ],
-    "collection": {
-      "stages_without_source": [
-        "ISRA / Site visits",
-        "ISRA / White paper download",
-        "ISRA / Newsletter signup",
-        "ISRA / Product page view",
-        "ISRA / Demo/Trial request",
-        "ISRA / Sale (revenue)",
-        "STL Course / Site visits",
-        "STL Course / White paper download",
-        "STL Course / Newsletter signup",
-        "STL Course / Product page view",
-        "STL Course / Demo/Trial request",
-        "STL Course / Sale (revenue)",
-        "AI Transformation / Site visits",
-        "AI Transformation / White paper download",
-        "AI Transformation / Newsletter signup",
-        "AI Transformation / Product page view",
-        "AI Transformation / Demo/Trial request",
-        "AI Transformation / Sale (revenue)"
-      ],
-      "failures": []
-    }
+    "collection": null
   }
 }
