@@ -282,15 +282,15 @@
   "snapshot": {
     "snapshot_date": "2026-11-24",
     "week_start": "2026-11-16",
-    "executing_text_en_CA": "No activities were logged in the activity list this week.\nTasks in progress: STL Lab page, taster definition, LinkedIn branding templates.\nCompleted this cycle: SHRM provider approval confirmed and press releases written.",
-    "executing_text_pt_BR": "Nenhuma atividade foi registrada na lista de atividades esta semana.\nTarefas em andamento: página do STL Lab, definição do taster, templates de marca para LinkedIn.\nConcluído neste ciclo: aprovação de provedor na SHRM confirmada e press releases escritos.",
+    "executing_text_en_CA": "No activities or notes were logged this week.\nAll 38 tasks in the cycle are done.\n6 tasks are in progress, including the STL Lab page and the taster definition.",
+    "executing_text_pt_BR": "Nenhuma atividade ou nota foi registrada esta semana.\nTodas as 38 tarefas do ciclo estão concluídas.\n6 tarefas estão em andamento, incluindo a página do STL Lab e a definição do taster.",
     "how_its_going_status": "Yellow",
-    "how_its_going_text_en_CA": "Yellow: the cycle is 100% done with nothing late, but 1 task is blocked.\nNo funnel data this week: every product stage has no source value.",
-    "how_its_going_text_pt_BR": "Amarelo: o ciclo está 100% concluído e nada está atrasado, mas 1 tarefa está bloqueada.\nSem dados de funil esta semana: nenhuma etapa de produto tem valor de fonte.",
-    "what_to_change_text_en_CA": "Connect data sources for the funnel stages, which all show no data.\nSet up tracking for the 7 pillar items marked \"Not yet\".",
-    "what_to_change_text_pt_BR": "Conectar fontes de dados para as etapas do funil, que estão todas sem dados.\nConfigurar o acompanhamento dos 7 itens de pilar marcados como \"Not yet\".",
-    "needs_from_team_en_CA": "Scott: choose the LinkedIn branding template (M1117-05), due 2026-11-24.\nUnblock M1117-06: research adding the DCTI logo to team LinkedIn profiles.",
-    "needs_from_team_pt_BR": "Scott: escolher o template de marca para LinkedIn (M1117-05), prazo 24/11/2026.\nDesbloquear M1117-06: pesquisar como adicionar o logo do DCTI aos perfis de LinkedIn da equipe.",
+    "how_its_going_text_en_CA": "Yellow: cycle 100% done, none late, but 1 task blocked and no funnel data.\nThe blocked task is the DCTI logo research for team LinkedIn profiles (M1117-06).",
+    "how_its_going_text_pt_BR": "Amarelo: ciclo 100% concluído, nenhuma atrasada, mas 1 tarefa bloqueada e sem dados de funil.\nA tarefa bloqueada é a pesquisa do logo do DCTI nos perfis de LinkedIn da equipe (M1117-06).",
+    "what_to_change_text_en_CA": "Connect data sources for the funnel stages that have no data.\nUnblock M1117-06, the DCTI logo research, due November 27.\nClose the LinkedIn branding template decision (M1117-05), due November 24.",
+    "what_to_change_text_pt_BR": "Conectar fontes de dados para as etapas do funil que estão sem dados.\nDesbloquear a M1117-06, pesquisa do logo do DCTI, com prazo em 27 de novembro.\nFechar a decisão sobre o template de marca do LinkedIn (M1117-05), com prazo em 24 de novembro.",
+    "needs_from_team_en_CA": "Scott: decision needed on the LinkedIn branding template (M1117-05), due November 24.\nScott: REU-1006-10, REU-1103-11 and REU-1103-12 are due November 24.\nMaurício: STL Lab page (STL-03) is due November 25.",
+    "needs_from_team_pt_BR": "Scott: decisão necessária sobre o template de marca do LinkedIn (M1117-05), com prazo em 24 de novembro.\nScott: REU-1006-10, REU-1103-11 e REU-1103-12 vencem em 24 de novembro.\nMaurício: página do STL Lab (STL-03) vence em 25 de novembro.",
     "report_url": "https://dcti-dashboard.vercel.app?week=2026-11-16"
   },
   "kpi": {
@@ -371,41 +371,15 @@
           ]
         },
         {
-          "person": "Mauricio",
-          "tasks": [
-            {
-              "task_id": "REU-1006-10",
-              "due_date": "2026-11-24"
-            }
-          ]
-        },
-        {
           "person": "Maurício",
           "tasks": [
             {
               "task_id": "STL-03",
               "due_date": "2026-11-25"
-            }
-          ]
-        },
-        {
-          "person": "Rafael Cruz",
-          "tasks": [
-            {
-              "task_id": "M1117-02",
-              "due_date": "2026-11-24"
             },
             {
-              "task_id": "M1117-03",
+              "task_id": "REU-1006-10",
               "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "M1117-08",
-              "due_date": "2026-11-24"
-            },
-            {
-              "task_id": "M1117-13",
-              "due_date": "2026-11-30"
             }
           ]
         },
@@ -720,7 +694,7 @@
           "title_en_CA": "Email Scott the tutorial for extracting LinkedIn connections",
           "title_pt_BR": "Enviar por e-mail ao Scott o tutorial de extração das conexões do LinkedIn",
           "owners": [
-            "Rafael Cruz"
+            "Rafael"
           ],
           "done_on": "2026-11-18"
         },
@@ -738,7 +712,7 @@
           "title_en_CA": "Vet the LinkedIn contact Abraham and the CLLO exchange",
           "title_pt_BR": "Verificar a credibilidade do contato Abraham e da troca com o CLLO",
           "owners": [
-            "Rafael Cruz"
+            "Rafael"
           ],
           "done_on": "2026-11-19"
         },
@@ -747,7 +721,7 @@
           "title_en_CA": "Reorganize delayed tasks on the dashboard and move paid traffic items to January",
           "title_pt_BR": "Reorganizar as tarefas atrasadas no painel e mover o tráfego pago para janeiro",
           "owners": [
-            "Rafael Cruz"
+            "Rafael"
           ],
           "done_on": "2026-11-19"
         },
@@ -801,7 +775,7 @@
           "title_en_CA": "Generate engagement content with AI from post questions",
           "title_pt_BR": "Gerar conteúdo de engajamento com IA a partir das perguntas dos posts",
           "owners": [
-            "Rafael Cruz"
+            "Rafael"
           ],
           "done_on": "2026-11-22"
         },
@@ -810,7 +784,7 @@
           "title_en_CA": "Email Scott his tasks for the week every Monday morning",
           "title_pt_BR": "Enviar ao Scott toda segunda de manhã as tarefas dele da semana",
           "owners": [
-            "Rafael Cruz"
+            "Rafael"
           ],
           "done_on": "2026-11-22"
         },
@@ -828,7 +802,7 @@
           "title_en_CA": "Set up the weekly automatic status report email to Scott",
           "title_pt_BR": "Configurar o envio semanal automático do relatório de status ao Scott",
           "owners": [
-            "Rafael Cruz"
+            "Rafael"
           ],
           "done_on": "2026-11-22"
         },
