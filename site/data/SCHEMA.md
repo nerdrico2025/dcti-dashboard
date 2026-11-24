@@ -108,6 +108,7 @@ Calculado da aba `tasks`. A IA só redige a frase de "Como está" (primeira linh
 | Campo | Tipo | Significado |
 |---|---|---|
 | `base_date` / `cycle_end` | AAAA-MM-DD | dia em que o B rodou (base das atrasadas) / domingo da semana relatada (base do ciclo e do % previsto) |
+| `cycle_start` | AAAA-MM-DD | segunda da semana relatada. `cycle_start`..`cycle_end` = último ciclo fechado, a mesma janela das horas |
 | `cycle` | `{ done, total, pct }` | "x de y do ciclo": prazo até `cycle_end` (ou concluída sem prazo), sem `dropped` e `frozen` |
 | `gtm_original` | `{ done, expected, total, done_pct, expected_pct, diff_points }` | origin "GTM 90 dias". (a) `done_pct`, (b) `expected_pct` (mesma base do ciclo), `diff_points` = (a) − (b): positivo = adiantado, negativo = atrasado |
 | `meeting_tasks` | `{ added, done }` | origin começando com "reunião ", independente de `is_new` |
@@ -121,10 +122,12 @@ Calculado da aba `tasks`. A IA só redige a frase de "Como está" (primeira linh
 | `team_needs` | `[{ person, tasks: [{ task_id, due_date }] }]` | `next`, `doing` ou `blocked` com responsável diferente de Rafael |
 | `items` | objeto por task_id: `{ title_en_CA, title_pt_BR, due_date, status, change_note }` | detalhes só das tarefas listadas |
 | `summary` | `{ active, backlog, next, doing, blocked, late, done }` (números) | bloco **Resumo** da Home (`site/resumo.js`, o mesmo da admin). `active` = todas menos `frozen` e `dropped` (inclui `done`); `late` = `late_count`. Só contagens: nenhum título, responsável ou hora. Semanas sem o campo não mostram o bloco. |
+| `completed_last_cycle` | `[{ task_id, title_en_CA, title_pt_BR, owners: [nome], done_on }]` | `done` com `done_on` entre `cycle_start` e `cycle_end`, ordem por `done_on`. Card **Concluídas no último ciclo** da Home e seção *Completed last week* do e-mail (workflow G). Concluída sem `done_on` fica fora. Semanas sem o campo escondem o card |
+| `done_without_date` | `{ count, task_ids }` | todas as `done` sem `done_on` (visíveis ou não), para corrigir a planilha. Aparece só na cópia PT do e-mail |
 
 - As listas têm só tarefas com `show_to_scott=yes`. As contas e a cor usam todas.
 - `how_its_going_status` (snapshot e kpi) = `forced_color`, ou `auto_color` quando não há cor forçada.
-- Nunca vão ao JSON público: `origin`, `owners` por tarefa, `pillar`, `is_new`, `show_to_scott`, `done_on`, `source_excerpt`.
+- Nunca vão ao JSON público: `origin`, `owners` por tarefa, `pillar`, `is_new`, `show_to_scott`, `done_on`, `source_excerpt`. Exceção: `completed_last_cycle` leva `owners` e `done_on` (só das concluídas visíveis do ciclo).
 
 ## 3. Rótulos da página que foram criados para ela (já estão em ui_labels)
 
