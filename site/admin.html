@@ -1535,7 +1535,8 @@
   }
   // Owners: one name per person. ownerName() compares ignoring case, extra spaces and accents and returns the
   // canonical spelling ("mauricio" -> "Maurício"). OWNER_ALIASES = other spellings seen in the data (key = plainText).
-  // Same lists as site/index.html ("Pedidos ao time"): change both together.
+  // Same lists in 5 places, change all together: here, site/index.html, n8n/code/task_metrics.js (workflow B),
+  // workflow D "Plan action" (+ names in the "Build AI request" prompt) and workflow F "Check request".
   // A name that is not in the list is kept as typed (spaces tidied). Used when reading AND before every write.
   var OWNER_NAMES = ['Rafael', 'Maurício', 'Scott', 'Panorea', 'Henrique', 'Board'];
   var OWNER_ALIASES = { 'Rafael Cruz': 'Rafael' };

@@ -121,7 +121,8 @@
   .box-icon { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 12px; background: var(--tone-soft); color: var(--tone); flex: none; }
   .box h2 { font-size: 1.25rem; font-weight: 700; }
   .box-how h2 { font-size: 1.375rem; }
-  .lines li { padding-left: 18px; position: relative; }
+  .lines li { padding-left: 18px; position: relative; min-width: 0; overflow-wrap: anywhere; }   /* long words / URLs wrap instead of being cut by .box */
+  .note-link { color: var(--accent); font-weight: 600; text-underline-offset: 3px; white-space: nowrap; }
   .lines li + li { margin-top: 14px; }
   .lines li::before { content: ""; position: absolute; left: 0; top: 0.66em; width: 7px; height: 7px; border-radius: 50%; background: var(--tone, var(--accent)); }
   .box .lines { font-size: 1.0625rem; line-height: 1.6; }
@@ -281,6 +282,12 @@
   .cycle-h { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .cycle-list li.zero .cycle-name, .cycle-list li.zero .cycle-h { color: var(--faint); font-weight: 500; }
 
+  /* ---------- tasks completed in the last cycle (same card as the hours; one group per owner) */
+  .done-note { margin: -8px 0 16px; font-size: 0.875rem; color: var(--muted); }
+  .done-group + .done-group { margin-top: 18px; }
+  .done-group .needs-list { margin-top: 4px; }
+  .done-id { display: block; font-size: 0.8125rem; font-weight: 650; color: var(--muted); }
+
   /* ---------- process health (details) */
   .health { display: flex; flex-wrap: wrap; gap: 12px 40px; margin-top: 40px; }
   .health h2 { width: 100%; }
@@ -299,7 +306,7 @@
     :root { --section-gap: 48px; --card-pad: 24px; --card-gap: 18px; }
     .wrap { padding: 28px 20px 56px; }
     .strategy-grid { grid-template-columns: 1fr; gap: 24px; }
-    .boxes, .products { grid-template-columns: 1fr; }
+    .boxes, .products { grid-template-columns: minmax(0, 1fr); }
     .cycle-card { grid-template-columns: 1fr; }
     .needs-people { grid-template-columns: 1fr; }
   }
@@ -338,7 +345,7 @@
     .products { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; }
     .status-large { font-size: 13pt !important; }
     .needs-people { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
-    .controls, .details, .more, .more-btn, .timelog-link, .hours-worked, .resumo-band, noscript { display: none !important; }
+    .controls, .details, .more, .more-btn, .timelog-link, .hours-worked, .completed-cycle, .resumo-band, noscript { display: none !important; }
     .wrap { max-width: none; padding: 0; }
     .card, .table-scroll { box-shadow: none; border: 1px solid #c9d1da; border-radius: 8px; padding: 3mm 4.5mm; }
     .site-header h1 { font-size: 17pt; margin-top: 0.5mm; }
@@ -509,6 +516,24 @@
         <div class="products" id="main-funnel"></div>
       </section>
 
+      <!-- tasks completed in the last closed cycle (kpi.tasks.completed_last_cycle), read-only, never printed. Weeks without the field hide it. -->
+      <section class="completed-cycle" id="done-section" aria-labelledby="done-title" hidden>
+        <h2 class="section-title" id="done-title"></h2>
+        <p class="done-note" id="done-note"></p>
+        <div class="card cycle-card">
+          <div>
+            <p class="cycle-k" id="done-k"></p>
+            <p class="cycle-range" id="done-range"></p>
+            <p class="cycle-value" id="done-value"></p>
+            <p class="cycle-total-label" id="done-total-label"></p>
+          </div>
+          <div>
+            <p class="cycle-msg" id="done-msg" hidden></p>
+            <div class="done-groups" id="done-groups"></div>
+          </div>
+        </div>
+      </section>
+
       <!-- hours worked: aggregate only (total and per group), never printed (the A4 page is full) -->
       <section class="hours-worked" aria-labelledby="cycle-title">
         <h2 class="section-title" id="cycle-title"></h2>
@@ -645,7 +670,16 @@
     'label.meeting_new_one':   { 'en-CA': '+{n} new', 'pt-BR': '+{n} nova' },
     'label.meeting_new_many':  { 'en-CA': '+{n} new', 'pt-BR': '+{n} novas' },
     'label.meeting_done_one':  { 'en-CA': '{n} completed', 'pt-BR': '{n} concluída' },
-    'label.meeting_done_many': { 'en-CA': '{n} completed', 'pt-BR': '{n} concluídas' }
+    'label.meeting_done_many': { 'en-CA': '{n} completed', 'pt-BR': '{n} concluídas' },
+    'label.done_title':        { 'en-CA': 'Completed last cycle', 'pt-BR': 'Concluídas no último ciclo' },
+    'label.open_document':     { 'en-CA': 'open document', 'pt-BR': 'abrir documento' },
+    'label.done_note':         { 'en-CA': 'Tasks completed during the cycle, regardless of their due date.', 'pt-BR': 'Tarefas concluídas durante o ciclo, independentemente do prazo.' },
+    'label.done_cycle':      { 'en-CA': 'Last work cycle', 'pt-BR': 'Último ciclo de trabalho' },
+    'label.done_total_one':    { 'en-CA': 'task completed', 'pt-BR': 'tarefa concluída' },
+    'label.done_total_many':   { 'en-CA': 'tasks completed', 'pt-BR': 'tarefas concluídas' },
+    'label.done_none':         { 'en-CA': 'No tasks completed in this cycle.', 'pt-BR': 'Nenhuma tarefa concluída neste ciclo.' },
+    'label.done_no_owner':     { 'en-CA': 'No owner', 'pt-BR': 'Sem responsável' },
+    'label.done_on':           { 'en-CA': 'done {date}', 'pt-BR': 'concluída {date}' }
   };
   var MAX_BOX_ITEMS = 3;
   // Main screen: sales-focused funnel (technical stage keys from kpi.funnel[].stage)
@@ -771,15 +805,17 @@
     clear(target);
     var host = $(target.id + '-more');
     clear(host);
-    var parts = splitLines(text);
+    // text = AI text (one item per line) or a list of items, each a string or a DOM node (e.g. a line with a link)
+    var parts = Array.isArray(text) ? text : splitLines(text);
+    function item(p) { if (typeof p === 'string') return el('li', null, p); var li = el('li'); li.appendChild(p); return li; }
     if (!parts.length) { target.appendChild(el('li', 'empty', DASH)); return; }
-    parts.slice(0, MAX_BOX_ITEMS).forEach(function (p) { target.appendChild(el('li', null, p)); });
+    parts.slice(0, MAX_BOX_ITEMS).forEach(function (p) { target.appendChild(item(p)); });
     var rest = parts.slice(MAX_BOX_ITEMS);
     if (!rest.length) return;
     var det = el('details', 'more');
     det.appendChild(el('summary', null, uiText('label.see_more') + ' (+' + fmtNumber(rest.length) + ')'));
     var ul = el('ul', 'lines');
-    rest.forEach(function (p) { ul.appendChild(el('li', null, p)); });
+    rest.forEach(function (p) { ul.appendChild(item(p)); });
     det.appendChild(ul);
     host.appendChild(det);
   }
@@ -876,6 +912,7 @@
     renderNeeds(tasks, tasks ? [] : splitLines(aiText(snap, 'needs_from_team')));
 
     renderMainFunnel(kpi);
+    renderCompleted(tasks, kpi);
     renderCycle();
     $('details-summary').textContent = uiText('label.see_details');
     $('timelog-link').textContent = uiText('label.time_log');
@@ -949,10 +986,36 @@
       var it = taskItem(t, id), why = [];
       if (it.status === 'blocked') why.push(uiText('label.task_blocked'));
       if (it.due_date && it.due_date < str(t.base_date) && it.status !== 'done') why.push(fill(uiText('label.task_late'), { date: shortDate(it.due_date) }));
-      if (it.change_note) why.push(oneLine(it.change_note));
-      return oneLine(taskTitle(t, id)) + (why.length ? ' (' + why.join(' · ') + ')' : '');
+      var line = oneLine(taskTitle(t, id));
+      var note = it.change_note ? noteParts(oneLine(it.change_note)) : null;
+      if (note && !note.urls.length) why.push(note.text);
+      if (!note || !note.urls.length) return line + (why.length ? ' (' + why.join(' · ') + ')' : '');
+      // Note with a URL: the text without it, then a short link per URL (display only; change_note is unchanged).
+      // "Title (Blocked · See the brief open document)"; a note that is only the URL: "Title (open document)".
+      if (note.text) why.push(note.text);
+      var frag = document.createDocumentFragment();
+      frag.appendChild(document.createTextNode(line + ' (' + (why.length ? why.join(' · ') + ' ' : '')));
+      note.urls.forEach(function (u, i) {
+        if (i) frag.appendChild(document.createTextNode(' · '));
+        var a = el('a', 'note-link', uiText('label.open_document'));
+        a.href = u; a.target = '_blank'; a.rel = 'noopener';
+        frag.appendChild(a);
+      });
+      frag.appendChild(document.createTextNode(')'));
+      return frag;
     });
-    return (out.length ? out : [uiText('label.tasks_none')]).join('\n');
+    return out.length ? out : [uiText('label.tasks_none')];
+  }
+  // "See the brief: https://docs.google.com/..." -> { text: 'See the brief', urls: ['https://docs.google.com/...'] }
+  function noteParts(s) {
+    var urls = [];
+    var text = s.replace(/https?:\/\/[^\s<>"]+/gi, function (u) {
+      var clean = u.replace(/[).,;:!?\]]+$/, '');
+      urls.push(clean);
+      return u.slice(clean.length);
+    });
+    text = text.replace(/\(\s*\)|\[\s*\]/g, '').replace(/\s+/g, ' ').replace(/^[\s:;,.\-–—]+|[\s:;,\-–—]+$/g, '').trim();
+    return { text: text, urls: urls };
   }
   // ---------- needs from the team: presentation only (data = kpi.tasks.team_needs + items, unchanged)
   var NEEDS_SOON_DAYS = 2;
@@ -972,7 +1035,8 @@
   }
   function dayDiff(a, b) { var x = parseDate(a), y = parseDate(b); return x && y ? Math.round((x - y) / 86400000) : null; }
   function titleKey(t, id) { var it = taskItem(t, id); return oneLine(it.title_pt_BR || it.title_en_CA || id).toLowerCase(); }
-  // Owners: one name per person, same rule and lists as site/admin.html (change both together). Compares ignoring
+  // Owners: one name per person, same rule and lists as site/admin.html, task_metrics.js (B) and workflows D and F
+  // (change all together; list of copies in site/admin.html). Compares ignoring
   // case, extra spaces and accents and returns the canonical spelling ("Mauricio" -> "Maurício"); other names stay as written.
   var OWNER_NAMES = ['Rafael', 'Maurício', 'Scott', 'Panorea', 'Henrique', 'Board'];
   var OWNER_ALIASES = { 'Rafael Cruz': 'Rafael' };
@@ -1479,6 +1543,60 @@
       list.appendChild(li);
     });
     list.hidden = false;
+  }
+
+  // ---------- tasks completed in the last closed cycle (Monday to Sunday of the snapshot week, by done_on).
+  // One group per owner (names merged like "Pedidos ao time"); a task with two owners shows under both, the total counts it once.
+  function renderCompleted(t, kpi) {
+    var list = t && Array.isArray(t.completed_last_cycle) ? t.completed_last_cycle.filter(function (x) { return isObj(x) && str(x.task_id); }) : null;
+    $('done-section').hidden = !list;
+    if (!list) return;
+    var ws = WEEK_RE.test(str(t.cycle_start)) ? t.cycle_start : cycleWeekStart();
+    $('done-title').textContent = uiText('label.done_title');
+    $('done-note').textContent = uiText('label.done_note');
+    $('done-k').textContent = uiText('label.done_cycle');
+    $('done-range').textContent = cycleRange(ws);
+    $('done-value').textContent = fmtNumber(list.length);
+    $('done-total-label').textContent = uiText(list.length === 1 ? 'label.done_total_one' : 'label.done_total_many');
+    var box = $('done-groups'), msg = $('done-msg');
+    clear(box);
+    msg.hidden = list.length > 0;
+    msg.textContent = uiText('label.done_none');
+    var groups = [], byName = {}, noOwner = uiText('label.done_no_owner');
+    list.forEach(function (x) {
+      var names = arr(x.owners).map(ownerName).filter(Boolean);
+      if (!names.length) names = [noOwner];
+      names.filter(function (n, i) { return names.indexOf(n) === i; }).forEach(function (n) {
+        if (!byName[n]) { byName[n] = { name: n, items: [] }; groups.push(byName[n]); }
+        byName[n].items.push(x);
+      });
+    });
+    groups.sort(function (a, b) { return (a.name === noOwner) - (b.name === noOwner) || b.items.length - a.items.length || a.name.localeCompare(b.name); });
+    var col = COL[state.lang] === 'pt_BR' ? 'pt_BR' : 'en_CA', alt = col === 'pt_BR' ? 'en_CA' : 'pt_BR';
+    groups.forEach(function (g) {
+      var wrap = el('div', 'done-group');
+      var who = el('div', 'needs-who');
+      var av = el('span', 'needs-avatar', g.name === noOwner ? '?' : initials(g.name));
+      av.setAttribute('aria-hidden', 'true');
+      who.appendChild(av);
+      who.appendChild(el('strong', null, g.name));
+      who.appendChild(el('span', 'needs-count', fmtNumber(g.items.length)));
+      wrap.appendChild(who);
+      var ul = el('ul', 'needs-list');
+      g.items.forEach(function (x) {
+        var li = el('li');
+        var task = el('span', 'needs-task');
+        task.appendChild(el('span', 'done-id', str(x.task_id)));
+        task.appendChild(document.createTextNode(oneLine(x['title_' + col] || x['title_' + alt] || x.task_id)));
+        li.appendChild(task);
+        var tag = el('span', 'due-tag', tagDate(x.done_on));
+        tag.setAttribute('title', fill(uiText('label.done_on'), { date: tagDate(x.done_on) }));
+        li.appendChild(tag);
+        ul.appendChild(li);
+      });
+      wrap.appendChild(ul);
+      box.appendChild(wrap);
+    });
   }
 
   function renderHealth(kpi) {
